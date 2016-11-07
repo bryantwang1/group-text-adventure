@@ -72,17 +72,41 @@ function mapDisplayer() {
   }
 }
 
+// PLAYER STUFF BELOW THIS LINE
+
 // Possible constructor for player objects
 function Player(userName) {
 	this.name = userName;
   this.maxHealth = 100;
   this.currentHealth = 100;
+  this.minDamage = 10;
+  this.maxDamage = 10;
   // We need to update these coordinates everytime the player enters a room or moves.
   this.y = 0;
   this.x = 0;
   this.defense = 0;
   this.symbol = "Δ";
   this.inventory = [];
+}
+
+// Prototype method to see how much damage a player will deal.
+Player.prototype.whatDamage = function() {
+	// Finds and stores the size of the damage range to use as the multiplier in the random number generator.
+	var damageRange = this.maxDamage - this.minDamage;
+	var damage = Math.floor(Math.random() * damageRange) + this.minDamage;
+  // For example: monster deals 35 to 50 damage. damageRange is set to 15. minDamage stays at 35. Generator becomes Math.floor(Math.random() * 15) + 35; which generates a random number from 35 to 50.
+}
+
+Player.prototype.takeDamage = function(damageAmount) {
+	this.currentHealth -= damageAmount;
+  alert("You're attacked with " + damageAmount + ", your health is " + this.currentHealth);
+  if(this.currentHealth <= 0) {
+    alert("You're dead!"); // end the game
+  }
+}
+
+Player.prototype.restoreHealth = function(healthAmount) {
+  this.currentHealth += healthAmount;
 }
 
 function playerDisplayer(player) {

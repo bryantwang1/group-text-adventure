@@ -15,6 +15,7 @@ function Monster(name, health, minDamage, maxDamage) {
 }
 
 var testMonster = new Monster("testes", 50, 10, 10);
+testMonster.defense = 2;
 
 // Prototype method for monster to emit a random vocalization from its library.
 Monster.prototype.saySomething = function() {
@@ -28,8 +29,8 @@ Monster.prototype.saySomething = function() {
 Monster.prototype.healthBar = function() {
 	var percentage = Math.floor((currentHealth / maxHealth) * 10);
   // Need jQuery here
-  $("div#someID").empty();
-  $("div#someID").append("<div id=\"health-bar-outer\"><div id=\"health-bar-inner\"></div></div>");
+  $("div#vil-health-bar").empty();
+  $("div#vil-health-bar").append("<div id=\"health-bar-outer\"><div id=\"health-bar-inner\"></div></div>");
   $("div#health-bar-inner").css({"width":"\"" + percentage +"%\";"});
 }
 
@@ -43,18 +44,22 @@ Monster.prototype.takeDamage = function(damageAmount) {
   }
 }
 
+Monster.prototype.restoreHealth = function(healthAmount) {
+  this.currentHealth += healthAmount;
+}
+
 // Example of a function for a chance to hit a monster instead of a sure hit.
 function attemptHit(damage, target) {
 	// Generates and stores a random number from 1 to 10.
 	var hitChance = Math.floor(Math.random() * 10) + 1;
   console.log("The hit chance was: " +hitChance);
+  var defense = target.defense;
 
-  if(hitChance >= 1 && hitChance <= 9) {
+  if(hitChance <= defense) {
+    alert("Monster defended, no damage.");
+  } else if(hitChance >= 1 && hitChance <= 10) {
   	target.takeDamage(damage);
     // Doesn't need to be an else if, but made it one to illustrate 	the concept.
-  } else if(hitChance === 10) {
-    alert("Monster defended, no damage.");
-  	// Do nothing. No damage is dealt. Basically a 90% chance to hit.
   }
 }
 
