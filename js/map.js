@@ -12,6 +12,23 @@ function Location(yCoord, xCoord) {
   this.symbol = "#";
   this.color = "white";
   this.searchable = false;
+  this.spawnChance = 10;
+}
+// Prototype method that increases spawn chance by the argument
+Location.prototype.increaseSpawn = function(percentage) {
+  this.spawnChance += percentage;
+}
+// Prototype method that resets the spawn chance
+Location.prototype.resetSpawn = function() {
+  this.spawnChance += 10;
+}
+// Function to apply the adjusted spawn chance to every tile
+function adjustSpawn(percentage) {
+  for(var idx = 0; idx < mapArrays.length; idx++) {
+    for(var idx2 = 0; idx2 < mapArrays[idx].length; idx2++) {
+      mapArrays[idx][idx2].increaseSpawn(percentage);
+    }
+  }
 }
 
 // 2d square array creator. Confirmed to work.
@@ -78,6 +95,7 @@ function mapDisplayer() {
 function surroundingChecker(player) {
   var y = player.y - 1;
 	var x = player.x - 1;
+  userCommands = [];
 
   for(var idx = y; idx < y+3; idx++) {
   	for(var idx2 = x; idx2 > x+3; idx2++) {
@@ -165,6 +183,8 @@ $(function() {
   	if(mapArrays[player.y-1][player.x].canMove) {
       player.y -= 1;
     	positionUpdater(player,1,0);
+      adjustSpawn(2);
+      surroundingChecker(player);
       mapDisplayer();
       playerDisplayer(player);
     } else {
@@ -177,6 +197,8 @@ $(function() {
     if(mapArrays[player.y+1][player.x].canMove) {
       player.y += 1;
       positionUpdater(player,-1,0);
+      adjustSpawn(2);
+      surroundingChecker(player);
       mapDisplayer();
       playerDisplayer(player);
     } else {
@@ -189,6 +211,8 @@ $(function() {
     if(mapArrays[player.y][player.x-1].canMove) {
       player.x -= 1;
       positionUpdater(player,0,1);
+      adjustSpawn(2);
+      surroundingChecker(player);
       mapDisplayer();
       playerDisplayer(player);
     } else {
@@ -201,6 +225,8 @@ $(function() {
     if(mapArrays[player.y][player.x+1].canMove) {
       player.x += 1;
       positionUpdater(player,0,-1);
+      adjustSpawn(2);
+      surroundingChecker(player);
       mapDisplayer();
       playerDisplayer(player);
     } else {
