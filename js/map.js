@@ -103,6 +103,7 @@ $(function() {
   var testPlayer = new Player("tester");
   testPlayer.y = 5;
   testPlayer.x = 5;
+  mapArrays[5][5].playerHere = true;
 
   playerDisplayer(testPlayer);
 
@@ -116,25 +117,60 @@ $(function() {
   function moveUp(player) {
   	if(mapArrays[player.y-1][player.x].canMove) {
       player.y -= 1;
-    	positionUpdater(testPlayer,-1, 0);
+    	positionUpdater(player,1,0);
       mapDisplayer();
-      playerDisplayer(testPlayer);
+      playerDisplayer(player);
     } else {
     	alert("You can't move there!");
     }
   }
 
+  // Move Down
+  function moveDown(player) {
+    if(mapArrays[player.y+1][player.x].canMove) {
+      player.y += 1;
+      positionUpdater(player,-1,0);
+      mapDisplayer();
+      playerDisplayer(player);
+    } else {
+      alert("You can't move there!");
+    }
+  }
+
+  // Move Left
+  function moveLeft(player) {
+    if(mapArrays[player.y][player.x-1].canMove) {
+      player.x -= 1;
+      positionUpdater(player,0,1);
+      mapDisplayer();
+      playerDisplayer(player);
+    } else {
+      alert("You can't move there!");
+    }
+  }
+
+  // Move Right
+  function moveRight(player) {
+    if(mapArrays[player.y][player.x+1].canMove) {
+      player.x += 1;
+      positionUpdater(player,0,-1);
+      mapDisplayer();
+      playerDisplayer(player);
+    } else {
+      alert("You can't move there!");
+    }
+  }
+
   // Possible code to make arrow keys work to move
-  $("body").on("keydown", function(event) {
-    console.log("handler for .keypress() called.");
+  $(document).on("keydown", function(event) {
   	if(event.which === 37) {
-    // moveLeft();
+    moveLeft(testPlayer);
     } else if(event.which === 38) {
     moveUp(testPlayer);
     } else if(event.which === 39) {
-    // moveRight();
+    moveRight(testPlayer);
   } else if(event.which === 40) {
-    // moveDown();
+    moveDown(testPlayer);
     }
   });
 })
