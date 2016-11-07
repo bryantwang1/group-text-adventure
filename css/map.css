@@ -1,0 +1,23 @@
+body {
+  background-color: black;
+}
+
+#map-display p {
+  letter-spacing: 2em;
+}
+
+#map-display {
+  text-align: center;
+}
+
+.green {
+  color: green;
+}
+
+.white {
+  color: gray;
+}
+
+.gold {
+  color: gold;
+}
