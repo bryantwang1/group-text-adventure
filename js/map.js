@@ -206,17 +206,21 @@ $(function() {
     mapArrays[player.y + oldY][player.x + oldX].playerHere = false;
     mapArrays[player.y][player.x].playerHere = true;
   }
+  //
+  function moveChecklist(player, spawnPercentage) {
+    spawnChecker(player);
+    spawnAdjuster(spawnPercentage);
+    surroundingChecker(player);
+    mapDisplayer();
+    playerDisplayer(player);
+  }
 
   // Move Up
   function moveUp(player) {
   	if(mapArrays[player.y-1][player.x].canMove) {
       player.y -= 1;
     	positionUpdater(player,1,0);
-      spawnChecker(player);
-      spawnAdjuster(2);
-      surroundingChecker(player);
-      mapDisplayer();
-      playerDisplayer(player);
+      moveChecklist(player, 2);
     } else {
     	alert("You can't move there!");
     }
@@ -227,11 +231,7 @@ $(function() {
     if(mapArrays[player.y+1][player.x].canMove) {
       player.y += 1;
       positionUpdater(player,-1,0);
-      spawnChecker(player);
-      spawnAdjuster(2);
-      surroundingChecker(player);
-      mapDisplayer();
-      playerDisplayer(player);
+      moveChecklist(player, 2);
     } else {
       alert("You can't move there!");
     }
@@ -242,11 +242,7 @@ $(function() {
     if(mapArrays[player.y][player.x-1].canMove) {
       player.x -= 1;
       positionUpdater(player,0,1);
-      spawnChecker(player);
-      spawnAdjuster(2);
-      surroundingChecker(player);
-      mapDisplayer();
-      playerDisplayer(player);
+      moveChecklist(player, 2);
     } else {
       alert("You can't move there!");
     }
@@ -257,11 +253,7 @@ $(function() {
     if(mapArrays[player.y][player.x+1].canMove) {
       player.x += 1;
       positionUpdater(player,0,-1);
-      spawnChecker(player);
-      spawnAdjuster(2);
-      surroundingChecker(player);
-      mapDisplayer();
-      playerDisplayer(player);
+      moveChecklist(player, 2);
     } else {
       alert("You can't move there!");
     }

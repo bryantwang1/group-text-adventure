@@ -1,3 +1,4 @@
+var monsters = ["goblin", "wizard", "dragon", "golem", "skeleton"];
 // Constructor for monsters
 function Monster(name, health, minDamage, maxDamage) {
  this.name = name;
@@ -73,6 +74,6 @@ Monster.prototype.whatDamage = function() {
 
 // Function to possibly grab a random monster out of 6.
 function getMonster() {
-  var number = Math.floor(Math.random()*6);
+  var number = Math.floor(Math.random() * monsters.length);
    return monsters[number];
 }
