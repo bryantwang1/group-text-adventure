@@ -72,7 +72,7 @@ Monster.prototype.whatDamage = function() {
 }
 
 // Function to possibly grab a random monster out of 6.
-function getMonster () {
+function getMonster() {
   var number = Math.floor(Math.random()*6);
    return monsters[number];
 }

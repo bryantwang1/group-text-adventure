@@ -22,7 +22,7 @@ Location.prototype.increaseSpawn = function(percentage) {
 }
 // Prototype method that resets the spawn chance
 Location.prototype.resetSpawn = function() {
-  this.spawnChance = 6;
+  this.spawnChance = 8;
 }
 // Function to apply the adjusted spawn chance to every tile
 function spawnAdjuster(percentage) {
@@ -125,7 +125,7 @@ function surroundingChecker(player) {
     }
   }
 }
-//
+// Function that checks if the player's tile spawns a monster and takes the appropriate actions if it does.
 function spawnChecker(player) {
   var playerTile = mapArrays[player.y][player.x];
   var spawner = Math.floor((Math.random() * 100) + 1);
@@ -134,6 +134,7 @@ function spawnChecker(player) {
     playerTile.monsterHere = true;
     playerInCombat = true;
     spawnResetter();
+    // Add the random monster selector here or something
   }
 }
 
