@@ -41,6 +41,7 @@ Monster.prototype.takeDamage = function(damageAmount) {
   alert("You attack with " + damageAmount + ", the monster's health is " + this.currentHealth);
   if(this.currentHealth <= 0) {
   	this.alive = false;
+    // Set playerInCombat = false; when merged into one script file
     alert("The monster is dead!");
   }
 }
@@ -50,7 +51,7 @@ Monster.prototype.restoreHealth = function(healthAmount) {
 }
 
 // Example of a function for a chance to hit a monster instead of a sure hit.
-function attemptHit(damage, target) {
+function attack(damage, target) {
 	// Generates and stores a random number from 1 to 10.
 	var hitChance = Math.floor(Math.random() * 10) + 1;
   console.log("The hit chance was: " +hitChance);
