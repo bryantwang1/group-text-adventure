@@ -1,4 +1,5 @@
 var mapArrays = [];
+var userCommands = [];
 
 // Constructor for locations, defaults to floor type
 function Location(yCoord, xCoord) {
@@ -10,6 +11,7 @@ function Location(yCoord, xCoord) {
   this.playerHere = false;
   this.symbol = "#";
   this.color = "white";
+  this.searchable = false;
 }
 
 // 2d square array creator. Confirmed to work.
@@ -69,6 +71,27 @@ function mapDisplayer() {
       tempString += "<span id=\"location-" + idx + "-" + idx2 + "\" class=\"" + mapArrays[idx][idx2].color + "\">" + mapArrays[idx][idx2].symbol +"</span>";
     }
     $("#map-display").append("<p>" + tempString + "</p>");
+  }
+}
+
+// Doesn't really do anything yet, but this is how I would check for the properties of the player's surroundings. Of course, this would mean the player need properties called "x" and "y" to show where the player is.
+function surroundingChecker(player) {
+  var y = player.y - 1;
+	var x = player.x - 1;
+
+  for(var idx = y; idx < y+3; idx++) {
+  	for(var idx2 = x; idx2 > x+3; idx2++) {
+    	// This if statement is how we skip checking the center tile(the one the player is on).
+    	if(idx === player.y && idx2 === player.x) {
+
+      } else {
+      	var area = mapArrays[idx][idx2];
+        if(area.searchable) {
+          userCommands.push("search");
+        }
+        // Add more later
+    	}
+    }
   }
 }
 
@@ -197,4 +220,5 @@ $(function() {
     moveDown(testPlayer);
     }
   });
+
 })
