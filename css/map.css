@@ -15,5 +15,9 @@ body {
 }
 
 .white {
-  color: lightgray;
+  color: gray;
+}
+
+.orange {
+  color: orange;
 }

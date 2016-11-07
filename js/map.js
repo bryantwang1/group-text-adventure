@@ -66,16 +66,41 @@ function mapDisplayer() {
   for(var idx = 0; idx < mapArrays.length; idx++) {
     var tempString = "";
     for(var idx2 = 0; idx2 < mapArrays[idx].length; idx2++) {
-      tempString += "<span id=\"location-" + idx + "," + idx2 + "\" class=\"" + mapArrays[idx][idx2].color + "\">" + mapArrays[idx][idx2].symbol +"</span>";
+      tempString += "<span id=\"location-" + idx + "-" + idx2 + "\" class=\"" + mapArrays[idx][idx2].color + "\">" + mapArrays[idx][idx2].symbol +"</span>";
     }
     $("#map-display").append("<p>" + tempString + "</p>");
   }
 }
 
+// Possible constructor for player objects
+function Player(userName) {
+	this.name = userName;
+  this.maxHealth = 100;
+  this.currentHealth = 100;
+  // We need to update these coordinates everytime the player enters a room or moves.
+  this.y = 0;
+  this.x = 0;
+  this.defense = 0;
+  this.symbol = "Δ";
+  this.inventory = [];
+}
+
+function playerDisplayer(player) {
+  console.log("#location-" + player.y + "-" + player.x);
+  $("#location-" + player.y + "-" + player.x).text(player.symbol);
+  $("#location-" + player.y + "-" + player.x).removeClass();
+  $("#location-" + player.y + "-" + player.x).addClass("orange");
+}
 // Front-end below this line
 
 $(function() {
   mapCreator(10,10);
   wallMaker();
   mapDisplayer();
+
+  var testPlayer = new Player("tester");
+  testPlayer.y = 5;
+  testPlayer.x = 5;
+
+  playerDisplayer(testPlayer);
 })
