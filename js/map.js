@@ -129,7 +129,7 @@ function surroundingChecker(player) {
 function spawnChecker(player) {
   var playerTile = mapArrays[player.y][player.x];
   var spawner = Math.floor((Math.random() * 100) + 1);
-  console.log("run spawnchecker");
+  console.log("run spawnchecker, spawner: " + spawner + "playerTile: " + playerTile.spawnChance);
 
   if(spawner <= playerTile.spawnChance) {
     console.log("entered combat!");
