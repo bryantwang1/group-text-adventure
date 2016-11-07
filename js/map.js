@@ -9,10 +9,11 @@ function Location(yCoord, xCoord) {
   this.terrainType = "floor";
   this.playerHere = false;
   this.symbol = "#";
+  this.color = "white";
 }
 
 // 2d square array creator. Confirmed to work.
-function arrayCreator(ySize, xSize) {
+function mapCreator(ySize, xSize) {
   mapArrays = [];
 	for(var idx = 0; idx < ySize; idx++) {
   	mapArrays[idx] = [];
@@ -37,6 +38,7 @@ function wallMaker() {
     wallThis.description = "A wall.";
   	wallThis.terrainType = "wall";
     wallThis.symbol = "^";
+    wallThis.color = "green";
     // Or whatever symbol we want to set it to.
   }
   // Walls the top row.
@@ -64,11 +66,16 @@ function mapDisplayer() {
   for(var idx = 0; idx < mapArrays.length; idx++) {
     var tempString = "";
     for(var idx2 = 0; idx2 < mapArrays[idx].length; idx2++) {
-      tempString += "<span id=\"location-" + idx + "," + idx2 + "\">" + mapArrays[idx][idx2].symbol +"</span>";
+      tempString += "<span id=\"location-" + idx + "," + idx2 + "\" class=\"" + mapArrays[idx][idx2].color + "\">" + mapArrays[idx][idx2].symbol +"</span>";
     }
     $("#map-display").append("<p>" + tempString + "</p>");
   }
 }
 
-// Function 
-function mapColorizer()
+// Front-end below this line
+
+$(function() {
+  mapCreator(10,10);
+  wallMaker();
+  mapDisplayer();
+})

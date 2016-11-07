@@ -1,3 +1,7 @@
+body {
+  background-color: black;
+}
+
 #map-display p {
   letter-spacing: 2em;
 }
@@ -8,4 +12,8 @@
 
 .green {
   color: green;
+}
+
+.white {
+  color: lightgray;
 }
