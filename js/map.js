@@ -1,5 +1,6 @@
 var mapArrays = [];
 var userCommands = [];
+var playerInCombat = false;
 
 // Constructor for locations, defaults to floor type
 function Location(yCoord, xCoord) {
@@ -13,6 +14,7 @@ function Location(yCoord, xCoord) {
   this.color = "white";
   this.searchable = false;
   this.spawnChance = 10;
+  this.monsterHere = false;
 }
 // Prototype method that increases spawn chance by the argument
 Location.prototype.increaseSpawn = function(percentage) {
@@ -20,13 +22,21 @@ Location.prototype.increaseSpawn = function(percentage) {
 }
 // Prototype method that resets the spawn chance
 Location.prototype.resetSpawn = function() {
-  this.spawnChance += 10;
+  this.spawnChance = 6;
 }
 // Function to apply the adjusted spawn chance to every tile
-function adjustSpawn(percentage) {
+function spawnAdjuster(percentage) {
   for(var idx = 0; idx < mapArrays.length; idx++) {
     for(var idx2 = 0; idx2 < mapArrays[idx].length; idx2++) {
       mapArrays[idx][idx2].increaseSpawn(percentage);
+    }
+  }
+}
+// Function to apply the resetted spawn chance to every tile
+function spawnResetter() {
+  for(var idx = 0; idx < mapArrays.length; idx++) {
+    for(var idx2 = 0; idx2 < mapArrays[idx].length; idx2++) {
+      mapArrays[idx][idx2].resetSpawn();
     }
   }
 }
@@ -107,9 +117,23 @@ function surroundingChecker(player) {
         if(area.searchable) {
           userCommands.push("search");
         }
+        if(area.monsterHere) {
+          userCommands.push("fight");
+        }
         // Add more later
     	}
     }
+  }
+}
+//
+function spawnChecker(player) {
+  var playerTile = mapArrays[player.y][player.x];
+  var spawner = Math.floor((Math.random() * 100) + 1);
+
+  if(spawner <= playerTile.spawnChance) {
+    playerTile.monsterHere = true;
+    playerInCombat = true;
+    spawnResetter();
   }
 }
 
@@ -127,7 +151,11 @@ function Player(userName) {
   this.x = 0;
   this.defense = 0;
   this.symbol = "Δ";
-  this.inventory = [];
+  this.weapons = [];
+  this.items = [];
+  this.equippedWeapon = {};
+  // Not sure if we need to actually keep track of armor or if it would be a permanent upgrade once it's picked up
+  this.equippedArmor = {};
 }
 
 // Prototype method to see how much damage a player will deal.
@@ -183,7 +211,8 @@ $(function() {
   	if(mapArrays[player.y-1][player.x].canMove) {
       player.y -= 1;
     	positionUpdater(player,1,0);
-      adjustSpawn(2);
+      spawnChecker(player);
+      spawnAdjuster(2);
       surroundingChecker(player);
       mapDisplayer();
       playerDisplayer(player);
@@ -197,7 +226,8 @@ $(function() {
     if(mapArrays[player.y+1][player.x].canMove) {
       player.y += 1;
       positionUpdater(player,-1,0);
-      adjustSpawn(2);
+      spawnChecker(player);
+      spawnAdjuster(2);
       surroundingChecker(player);
       mapDisplayer();
       playerDisplayer(player);
@@ -211,7 +241,8 @@ $(function() {
     if(mapArrays[player.y][player.x-1].canMove) {
       player.x -= 1;
       positionUpdater(player,0,1);
-      adjustSpawn(2);
+      spawnChecker(player);
+      spawnAdjuster(2);
       surroundingChecker(player);
       mapDisplayer();
       playerDisplayer(player);
@@ -225,7 +256,8 @@ $(function() {
     if(mapArrays[player.y][player.x+1].canMove) {
       player.x += 1;
       positionUpdater(player,0,-1);
-      adjustSpawn(2);
+      spawnChecker(player);
+      spawnAdjuster(2);
       surroundingChecker(player);
       mapDisplayer();
       playerDisplayer(player);
@@ -236,15 +268,30 @@ $(function() {
 
   // Possible code to make arrow keys work to move
   $(document).on("keydown", function(event) {
-  	if(event.which === 37) {
-    moveLeft(testPlayer);
+    if(event.which === 37) {
+      if(playerInCombat === false) {
+        moveLeft(testPlayer);
+      } else {
+        alert("You can't move while in combat!");
+      }
     } else if(event.which === 38) {
-    moveUp(testPlayer);
+      if(playerInCombat === false) {
+        moveUp(testPlayer);
+      } else {
+        alert("You can't move while in combat!");
+      }
     } else if(event.which === 39) {
-    moveRight(testPlayer);
-  } else if(event.which === 40) {
-    moveDown(testPlayer);
+      if(playerInCombat === false) {
+        moveRight(testPlayer);
+      } else {
+        alert("You can't move while in combat!");
+      }
+    } else if(event.which === 40) {
+      if(playerInCombat === false) {
+        moveDown(testPlayer);
+      } else {
+        alert("You can't move while in combat!");
+      }
     }
   });
-
 })
