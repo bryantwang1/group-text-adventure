@@ -1,4 +1,6 @@
 var mapArrays = [];
+var userCommands = [];
+var playerInCombat = false;
 
 // Constructor for locations, defaults to floor type
 function Location(yCoord, xCoord) {
@@ -10,6 +12,33 @@ function Location(yCoord, xCoord) {
   this.playerHere = false;
   this.symbol = "#";
   this.color = "white";
+  this.searchable = false;
+  this.spawnChance = 10;
+  this.monsterHere = false;
+}
+// Prototype method that increases spawn chance by the argument
+Location.prototype.increaseSpawn = function(percentage) {
+  this.spawnChance += percentage;
+}
+// Prototype method that resets the spawn chance
+Location.prototype.resetSpawn = function() {
+  this.spawnChance = 8;
+}
+// Function to apply the adjusted spawn chance to every tile
+function spawnAdjuster(percentage) {
+  for(var idx = 0; idx < mapArrays.length; idx++) {
+    for(var idx2 = 0; idx2 < mapArrays[idx].length; idx2++) {
+      mapArrays[idx][idx2].increaseSpawn(percentage);
+    }
+  }
+}
+// Function to apply the resetted spawn chance to every tile
+function spawnResetter() {
+  for(var idx = 0; idx < mapArrays.length; idx++) {
+    for(var idx2 = 0; idx2 < mapArrays[idx].length; idx2++) {
+      mapArrays[idx][idx2].resetSpawn();
+    }
+  }
 }
 
 // 2d square array creator. Confirmed to work.
@@ -72,17 +101,84 @@ function mapDisplayer() {
   }
 }
 
+// Doesn't really do anything yet, but this is how I would check for the properties of the player's surroundings. Of course, this would mean the player need properties called "x" and "y" to show where the player is.
+function surroundingChecker(player) {
+  var y = player.y - 1;
+	var x = player.x - 1;
+  userCommands = [];
+
+  for(var idx = y; idx < y+3; idx++) {
+  	for(var idx2 = x; idx2 > x+3; idx2++) {
+    	// This if statement is how we skip checking the center tile(the one the player is on).
+    	if(idx === player.y && idx2 === player.x) {
+
+      } else {
+      	var area = mapArrays[idx][idx2];
+        if(area.searchable) {
+          userCommands.push("search");
+        }
+        if(area.monsterHere) {
+          userCommands.push("fight");
+        }
+        // Add more later
+    	}
+    }
+  }
+}
+// Function that checks if the player's tile spawns a monster and takes the appropriate actions if it does.
+function spawnChecker(player) {
+  var playerTile = mapArrays[player.y][player.x];
+  var spawner = Math.floor((Math.random() * 100) + 1);
+  console.log("run spawnchecker, spawner: " + spawner + "playerTile: " + playerTile.spawnChance);
+
+  if(spawner <= playerTile.spawnChance) {
+    console.log("entered combat!");
+    playerTile.monsterHere = true;
+    playerInCombat = true;
+    spawnResetter();
+    // Add the random monster selector here or something
+  }
+}
+
+// PLAYER STUFF BELOW THIS LINE
+
 // Possible constructor for player objects
 function Player(userName) {
 	this.name = userName;
   this.maxHealth = 100;
   this.currentHealth = 100;
+  this.minDamage = 10;
+  this.maxDamage = 10;
   // We need to update these coordinates everytime the player enters a room or moves.
   this.y = 0;
   this.x = 0;
   this.defense = 0;
   this.symbol = "Δ";
-  this.inventory = [];
+  this.weapons = [];
+  this.items = [];
+  this.equippedWeapon = {};
+  // Not sure if we need to actually keep track of armor or if it would be a permanent upgrade once it's picked up
+  this.equippedArmor = {};
+}
+
+// Prototype method to see how much damage a player will deal.
+Player.prototype.whatDamage = function() {
+	// Finds and stores the size of the damage range to use as the multiplier in the random number generator.
+	var damageRange = this.maxDamage - this.minDamage;
+	var damage = Math.floor(Math.random() * damageRange) + this.minDamage;
+  // For example: monster deals 35 to 50 damage. damageRange is set to 15. minDamage stays at 35. Generator becomes Math.floor(Math.random() * 15) + 35; which generates a random number from 35 to 50.
+}
+
+Player.prototype.takeDamage = function(damageAmount) {
+	this.currentHealth -= damageAmount;
+  alert("You're attacked with " + damageAmount + ", your health is " + this.currentHealth);
+  if(this.currentHealth <= 0) {
+    alert("You're dead!"); // end the game
+  }
+}
+
+Player.prototype.restoreHealth = function(healthAmount) {
+  this.currentHealth += healthAmount;
 }
 
 function playerDisplayer(player) {
@@ -112,14 +208,21 @@ $(function() {
     mapArrays[player.y + oldY][player.x + oldX].playerHere = false;
     mapArrays[player.y][player.x].playerHere = true;
   }
+  //
+  function moveChecklist(player, spawnPercentage) {
+    spawnChecker(player);
+    spawnAdjuster(spawnPercentage);
+    surroundingChecker(player);
+    mapDisplayer();
+    playerDisplayer(player);
+  }
 
   // Move Up
   function moveUp(player) {
   	if(mapArrays[player.y-1][player.x].canMove) {
       player.y -= 1;
     	positionUpdater(player,1,0);
-      mapDisplayer();
-      playerDisplayer(player);
+      moveChecklist(player, 2);
     } else {
     	alert("You can't move there!");
     }
@@ -130,8 +233,7 @@ $(function() {
     if(mapArrays[player.y+1][player.x].canMove) {
       player.y += 1;
       positionUpdater(player,-1,0);
-      mapDisplayer();
-      playerDisplayer(player);
+      moveChecklist(player, 2);
     } else {
       alert("You can't move there!");
     }
@@ -142,8 +244,7 @@ $(function() {
     if(mapArrays[player.y][player.x-1].canMove) {
       player.x -= 1;
       positionUpdater(player,0,1);
-      mapDisplayer();
-      playerDisplayer(player);
+      moveChecklist(player, 2);
     } else {
       alert("You can't move there!");
     }
@@ -154,8 +255,7 @@ $(function() {
     if(mapArrays[player.y][player.x+1].canMove) {
       player.x += 1;
       positionUpdater(player,0,-1);
-      mapDisplayer();
-      playerDisplayer(player);
+      moveChecklist(player, 2);
     } else {
       alert("You can't move there!");
     }
@@ -163,14 +263,30 @@ $(function() {
 
   // Possible code to make arrow keys work to move
   $(document).on("keydown", function(event) {
-  	if(event.which === 37) {
-    moveLeft(testPlayer);
+    if(event.which === 37) {
+      if(playerInCombat === false) {
+        moveLeft(testPlayer);
+      } else {
+        alert("You can't move while in combat!");
+      }
     } else if(event.which === 38) {
-    moveUp(testPlayer);
+      if(playerInCombat === false) {
+        moveUp(testPlayer);
+      } else {
+        alert("You can't move while in combat!");
+      }
     } else if(event.which === 39) {
-    moveRight(testPlayer);
-  } else if(event.which === 40) {
-    moveDown(testPlayer);
+      if(playerInCombat === false) {
+        moveRight(testPlayer);
+      } else {
+        alert("You can't move while in combat!");
+      }
+    } else if(event.which === 40) {
+      if(playerInCombat === false) {
+        moveDown(testPlayer);
+      } else {
+        alert("You can't move while in combat!");
+      }
     }
   });
 })
