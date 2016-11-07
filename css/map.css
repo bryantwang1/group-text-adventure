@@ -2,11 +2,11 @@ body {
   background-color: black;
 }
 
-#map-display p {
+#map p {
   letter-spacing: 2em;
 }
 
-#map-display {
+#map {
   text-align: center;
 }
 

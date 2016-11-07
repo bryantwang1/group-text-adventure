@@ -93,13 +93,13 @@ function wallMaker() {
 
 // Function to display the map in html
 function mapDisplayer() {
-  $("#map-display").empty();
+  $("#map").empty();
   for(var idx = 0; idx < mapArrays.length; idx++) {
     var tempString = "";
     for(var idx2 = 0; idx2 < mapArrays[idx].length; idx2++) {
       tempString += "<span id=\"location-" + idx + "-" + idx2 + "\" class=\"" + mapArrays[idx][idx2].color + "\">" + mapArrays[idx][idx2].symbol +"</span>";
     }
-    $("#map-display").append("<p>" + tempString + "</p>");
+    $("#map").append("<p>" + tempString + "</p>");
   }
 }
 
@@ -294,7 +294,7 @@ Monster.prototype.takeDamage = function(damageAmount) {
   alert("You attack with " + damageAmount + ", the monster's health is " + this.currentHealth);
   if(this.currentHealth <= 0) {
   	this.alive = false;
-    // Set playerInCombat = false; when merged into one script file
+    playerInCombat = false;
     alert("The monster is dead!");
   }
 }
