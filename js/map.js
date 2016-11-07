@@ -89,8 +89,10 @@ function playerDisplayer(player) {
   console.log("#location-" + player.y + "-" + player.x);
   $("#location-" + player.y + "-" + player.x).text(player.symbol);
   $("#location-" + player.y + "-" + player.x).removeClass();
-  $("#location-" + player.y + "-" + player.x).addClass("orange");
+  $("#location-" + player.y + "-" + player.x).addClass("gold");
 }
+
+
 // Front-end below this line
 
 $(function() {
@@ -103,4 +105,36 @@ $(function() {
   testPlayer.x = 5;
 
   playerDisplayer(testPlayer);
+
+  // Example of what would update the map on move.
+  function positionUpdater(player, oldY, oldX) {
+    mapArrays[player.y + oldY][player.x + oldX].playerHere = false;
+    mapArrays[player.y][player.x].playerHere = true;
+  }
+
+  // Move Up
+  function moveUp(player) {
+  	if(mapArrays[player.y-1][player.x].canMove) {
+      player.y -= 1;
+    	positionUpdater(testPlayer,-1, 0);
+      mapDisplayer();
+      playerDisplayer(testPlayer);
+    } else {
+    	alert("You can't move there!");
+    }
+  }
+
+  // Possible code to make arrow keys work to move
+  $("body").on("keydown", function(event) {
+    console.log("handler for .keypress() called.");
+  	if(event.which === 37) {
+    // moveLeft();
+    } else if(event.which === 38) {
+    moveUp(testPlayer);
+    } else if(event.which === 39) {
+    // moveRight();
+  } else if(event.which === 40) {
+    // moveDown();
+    }
+  });
 })
