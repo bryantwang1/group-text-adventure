@@ -1,0 +1,78 @@
+* {
+  font-family: helvetica,arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  background-color: #222;
+}
+
+h4 {
+  color: #fff;
+}
+#combat {
+  width: 300px;
+  height: 400px;
+  background-color: #888;
+}
+
+#health-bar {
+  width: 120px;
+  height: 200px;
+  background-color: green;
+}
+
+#combat-details {
+  width: 120px;
+  height: 200px;
+  background-color: orange;
+}
+
+#map {
+width: 600px;
+height:600px;
+background-color: #555;
+}
+
+#inventory {
+width: 300px;
+height:600px;
+background-color: #444;
+}
+
+#weapons {
+width: 300px;
+height:250px;
+background-color: #666;
+}
+#items {
+width: 300px;
+height:250px;
+background-color: #777;
+}
+#userInput {
+width: 200px;
+height:100px;
+background-color: #888;
+}
+#movement {
+width: 100px;
+height:100px;
+background-color: #555;
+}
+#player-options {
+width: 600px;
+height:300px;
+background-color: #2d2d2d;
+}
+#environment {
+width: 400px;
+height:200px;
+background-color: #555;
+}
+#help {
+width: 200px;
+height:200px;
+background-color: #444;
+}
