@@ -283,8 +283,8 @@ Monster.prototype.saySomething = function() {
 Monster.prototype.healthBar = function() {
 	var percentage = Math.floor((currentHealth / maxHealth) * 10);
   // Need jQuery here
-  $("div#vil-health-bar").empty();
-  $("div#vil-health-bar").append("<div id=\"health-bar-outer\"><div id=\"health-bar-inner\"></div></div>");
+  $("div#monster-health-bar").empty();
+  $("div#monster-health-bar").append("<div id=\"health-bar-outer\"><div id=\"health-bar-inner\"></div></div>");
   $("div#health-bar-inner").css({"width":"\"" + percentage +"%\";"});
 }
 
@@ -328,8 +328,15 @@ Monster.prototype.whatDamage = function() {
 
 // Function to possibly grab a random monster out of 6.
 function getMonster() {
-  var number = Math.floor(Math.random() * monsters.length);
-   return monsters[number];
+  var mobOrTough = Math.floor((Math.random() * 99) + 1);
+
+  if(mobOrTough <= 66) {
+    var number = Math.floor(Math.random() * mobMonsters.length);
+    return mobMonsters[number];
+  } else {
+    var number = Math.floor(Math.random() * toughMonsters.length);
+    return toughMonsters[number];
+  }
 }
 
 // CONTENT BELOW THIS LINE (MONSTERS)
