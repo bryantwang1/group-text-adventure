@@ -1,14 +1,14 @@
 var mapArrays = [];
 
-// Constructor for locations
+// Constructor for locations, defaults to floor type
 function Location(yCoord, xCoord) {
   this.y = yCoord;
   this.x = xCoord;
 	this.canMove = true;
-  this.description = "";
-  this.terrainType = "";
+  this.description = "A floor tile.";
+  this.terrainType = "floor";
   this.playerHere = false;
-  this.symbol = "";
+  this.symbol = "#";
 }
 
 // 2d square array creator. Confirmed to work.
@@ -33,10 +33,10 @@ function wallMaker() {
   var lastColumnX = mapArrays[0].length - 1;
   // A little callback function created inside wallMaker so that we don't have to repeat the same 3 commands.
   function waller(wallThis) {
-  	wallThis.terrainType = "wall";
-  	wallThis.description = "A wall";
-    wallThis.symbol = "^"
     wallThis.canMove = false;
+    wallThis.description = "A wall.";
+  	wallThis.terrainType = "wall";
+    wallThis.symbol = "^";
     // Or whatever symbol we want to set it to.
   }
   // Walls the top row.
@@ -50,10 +50,25 @@ function wallMaker() {
     waller(toWall);
   }
   // Walls the sides. Ignores the top and bottom rows since they're already done.
-  for(var idx = 1; idx < height-2; idx++) {
+  for(var idx = 1; idx < height-1; idx++) {
   	var toWall1 = mapArrays[idx][0];
     var toWall2 = mapArrays[idx][lastColumnX];
     waller(toWall1);
     waller(toWall2);
   }
 }
+
+// Function to display the map in html
+function mapDisplayer() {
+  $("#map-display").empty();
+  for(var idx = 0; idx < mapArrays.length; idx++) {
+    var tempString = "";
+    for(var idx2 = 0; idx2 < mapArrays[idx].length; idx2++) {
+      tempString += "<span id=\"location-" + idx + "," + idx2 + "\">" + mapArrays[idx][idx2].symbol +"</span>";
+    }
+    $("#map-display").append("<p>" + tempString + "</p>");
+  }
+}
+
+// Function 
+function mapColorizer()
