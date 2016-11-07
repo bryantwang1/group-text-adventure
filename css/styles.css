@@ -11,68 +11,90 @@
 h4 {
   color: #fff;
 }
+p{
+  color: #fff;
+}
 #combat {
   width: 300px;
-  height: 400px;
+  height: 600px;
   background-color: #888;
+  border: solid 4px #777;
+  padding: 10px;
+  margin: 20px 5px;
+}
+
+#image {
+  width: 270px;
+  height: 380px;
+  background-color: #555;
 }
 
 #health-bar {
-  width: 120px;
-  height: 200px;
+  width: 270px;
+  height: 50px;
   background-color: green;
 }
-
 #combat-details {
-  width: 120px;
-  height: 200px;
+  width: 270px;
+  height: 100px;
   background-color: orange;
 }
-
 #map {
-width: 600px;
-height:600px;
-background-color: #555;
-}
-
-#inventory {
-width: 300px;
+width: 565px;
 height:600px;
 background-color: #444;
+border: solid 4px #777;
+padding: 20px;
+margin: 20px 0px 0px 20px;
 }
-
+#inventory {
+width: 260px;
+height:600px;
+background-color: #888;
+border: solid 4px #777;
+padding: 10px;
+margin: 20px 0px 5px 5px;
+}
 #weapons {
-width: 300px;
+width: 230px;
 height:250px;
 background-color: #666;
 }
 #items {
-width: 300px;
+width: 230px;
 height:250px;
 background-color: #777;
 }
 #userInput {
-width: 200px;
+width: 300px;
 height:100px;
 background-color: #888;
+margin-left: 350px;
 }
 #movement {
-width: 100px;
+width: 250px;
 height:100px;
 background-color: #555;
 }
 #player-options {
-width: 600px;
+width: 1170px;
 height:300px;
 background-color: #2d2d2d;
+margin-top: 10px;
 }
 #environment {
-width: 400px;
-height:200px;
+width: 650px;
+height:240px;
 background-color: #555;
 }
 #help {
-width: 200px;
-height:200px;
+width: 450px;
+height:240px;
 background-color: #444;
+}
+
+#middle {
+width: 1170px;
+height:120px;
+background-color: #2d2d2d;
 }
