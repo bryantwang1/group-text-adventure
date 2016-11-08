@@ -1,13 +1,12 @@
 * {
-  font-family: helvetica,arial, sans-serif;
+  font-family: 'Eczar', serif;
   margin: 0;
   padding: 0;
 }
-
 .container {
   background-color: #222;
+  height: 1180px;
 }
-
 h4 {
   color: #fff;
   font-size: 1.6em;
@@ -15,171 +14,251 @@ h4 {
 h3 {
   text-align: center;
   font-size: 1.4em;
-
+  margin-bottom: 1px;
 }
-
 p{
   color: #fff;
 }
+
+/* ----   Monster   ----*/
 #monster {
   width: 275px;
   height: 600px;
-  background-color: #888;
   border: solid 4px #777;
   padding: 10px 10px 10px 12px;
   margin: 20px 5px;
+  background-color: #888;
+  border: solid 4px #0f345a;
 }
-
-#hero-image {
-  width: 240px;
-  height: 380px;
-  background-color: #555;
-  margin-bottom: 10px;
-  border: solid 3px #333;
-  box-shadow: 5px 5px 15px #222;
-}
-
 #monster-image {
   width: 240px;
-  height: 380px;
+  height: 360px;
   background-color: #555;
   margin-bottom: 10px;
-  border: solid 3px #333;
   box-shadow: 5px 5px 15px #222;
+  background-image: url("../img/sample.png");
+  border-radius: 15px;
 }
-
-#hero-health {
+#monster-health-number {
+  text-align: center;
+}
+#monster-name {
+  font-size: 1.6em;
+  text-align: center;
+  margin: 15px 10px 0px 10px;
+}
+#monster-description {
+  width: 240px;
+  height: 150px;
+  margin: 0px 0px 0px 0px;
+  padding: 10px;
+  color: #333;
+  letter-spacing: 1px;
+}
+#monster-health-bar-inner, #player-health-bar-inner {
   width: 236px;
   height: 16px;
   background-color: #6dc20f;
+  border-radius: 5px;
+  background: linear-gradient(#D9FEB1 10%, white 10%, #5BC656 50%);
 }
-
-#health-bar {
+/*Works on both monster and hero*/
+#monster-health-bar-outer, #player-health-bar-outer {
   width: 240px;
   height: 20px;
   background-color: #000;
-  border: solid 2px #dddddd;
+  border: solid 2px #333;
+  box-shadow: 5px 5px 15px #222;
+  border-radius: 5px;
 }
 
-#monster-health {
-  width: 236px;
-  height: 16px;
-  background-color: #6dc20f;
-}
-#monster-detail {
-  width: 240px;
-  height: 150px;
-  background-color: #333;
-  margin: 10px 0px 0px 0px;
-  padding: 10px;
-  color: #888;
-}
-#map {
-width: 565px;
-height:600px;
-background-color: #e6e5e5;
-border: solid 5px #777;
-padding: 20px;
-margin: 20px 0px 0px 0px;
-}
-/*#inventory {
-width: 260px;
-height:600px;
-background-color: #888;
-border: solid 4px #777;
-padding: 10px;
-margin: 20px 0px 5px 5px;
-}*/
-#weapons {
-width: 240px;
-height:230px;
-background-color: #e6e5e5;
-border-radius: 15px;
-box-shadow: 5px 5px 15px #222;
-
-}
-#items {
-width: 240px;
-height:230px;
-background-color: #e6e5e5;
-border-radius: 15px;
-box-shadow: 5px 5px 15px #222;
-}
+/* ----   Hero   ----*/
 #character {
 width: 270px;
-height: 1010px;
+height: 1150px;
 background-color: #888;
-border: solid 4px #777;
+border: solid 4px #0f345a;
 padding: 10px;
 margin: 20px 0px -20px -10px;
+}
+#hero-image {
+  width: 240px;
+  height: 360px;
+  background-color: #555;
+  margin-bottom: 10px;
+  box-shadow: 5px 5px 15px #222;
+  background-image: url("../img/hero-image.jpg");
+  border-radius: 15px;
+}
+
+#hero-health-number {
+  text-align: center;
+}
+
+/* ----   Weapons   ----*/
+#weapons {
+width: 240px;
+height:250px;
+background-color: #111;
+border-radius: 15px;
+box-shadow: 5px 5px 15px #222;
+padding: 10px 8px 6px 8px ;
+}
+#weapons p {
+  font-size: 1em;
+  font-style: normal;
+  color: #888;
+  letter-spacing: 1px;
+  text-align: center;
+  margin-left: 12px;
+}
+#weapons img {
+  margin: -2px 2px 2px 2px;
+  margin-left: 12px;
+}
+
+/* ----   Items   ----*/
+#items {
+  width: 240px;
+  height: 375px;
+  background-color: #111;
+  border-radius: 15px;
+  box-shadow: 5px 5px 15px #222;
+  padding: 10px 8px 6px 8px ;
+}
+#items p {
+  font-size: 1em;
+  font-style: normal;
+  color: #888;
+  letter-spacing: 1px;
+  text-align: center;
+  margin-left: 12px;
+}
+#items img {
+  margin: -2px 2px 2px 2px;
+  margin-left: 12px;
+}
+
+/* ----   player User Input   ----*/
+#middle {
+width: 870px;
+height:120px;
+margin-top: -510px;
+}
+#command-label {
+color: #D2D2D2;
+text-align: left;
+margin-bottom: 10p
 }
 #user-input-display {
 width: 300px;
 height:100px;
-background-color: #888;
 margin-left: 320px;
 }
-/*#movement {
-width: 150px;
-height:100px;
-background-color: #555;
-margin-left: 170px;
-}*/
+#user-input {
+  width: 225px;
+}
+
+#available-options {
+width: 275px;
+height:150px;
+background-color: #111;
+margin-left: 73px;
+padding: 10px 10px 10px 10px;
+}
+#available-options li {
+  list-style: none;
+  font-size: 1em;
+  font-style: normal;
+  color: #888;
+  letter-spacing: 1px;
+}
+
+/* ----   Environment/Bottom   ----*/
 #player-options {
 width: 870px;
 height:290px;
-/*background-color: #2d2d2d;*/
+/*background-color: red;*/
 margin-top: -255px;
 }
 #environment  {
 width: 560px;
-height:265px;
-background-color: #e6e5e5;
+height:365px;
+background-color: #ddd;
 margin-left: 5px;
-margin-top: 10px;
-color: #000;
+margin-top: -90px;
+color: #333;
 padding: 20px;
 font-size: 1.2em;
+border: solid 4px #0f345a;
 }
-
 #environment p {
-  color: #000;
+  color: #333;
 }
 
-
-
+/* ----   Help   ----*/
 #help  {
-width: 280px;
-height:265px;
+width: 275px;
+height: 495px;
 background-color: #444;
-margin-top: 10px;
-color: #e1e1e1;
+margin-top: -220px;
+margin-left: 5px;
+color: #C2C2C2;
 padding: 20px;
 font-size: 1.2em;
+border: solid 4px #0f345a;
 }
  #help p {
-   color: #e1e1e1;
+   color: #C2C2C2;
  }
-
-
-#middle {
-width: 870px;
-height:120px;
-/*background-color: #2d2d2d;*/
-margin-top: -380px;
-}
-
 ul {
   list-style: none;
 }
-
-li {
+#help li {
   font-size: 0.8em;
   font-style: italic;
-
 }
-
 h5 {
   font-size: 1.2em;
-  color: #fff;
+  color: #D2D2D2;
+    margin-bottom: 0px;
+}
+
+/* ----   Map   ----*/
+#map {
+width: 565px;
+height:560px;
+background-color: #111;
+padding: 20px;
+margin: 20px 0px 0px 0px;
+border-radius: 15px;
+text-align: center;
+padding: 30px 20px;
+}
+#map p {
+  letter-spacing: 3.5em;
+  line-height: 3em;
+}
+#map-placement {
+  margin-top: 50px;
+}
+#map-label h4 {
+  color: #D2D2D2;
+  margin: 20px 10px -10px 10px;
+  text-align: center;
+  letter-spacing: 2px;
+}
+/*walls icon*/
+.green {
+  color: #4777A9;
+  font-size: 1.2em;
+}
+/*tiles icon*/
+.white {
+  color: #6A6A6A;
+}
+/*character icon*/
+.gold {
+  color: #5BC656;
+  font-size: 1.6em;
 }
