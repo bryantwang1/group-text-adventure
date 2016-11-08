@@ -1,5 +1,5 @@
 * {
-  font-family: helvetica,arial, sans-serif;
+  font-family: 'Eczar', serif;
   margin: 0;
   padding: 0;
 }
@@ -24,10 +24,11 @@ p{
 #monster {
   width: 275px;
   height: 600px;
-  background-color: #888;
   border: solid 4px #777;
   padding: 10px 10px 10px 12px;
   margin: 20px 5px;
+  background-color: #888;
+  border: solid 4px #0f345a;
 }
 
 #hero-image {
@@ -35,8 +36,9 @@ p{
   height: 380px;
   background-color: #555;
   margin-bottom: 10px;
-  border: solid 3px #333;
   box-shadow: 5px 5px 15px #222;
+  background-image: url("../img/hero-image.jpg");
+  border-radius: 15px;
 }
 
 #monster-image {
@@ -44,43 +46,52 @@ p{
   height: 380px;
   background-color: #555;
   margin-bottom: 10px;
-  border: solid 3px #333;
   box-shadow: 5px 5px 15px #222;
+  background-image: url("../img/sample.png");
+  border-radius: 15px;
 }
 
-#hero-health {
+#monster-name {
+  font-size: 1.6em;
+  text-align: center;
+
+  margin: 12px 10px 8px 10px;
+}
+
+#hero-health-bar-inner {
   width: 236px;
   height: 16px;
   background-color: #6dc20f;
 }
 
-#health-bar {
+#health-bar-outer {
   width: 240px;
   height: 20px;
   background-color: #000;
   border: solid 2px #dddddd;
 }
 
-#monster-health {
+#health-bar-inner {
   width: 236px;
   height: 16px;
   background-color: #6dc20f;
 }
-#monster-detail {
+#monster-description {
   width: 240px;
   height: 150px;
-  background-color: #333;
   margin: 10px 0px 0px 0px;
   padding: 10px;
-  color: #888;
+  color: #333;
+  letter-spacing: 1px;
 }
 #map {
 width: 565px;
 height:600px;
 background-color: #e6e5e5;
-border: solid 5px #777;
 padding: 20px;
 margin: 20px 0px 0px 0px;
+background-image: url("../img/map.jpg");
+border-radius: 15px;
 }
 /*#inventory {
 width: 260px;
@@ -92,39 +103,60 @@ margin: 20px 0px 5px 5px;
 }*/
 #weapons {
 width: 240px;
-height:230px;
-background-color: #e6e5e5;
+height:240px;
+background-color: #111;
 border-radius: 15px;
 box-shadow: 5px 5px 15px #222;
-
+padding: 6px;
+}
+#weapons img {
+  margin: 2px;
 }
 #items {
-width: 240px;
-height:230px;
-background-color: #e6e5e5;
-border-radius: 15px;
-box-shadow: 5px 5px 15px #222;
+  width: 240px;
+  height:240px;
+  background-color: #111;
+  border-radius: 15px;
+  box-shadow: 5px 5px 15px #222;
+  padding: 6px;
+}
+
+#items img {
+  margin: 2px;
 }
 #character {
 width: 270px;
 height: 1010px;
 background-color: #888;
-border: solid 4px #777;
+border: solid 4px #0f345a;
 padding: 10px;
 margin: 20px 0px -20px -10px;
 }
 #user-input-display {
 width: 300px;
 height:100px;
-background-color: #888;
 margin-left: 320px;
 }
-/*#movement {
-width: 150px;
-height:100px;
-background-color: #555;
-margin-left: 170px;
+#user-input {
+  width: 225px;
+}
+#available-options {
+width: 275px;
+height:120px;
+background-color: #111;
+margin-left: 73px;
+padding: 10px 10px 10px 10px;
+}
+/*#available-options ul {
+
 }*/
+#available-options li {
+  list-style: none;
+  font-size: 1em;
+  font-style: normal;
+  color: #888;
+  letter-spacing: 1px;
+}
 #player-options {
 width: 870px;
 height:290px;
@@ -134,31 +166,35 @@ margin-top: -255px;
 #environment  {
 width: 560px;
 height:265px;
-background-color: #e6e5e5;
+background-color: #ddd;
 margin-left: 5px;
 margin-top: 10px;
-color: #000;
+color: #333;
 padding: 20px;
 font-size: 1.2em;
+border: solid 4px #0f345a;
 }
 
 #environment p {
-  color: #000;
+  color: #333;
 }
 
 
 
 #help  {
-width: 280px;
-height:265px;
+width: 275px;
+height:395px;
 background-color: #444;
-margin-top: 10px;
-color: #e1e1e1;
+margin-top: -120px;
+margin-left: 5px;
+color: #C2C2C2;
 padding: 20px;
 font-size: 1.2em;
+border: solid 4px #0f345a;
+
 }
  #help p {
-   color: #e1e1e1;
+   color: #C2C2C2;
  }
 
 
@@ -181,5 +217,10 @@ li {
 
 h5 {
   font-size: 1.2em;
-  color: #fff;
+  color: #D2D2D2;
+}
+
+#command-label {
+color: #D2D2D2;
+text-align: left;
 }

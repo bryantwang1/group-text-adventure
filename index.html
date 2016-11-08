@@ -3,8 +3,9 @@
   <head>
     <meta charset="utf-8">
     <link href="css/bootstrap.css" rel="stylesheet" type="text/css">
-    <link href="css/styles.css" rel="stylesheet" type="text/css">
     <link href="css/map.css" rel="stylesheet" type="text/css">
+    <link href="css/styles.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Eczar" rel="stylesheet">
     <script src="js/jquery-3.1.1.js"></script>
     <script src="js/scripts.js"></script>
     <script src="js/master.js"></script>
@@ -16,19 +17,19 @@
         <div class="col-md-3">
           <div id="monster">
         <!-- <p>combat</p> -->
-            <div id="monster-name">
-            </div>
+
             <div id="monster-image">
             </div><!-- he end -->
+            <div id="monster-name">
+            </div>
           <div id="health-bar">
             <div id="monster-health">
             </div><!-- health end -->
           </div><!-- heealth end -->
-          <div id="monster-detail">
-            <p> Monster detail test text</p>
+
             <div id="monster-description">
             </div>
-          </div>
+
         </div><!-- combat end -->
       </div><!-- col1 end -->
 
@@ -48,9 +49,14 @@
       </div><!-- he end -->
       <h3> Weapons</h3>
         <div id="weapons">
+          <img src="img/woodSword.png">
+          <img src="img/metalSword.png">
+          <img src="img/bow.png">
+          <img src="img/woodSword.png">
         </div><!-- weapons end -->
         <h3> Items</h3>
         <div id="items">
+          <img src="img/potionHealth.png">
         </div><!-- item end -->
       </div><!-- char end -->
     </div><!-- col3 end -->
@@ -61,10 +67,9 @@
       <div id="middle">
         <div class="col-md-7">
       <div id="user-input-display">
-        <h4>input</h4>
         <form id="input-form">
           <div class="form-group">
-            <label for="user-input">Command:</label>
+            <h3 id="command-label">Command:</h3>
             <input id="user-input" class="form-control" type="text" placeholder="Enter a command." autocomplete="off">
           </div>
         </form>
@@ -72,7 +77,12 @@
     </div> <!--col end-->
 
       <div class="col-md-5">
-      <div id="movement">
+      <div id="available-options">
+        <li>Open Door - open</li>
+        <li>Pick Up Item - pick up</li>
+        <li>Attack Monster - monster</li>
+        <li>Use Item - use</li>
+        <li>Equip Weapon - equip</li>
         <!-- <h4>movement</h4> -->
       </div><!-- help end -->
     </div> <!--col end-->
