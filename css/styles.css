@@ -55,7 +55,7 @@ p{
   color: #333;
   letter-spacing: 1px;
 }
-#health-bar-inner {
+#monster-health-bar-inner, #player-health-bar-inner {
   width: 236px;
   height: 16px;
   background-color: #6dc20f;
@@ -63,7 +63,7 @@ p{
   background: linear-gradient(#D9FEB1 10%, white 10%, #5BC656 50%);
 }
 /*Works on both monster and hero*/
-#health-bar-outer {
+#monster-health-bar-outer, #player-health-bar-outer {
   width: 240px;
   height: 20px;
   background-color: #000;
@@ -90,11 +90,7 @@ margin: 20px 0px -20px -10px;
   background-image: url("../img/hero-image.jpg");
   border-radius: 15px;
 }
-#hero-health-bar-inner {
-  width: 236px;
-  height: 16px;
-  background-color: #6dc20f;
-}
+
 #hero-health-number {
   text-align: center;
 }
