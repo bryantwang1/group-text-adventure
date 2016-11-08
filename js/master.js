@@ -126,7 +126,7 @@ function mapDisplayer() {
 function surroundingChecker(player) {
   var y = player.y - 1;
 	var x = player.x - 1;
-  userCommands = [];
+  userCommands = ["equip"];
 
   for(var idx = y; idx < y+3; idx++) {
   	for(var idx2 = x; idx2 < x+3; idx2++) {
@@ -264,7 +264,24 @@ Player.prototype.takeDamage = function(damageAmount) {
 
 Player.prototype.restoreHealth = function(healthAmount) {
   this.currentHealth += healthAmount;
+  if(this.currentHealth > this.maxHealth) {
+    this.currentHealth = this.maxHealth;
+  }
 }
+// Allows users to drink a potion from their inventory, removing it upon use.
+Player.prototype.drinkPotion = function() {
+  for(var idx = 0; idx < this.items.length; idx++) {
+    if(this.items[idx].name === "potion") {
+      this.restoreHealth(this.items[idx].addHealth);
+      $("#combat-display").text("You drank a potion.");
+      this.items.splice(idx, idx+1);
+      idx--;
+      break;
+    }
+  }
+}
+
+Player.prototype.equipWeapon
 
 function playerDisplayer(player) {
   console.log("#location-" + player.y + "-" + player.x);
