@@ -232,6 +232,29 @@ function monsterEncounter(player) {
   currentEnemy = getMonster();
   combatStarter(currentEnemy);
 }
+// Hard coded to use testPlayer y and x for now
+function combatEnder() {
+  var playerTile = mapArrays[testPlayer.y][testPlayer.x];
+  playerTile.monsterHere = false;
+  currentEnemy.statReset();
+  currentEnemy = {};
+  playerInCombat = false;
+  $("#monster-description").text("");
+  $("#monster-name").text("");
+}
+// Function for the flee command
+function playerFlee(player) {
+  var fleeChance = Math.floor((Math.random() * 10) + 1);
+  if(fleeChance > 10) {
+    combatEnder(player);
+    $("#combat-display").empty();
+    $("#combat-display").text("You flee from the monster.");
+  } else {
+    $("#combat-display").empty();
+    $("#combat-display").append("You attempt to flee, but can't get away from the monster.");
+    monsterRetaliater(currentEnemy, player);
+  }
+}
 // Function that checks if the player's tile spawns a monster and takes the appropriate actions if it does.
 function spawnChecker(player) {
   var playerTile = mapArrays[player.y][player.x];
@@ -285,7 +308,7 @@ Player.prototype.whatDamage = function() {
 Player.prototype.takeDamage = function(damageAmount) {
 	this.currentHealth -= damageAmount;
   this.healthBar();
-  $("#combat-display").append("<p>You're attacked with " + damageAmount + ", your health is " + this.currentHealth + ".</p>");
+  $("#combat-display").append("<p>You're attacked with " + damageAmount + "damage, your health is " + this.currentHealth + ".</p>");
   if(this.currentHealth <= 0) {
     this.currentHealth = 0;
     alert("You're dead!"); // end the game
@@ -448,11 +471,10 @@ Monster.prototype.statReset = function() {
 Monster.prototype.takeDamage = function(damageAmount) {
 	this.currentHealth -= damageAmount;
   this.healthBar();
-  $("#combat-display").append("<p>You attack with " + damageAmount + ", the monster's health is " + this.currentHealth + ".</p>");
+  $("#combat-display").append("<p>You attack with " + damageAmount + "damage, the monster's health is " + this.currentHealth + ".</p>");
   if(this.currentHealth <= 0) {
   	this.alive = false;
-    this.currentHealth = 0;
-    playerInCombat = false;
+    combatEnder();
     $("#combat-display").empty();
     $("#combat-display").text("The monster is dead!");
   }
@@ -691,9 +713,11 @@ $(function() {
             console.log("player attacks")
             attack(attackDamage, currentEnemy);
 
-            monsterRetaliater(currentEnemy, testPlayer);
+            if(playerInCombat) {
+              monsterRetaliater(currentEnemy, testPlayer);
+            }
           } else if (userInput === "flee") {
-
+            playerFlee(testPlayer);
           }
         }
       } else {
