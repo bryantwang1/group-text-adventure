@@ -15,6 +15,7 @@ h4 {
 h3 {
   text-align: center;
   font-size: 1.4em;
+  margin-bottom: 1px;
 
 }
 
@@ -55,7 +56,7 @@ p{
   font-size: 1.6em;
   text-align: center;
 
-  margin: 12px 10px 8px 10px;
+  margin: 15px 10px 0px 10px;
 }
 
 #hero-health-bar-inner {
@@ -68,31 +69,27 @@ p{
   width: 240px;
   height: 20px;
   background-color: #000;
-  border: solid 2px #dddddd;
+  border: solid 2px #333;
+  box-shadow: 5px 5px 15px #222;
+  border-radius: 5px;
 }
 
 #health-bar-inner {
   width: 236px;
   height: 16px;
   background-color: #6dc20f;
+  border-radius: 5px;
+  background: linear-gradient(#D9FEB1 10%, white 10%, #5BC656 50%);
 }
 #monster-description {
   width: 240px;
   height: 150px;
-  margin: 10px 0px 0px 0px;
+  margin: 0px 0px 0px 0px;
   padding: 10px;
   color: #333;
   letter-spacing: 1px;
 }
-#map {
-width: 565px;
-height:600px;
-background-color: #e6e5e5;
-padding: 20px;
-margin: 20px 0px 0px 0px;
-background-image: url("../img/map.jpg");
-border-radius: 15px;
-}
+
 /*#inventory {
 width: 260px;
 height:600px;
@@ -103,7 +100,7 @@ margin: 20px 0px 5px 5px;
 }*/
 #weapons {
 width: 240px;
-height:240px;
+height:238px;
 background-color: #111;
 border-radius: 15px;
 box-shadow: 5px 5px 15px #222;
@@ -114,7 +111,7 @@ padding: 6px;
 }
 #items {
   width: 240px;
-  height:240px;
+  height:238px;
   background-color: #111;
   border-radius: 15px;
   box-shadow: 5px 5px 15px #222;
@@ -225,4 +222,47 @@ h5 {
 #command-label {
 color: #D2D2D2;
 text-align: left;
+}
+
+/*map styling*/
+#map {
+width: 565px;
+height:560px;
+background-color: #111;
+padding: 20px;
+margin: 20px 0px 0px 0px;
+/*background-image: url("../img/map.jpg");*/
+border-radius: 15px;
+text-align: center;
+padding: 30px 20px;
+}
+
+#map p {
+  letter-spacing: 3.5em;
+  line-height: 3em;
+}
+
+#map-placement {
+  margin-top: 50px;
+}
+
+#map-label h4 {
+  color: #D2D2D2;
+  margin: 20px 10px -10px 10px;
+  text-align: center;
+  letter-spacing: 2px;
+}
+/*walls icon*/
+.green {
+  color: #4777A9;
+  font-size: 1.2em;
+}
+/*tiles icon*/
+.white {
+  color: #6A6A6A;
+}
+/*character icon*/
+.gold {
+  color: #5BC656;
+  font-size: 1.6em;
 }
