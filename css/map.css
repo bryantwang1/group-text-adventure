@@ -27,13 +27,24 @@ body {
 }
 
  /*Remember to move health-bar styling to styles.css*/
-#health-bar-outer {
+#player-health-bar-outer {
   background-color: white;
   width: 200px;
   height: 30px;
 }
 
-#health-bar-inner {
+#player-health-bar-inner {
+  background-color: red;
+  height: 30px;
+}
+
+#monster-health-bar-outer {
+  background-color: white;
+  width: 200px;
+  height: 30px;
+}
+
+#monster-health-bar-inner {
   background-color: red;
   height: 30px;
 }

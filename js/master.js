@@ -2,6 +2,7 @@ var mapArrays = [];
 var userCommands = [];
 var chests = [];
 var playerInCombat = false;
+var currentEnemy = {};
 
 // Constructor for locations, defaults to floor type
 function Location(yCoord, xCoord) {
@@ -17,6 +18,7 @@ function Location(yCoord, xCoord) {
   this.spawnChance = 10;
   this.monsterHere = false;
   this.drops = [];
+  this.occupiedBy = {};
 }
 // Prototype method that increases spawn chance by the argument
 Location.prototype.increaseSpawn = function(percentage) {
@@ -126,7 +128,7 @@ function mapDisplayer() {
 function surroundingChecker(player) {
   var y = player.y - 1;
 	var x = player.x - 1;
-  userCommands = ["equip", "drink potion"];
+  userCommands = ["equip", "potion"];
 
   for(var idx = y; idx < y+3; idx++) {
   	for(var idx2 = x; idx2 < x+3; idx2++) {
@@ -201,17 +203,34 @@ function combatStarter(monster) {
   $("#monster-description").text(monster.description);
   $("#monster-name").text(monster.name);
   monster.healthBar();
+  playerInCombat = true;
+  userCommands = ["attack", "flee", "potion", "equip"];
+}
+// Function for the command "fight" which will initiate a fight with a monster on an adjacent tile. If there are multiple monsters for some reason it will initiate a fight with the first monster found.
+function fight() {
+  var y = player.y - 1;
+	var x = player.x - 1;
+
+  for(var idx = y; idx < y+3; idx++) {
+  	for(var idx2 = x; idx2 < x+3; idx2++) {
+      if(idx === player.y && idx2 === player.x) {
+      } else {
+        var area = mapArrays[idx][idx2];
+        if(area.monsterHere) {
+          currentEnemy = area.occupiedBy;
+          combatStarter(currentEnemy);
+          break;
+        }
+      }
+    }
+  }
 }
 // Function to start random monster encounters.
 function monsterEncounter(player) {
   var playerTile = mapArrays[player.y][player.x];
   playerTile.monsterHere = true;
-  playerInCombat = true;
-
-  var newEnemy = getMonster();
-
-  console.log(newEnemy);
-  combatStarter(newEnemy);
+  currentEnemy = getMonster();
+  combatStarter(currentEnemy);
 }
 // Function that checks if the player's tile spawns a monster and takes the appropriate actions if it does.
 function spawnChecker(player) {
@@ -231,14 +250,14 @@ function spawnChecker(player) {
 // Possible constructor for player objects
 function Player(userName) {
 	this.name = userName;
-  this.maxHealth = 100;
-  this.currentHealth = 100;
+  this.maxHealth = 500;
+  this.currentHealth = 500;
   this.minDamage = 10;
   this.maxDamage = 10;
   // We need to update these coordinates everytime the player enters a room or moves.
   this.y = 0;
   this.x = 0;
-  this.defense = 0;
+  this.defense = 1;
   this.symbol = "Δ";
   this.weapons = [];
   this.items = [];
@@ -250,8 +269,8 @@ function Player(userName) {
 Player.prototype.healthBar = function() {
 	var percentage = Math.floor((this.currentHealth / this.maxHealth) * 100);
   $("div#hero-health").empty();
-  $("div#hero-health").append("<div id=\"health-bar-outer\"><div id=\"health-bar-inner\"></div></div>");
-  $("#health-bar-inner").css("width", percentage + "%");
+  $("div#hero-health").append("<div id=\"player-health-bar-outer\"><div id=\"player-health-bar-inner\"></div></div>");
+  $("#player-health-bar-inner").css("width", percentage + "%");
 }
 
 // Prototype method to see how much damage a player will deal.
@@ -259,13 +278,14 @@ Player.prototype.whatDamage = function() {
 	// Finds and stores the size of the damage range to use as the multiplier in the random number generator.
 	var damageRange = this.maxDamage - this.minDamage;
 	var damage = Math.floor(Math.random() * damageRange) + this.minDamage;
+  return damage;
   // For example: monster deals 35 to 50 damage. damageRange is set to 15. minDamage stays at 35. Generator becomes Math.floor(Math.random() * 15) + 35; which generates a random number from 35 to 50.
 }
 
 Player.prototype.takeDamage = function(damageAmount) {
 	this.currentHealth -= damageAmount;
   this.healthBar();
-  $("#combat-display").text("You're attacked with " + damageAmount + ", your health is " + this.currentHealth);
+  $("#combat-display").append("<p>You're attacked with " + damageAmount + ", your health is " + this.currentHealth + ".</p>");
   if(this.currentHealth <= 0) {
     this.currentHealth = 0;
     alert("You're dead!"); // end the game
@@ -334,9 +354,9 @@ function positionUpdater(player, oldY, oldX) {
 //
 function moveChecklist(player, spawnPercentage) {
   $("#combat-display").empty();
+  surroundingChecker(player);
   spawnChecker(player);
   spawnAdjuster(spawnPercentage);
-  surroundingChecker(player);
   mapDisplayer();
   playerDisplayer(player);
 }
@@ -415,8 +435,8 @@ Monster.prototype.saySomething = function() {
 Monster.prototype.healthBar = function() {
 	var percentage = Math.floor((this.currentHealth / this.maxHealth) * 100);
   $("div#monster-health").empty();
-  $("div#monster-health").append("<div id=\"health-bar-outer\"><div id=\"health-bar-inner\"></div></div>");
-  $("#health-bar-inner").css("width", percentage + "%");
+  $("div#monster-health").append("<div id=\"monster-health-bar-outer\"><div id=\"monster-health-bar-inner\"></div></div>");
+  $("#monster-health-bar-inner").css("width", percentage + "%");
 }
 
 Monster.prototype.statReset = function() {
@@ -428,11 +448,12 @@ Monster.prototype.statReset = function() {
 Monster.prototype.takeDamage = function(damageAmount) {
 	this.currentHealth -= damageAmount;
   this.healthBar();
-  $("#combat-display").text("You attack with " + damageAmount + ", the monster's health is " + this.currentHealth);
+  $("#combat-display").append("<p>You attack with " + damageAmount + ", the monster's health is " + this.currentHealth + ".</p>");
   if(this.currentHealth <= 0) {
   	this.alive = false;
     this.currentHealth = 0;
     playerInCombat = false;
+    $("#combat-display").empty();
     $("#combat-display").text("The monster is dead!");
   }
 }
@@ -453,19 +474,25 @@ function attack(damage, target) {
   var defense = target.defense;
 
   if(hitChance <= defense) {
-    alert("Monster defended, no damage.");
+    $("#combat-display").append("<p>" + target.name + " defended, no damage.</p>");
   } else if(hitChance >= 1 && hitChance <= 10) {
   	target.takeDamage(damage);
     // Doesn't need to be an else if, but made it one to illustrate 	the concept.
   }
 }
-
 // Prototype method to see how much damage a monster will deal.
 Monster.prototype.whatDamage = function() {
 	// Finds and stores the size of the damage range to use as the multiplier in the random number generator.
 	var damageRange = this.maxDamage - this.minDamage;
 	var damage = Math.floor(Math.random() * damageRange) + this.minDamage;
+  return damage;
   // For example: monster deals 35 to 50 damage. damageRange is set to 15. minDamage stays at 35. Generator becomes Math.floor(Math.random() * 15) + 35; which generates a random number from 35 to 50.
+}
+// Function for monsters to react after player turn
+function monsterRetaliater(monster, player) {
+  var retaliationDamage = monster.whatDamage();
+  console.log("run retaliater")
+  attack(retaliationDamage, player);
 }
 
 // CONTENT BELOW THIS LINE (MONSTERS)
@@ -600,7 +627,7 @@ function chestTester() {
   mapArrays[chests[1].y][chests[1].x] = chests[1];
   mapArrays[chests[2].y][chests[2].x] = chests[2];
 }
-  var testPlayer = new Player("tester");
+  var testPlayer = new Player("You");
 // Front-end below this line
 
 $(function() {
@@ -656,29 +683,43 @@ $(function() {
 
       var userInput = $("#user-input").val().toLowerCase();
 
-      if(equipTyped) {
-        console.log("Enter equipTyped if");
-        testPlayer.equipWeapon(userInput);
-        equipTyped = false;
-      } else {
+      if(playerInCombat) {
         if(userCommands.includes(userInput)) {
+          if(userInput === "attack") {
+            $("#combat-display").empty();
+            var attackDamage = testPlayer.whatDamage()
+            console.log("player attacks")
+            attack(attackDamage, currentEnemy);
 
-          if(userInput === "search") {
-            searcher(testPlayer);
-          } else if(userInput === "drink potion") {
-            testPlayer.drinkPotion();
-          } else if(userInput === "equip") {
-            var weaponNames = [];
-            for(var idx = 0; idx < testPlayer.weapons.length; idx++) {
-              weaponNames.push(testPlayer.weapons[idx].name);
+            monsterRetaliater(currentEnemy, testPlayer);
+          } else if (userInput === "flee") {
+
+          }
+        }
+      } else {
+        if(equipTyped) {
+          console.log("Enter equipTyped if");
+          testPlayer.equipWeapon(userInput);
+          equipTyped = false;
+        } else {
+          if(userCommands.includes(userInput)) {
+            if(userInput === "search") {
+              searcher(testPlayer);
+            } else if(userInput === "potion") {
+              testPlayer.drinkPotion();
+            } else if(userInput === "equip") {
+              var weaponNames = [];
+              for(var idx = 0; idx < testPlayer.weapons.length; idx++) {
+                weaponNames.push(testPlayer.weapons[idx].name);
+              }
+              $("#combat-display").text("What would you like to equip? Type its name the command space. Available weapons: " + "| " + weaponNames.join(" | ") + " |");
+              equipTyped = true;
+            } else {
+              $("#combat-display").text("You can't do that.");
             }
-            $("#combat-display").text("What would you like to equip? Type its name the command space. Available weapons: " + "| " + weaponNames.join(" | ") + " |");
-            equipTyped = true;
           } else {
             $("#combat-display").text("You can't do that.");
           }
-        } else {
-          $("#combat-display").text("You can't do that.");
         }
       }
 
