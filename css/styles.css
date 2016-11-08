@@ -100,26 +100,46 @@ margin: 20px 0px 5px 5px;
 }*/
 #weapons {
 width: 240px;
-height:238px;
+height:250px;
 background-color: #111;
 border-radius: 15px;
 box-shadow: 5px 5px 15px #222;
-padding: 6px;
+padding: 10px 8px 6px 8px ;
+}
+#weapons p {
+  font-size: 1em;
+  font-style: normal;
+  color: #888;
+  letter-spacing: 1px;
+  text-align: center;
+  margin-left: 12px;
+
 }
 #weapons img {
-  margin: 2px;
+  margin: -2px 2px 2px 2px;
+  margin-left: 12px;
+
 }
 #items {
   width: 240px;
-  height:238px;
+  height:250px;
   background-color: #111;
   border-radius: 15px;
   box-shadow: 5px 5px 15px #222;
-  padding: 6px;
+  padding: 10px 8px 6px 8px ;
+}
+#items p {
+  font-size: 1em;
+  font-style: normal;
+  color: #888;
+  letter-spacing: 1px;
+  text-align: center;
+  margin-left: 12px;
 }
 
 #items img {
-  margin: 2px;
+  margin: -2px 2px 2px 2px;
+  margin-left: 12px;
 }
 #character {
 width: 270px;
