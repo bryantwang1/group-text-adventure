@@ -1,9 +1,6 @@
 var mapArrays = [];
 var userCommands = [];
 var playerInCombat = false;
-var mobMonsters = ["goblin", "spider", "skeleton"];
-var toughMonsters = ["wizard", "golem"];
-var testMonster = new Monster("testes", 50, 10, 10);
 
 // Constructor for locations, defaults to floor type
 function Location(yCoord, xCoord) {
@@ -133,6 +130,13 @@ function monsterEncounter(player) {
   var playerTile = mapArrays[player.y][player.x];
   playerTile.monsterHere = true;
   playerInCombat = true;
+
+  var newEnemy = getMonster();
+
+  console.log(newEnemy);
+  $("#monster-description").text(newEnemy.description);
+  newEnemy.currentHealth = 1;
+  newEnemy.healthBar();
 }
 // Function that checks if the player's tile spawns a monster and takes the appropriate actions if it does.
 function spawnChecker(player) {
@@ -293,6 +297,11 @@ Monster.prototype.healthBar = function() {
   $("#health-bar-inner").css("width", percentage + "%");
 }
 
+Monster.prototype.statReset = function() {
+  this.alive = true;
+  this.currentHealth = this.maxHealth;
+}
+
 // Prototype method for monsters to take damage. Changes alive property to false if their currentHealth falls to 0 or below.
 Monster.prototype.takeDamage = function(damageAmount) {
 	this.currentHealth -= damageAmount;
@@ -332,19 +341,6 @@ Monster.prototype.whatDamage = function() {
   // For example: monster deals 35 to 50 damage. damageRange is set to 15. minDamage stays at 35. Generator becomes Math.floor(Math.random() * 15) + 35; which generates a random number from 35 to 50.
 }
 
-// Function to possibly grab a random monster out of 6.
-function getMonster() {
-  var mobOrTough = Math.floor((Math.random() * 99) + 1);
-
-  if(mobOrTough <= 66) {
-    var number = Math.floor(Math.random() * mobMonsters.length);
-    return mobMonsters[number];
-  } else {
-    var number = Math.floor(Math.random() * toughMonsters.length);
-    return toughMonsters[number];
-  }
-}
-
 // CONTENT BELOW THIS LINE (MONSTERS)
 
 var goblin = new Monster("goblin", 100, 10, 25);
@@ -382,6 +378,22 @@ skeleton.description = "A member of the undead legions approaches you with malic
 this.defense = 2;
 this.drops = ["potion"];
 this.vocalizations = ["[Bones clanking]", "Arg!", "Die!", "I'll hurt you...", "Do you feel pain?", "Take this!"];
+
+var mobMonsters = [goblin, spider, skeleton];
+var toughMonsters = [wizard, golem];
+
+// Function to possibly grab a random monster out of 6.
+function getMonster() {
+  var mobOrTough = Math.floor((Math.random() * 99) + 1);
+
+  if(mobOrTough <= 66) {
+    var number = Math.floor(Math.random() * mobMonsters.length);
+    return mobMonsters[number];
+  } else {
+    var number = Math.floor(Math.random() * toughMonsters.length);
+    return toughMonsters[number];
+  }
+}
 
 // CONTENT BELOW THIS LINE (ITEMS)
 
@@ -447,11 +459,6 @@ $(function() {
   testPlayer.y = 5;
   testPlayer.x = 5;
   mapArrays[5][5].playerHere = true;
-
-  testMonster.defense = 2;
-  testMonster.currentHealth = 30;
-
-  testMonster.healthBar();
 
   playerDisplayer(testPlayer);
 
