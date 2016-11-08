@@ -287,7 +287,9 @@ Player.prototype.drinkPotion = function() {
   }
 }
 
-Player.prototype.equipWeapon
+Player.prototype.equipWeapon = function() {
+
+}
 
 function playerDisplayer(player) {
   console.log("#location-" + player.y + "-" + player.x);
@@ -495,9 +497,10 @@ function getMonster() {
 // CONTENT BELOW THIS LINE (ITEMS)
 
 // Constructor for weapons
-function Weapon(name, damage, criticalHit) {
+function Weapon(name, minDamage, maxDamage, criticalHit) {
  this.name = name;
- this.damage = damage;
+ this.minDamage = minDamage;
+ this.maxDamage = maxDamage;
  this.criticalHit = criticalHit;
  this.description = "";
  this.symbol = "";
@@ -506,19 +509,19 @@ function Weapon(name, damage, criticalHit) {
 }
 
 //Weapons
-var woodSword = new Weapon("wood sword", 10, 20);
+var woodSword = new Weapon("wood sword", 10, 15, 20);
 woodSword.description = "A warrior's first weapon.";
 this.image = "images/###.jpg";
 
-var metalSword = new Weapon("metal sword", 30, 60);
+var metalSword = new Weapon("metal sword", 26, 34, 30);
 metalSword.description = "Sharp, Brutal, and Highly Effective.";
 this.image = "images/###.jpg";
 
-var warHammer = new Weapon("war hammer", 15, 25);
+var warHammer = new Weapon("war hammer", 15, 25, 60);
 warHammer.description = "Blunt edge with crushing power.";
 this.image = "images/###.jpg";
 
-var mysticBow = new Weapon("mystic bow", 20, 30);
+var mysticBow = new Weapon("mystic bow", 26, 28, 40);
 warHammer.description = "Long range weapon delivers blows with precision.";
 this.image = "images/###.jpg";
 
