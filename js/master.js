@@ -307,11 +307,17 @@ Player.prototype.healthBar = function() {
 
 // Prototype method to see how much damage a player will deal.
 Player.prototype.whatDamage = function() {
-	// Finds and stores the size of the damage range to use as the multiplier in the random number generator.
-	var damageRange = this.maxDamage - this.minDamage;
-	var damage = Math.floor(Math.random() * damageRange) + this.minDamage;
+  var minDamage = this.minDamage + this.equippedWeapon.minDamage;
+  var maxDamage = this.maxDamage + this.equippedWeapon.maxDamage;
+	var damageRange = maxDamage - minDamage;
+	var damage = Math.floor(Math.random() * damageRange) + minDamage;
+
+  var critChance = Math.floor(Math.random() * 4) + 1;
+  if(critChance === 1) {
+    damage += this.equippedWeapon.criticalHit;
+  }
+
   return damage;
-  // For example: monster deals 35 to 50 damage. damageRange is set to 15. minDamage stays at 35. Generator becomes Math.floor(Math.random() * 15) + 35; which generates a random number from 35 to 50.
 }
 
 Player.prototype.takeDamage = function(damageAmount) {
