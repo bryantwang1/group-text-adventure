@@ -287,8 +287,28 @@ Player.prototype.drinkPotion = function() {
   }
 }
 
-Player.prototype.equipWeapon = function() {
+Player.prototype.equipWeapon = function(string) {
+  var haveWeapon = false;
+  for(var idx = 0; idx < this.weapons.length; idx++) {
+    if(this.weapons[idx] != string) {
+      haveWeapon = false;
+    }
 
+    if(this.equippedWeapon.name === string) {
+      $("#combat-display").text("You already have this weapon equipped!");
+      haveWeapon = true;
+    } else {
+      if(this.weapons[idx].name === string) {
+        this.equippedWeapon = this.weapons[idx];
+        $("#combat-display").text("You have equipped " + this.weapons[idx].name + "!");
+        haveWeapon = true;
+        break;
+      }
+    }
+  }
+  if(haveWeapon === false) {
+    $("#combat-display").text("You don't have this weapon!");
+  }
 }
 
 function playerDisplayer(player) {
@@ -509,6 +529,10 @@ function Weapon(name, minDamage, maxDamage, criticalHit) {
 }
 
 //Weapons
+var bareHands = new Weapon("bare hands", 0, 0, 5);
+bareHands.description = "Your bare fists. Nice and simple.";
+this.image = "images/###.jpg";
+
 var woodSword = new Weapon("wood sword", 10, 15, 20);
 woodSword.description = "A warrior's first weapon.";
 this.image = "images/###.jpg";
@@ -572,6 +596,8 @@ function chestTester() {
 // Front-end below this line
 
 $(function() {
+  var equipTyped = false;
+
   mapCreator(10,10);
   wallMaker();
   chestTester();
@@ -582,6 +608,8 @@ $(function() {
   testPlayer.x = 5;
   mapArrays[5][5].playerHere = true;
   testPlayer.healthBar()
+  testPlayer.weapons.push(bareHands);
+  testPlayer.equippedWeapon = bareHands;
 
   playerDisplayer(testPlayer);
   surroundingChecker(testPlayer);
@@ -620,14 +648,33 @@ $(function() {
 
       var userInput = $("#user-input").val().toLowerCase();
 
-      if(userInput === "search") {
-        searcher(testPlayer);
-      } else if (userInput === "drink potion") {
-        testPlayer.drinkPotion();
+      if(equipTyped) {
+        console.log("Enter equipTyped if");
+        testPlayer.equipWeapon(userInput);
+        equipTyped = false;
       } else {
-        $("#combat-display").text("You can't do that.")
+        if(userCommands.includes(userInput)) {
+
+          if(userInput === "search") {
+            searcher(testPlayer);
+          } else if(userInput === "drink potion") {
+            testPlayer.drinkPotion();
+          } else if(userInput === "equip") {
+            var weaponNames = [];
+            for(var idx = 0; idx < testPlayer.weapons.length; idx++) {
+              weaponNames.push(testPlayer.weapons[idx].name);
+            }
+            $("#combat-display").text("What would you like to equip? Type its name the command space. Available weapons: " + "| " + weaponNames.join(" | ") + " |");
+            equipTyped = true;
+          } else {
+            $("#combat-display").text("You can't do that.");
+          }
+        } else {
+          $("#combat-display").text("You can't do that.");
+        }
       }
 
+      console.log("equipTyped: " + equipTyped);
       $("#user-input").val("");
   });
 });
