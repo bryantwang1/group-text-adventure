@@ -14,137 +14,152 @@
   <body>
     <div class="container">
       <div class="row">
+
+<!--              MONSTER          -->
         <div class="col-md-3">
           <div id="monster">
-        <!-- <p>combat</p> -->
-
             <div id="monster-image">
             </div><!-- he end -->
-
-          <div id="health-bar">
-            <div id="monster-health">
+            <div id="monster-health-number"><span>75/1000</span>
+            </div><!-- health-number end -->
+            <div id="health-bar">
+              <div id="monster-health">
+              </div><!-- monster end -->
             </div><!-- health end -->
-          </div><!-- heealth end -->
-          <div id="monster-name">
-          </div>
+            <div id="monster-name">
+            </div>
             <div id="monster-description">
             </div>
+          </div><!-- monster end -->
+        </div><!-- col1 end -->
 
-        </div><!-- combat end -->
-      </div><!-- col1 end -->
+<!--              MAP          -->
+        <div class="col-md-6">
+          <div id="map-label">
+            <h4>Dungeon Map</h4>
+          </div>
+          <div id="map">
+          </div><!-- map end -->
+        </div><!-- col2 end -->
 
-
-      <div class="col-md-6">
-        <div id="map-label">
-        <h4>Dungeon Map</h4>
-      </div>
-      <div id="map">
-      </div><!-- map end -->
-
-    </div><!-- col2 end -->
-
-    <div class="col-md-3">
-      <div id="character">
-        <div id="hero-image">
-        </div><!-- he end -->
-        <div id="health-bar">
-          <div id="monster-health">
+<!--              HERO          -->
+        <div class="col-md-3">
+          <div id="character">
+            <div id="hero-image">
+            </div><!-- image end -->
+            <div id="hero-health-number"><span>500/500</span>
+            </div><!-- health-number end -->
+            <div id="health-bar">
+            <div id="hero-health">
+            </div><!-- health end -->
           </div><!-- health end -->
-        </div><!-- heealth end -->
 
-      <h3> Weapons</h3>
-        <div id="weapons">
-          <div id="woodSword" class="pull-left">
-          <img src="img/woodSword.png"><br>
-          <p>woodsword</p>
-          </div><!-- wood end -->
-          <div id="metalSword">
-          <img src="img/metalSword.png"><br>
-          <p>metalsword</p>
-        </div><!-- metal end -->
-        <div id="bow" class="pull-left">
-          <img src="img/bow.png"><br>
-          <p>bow</p>
-        </div><!-- bow end -->
-        <div id="warHammer">
-          <img src="img/woodSword.png"><p>warhammer</p>
-        </div><!-- hammer end -->
-        </div><!-- weapons end -->
-        <h3> Items</h3>
-        <div id="items">
-          <div id="potion" class="pull-left">
-          <img src="img/potionHealth.png"><br><p>potionhealth</p>
-        </div><!-- potion end -->
-        </div><!-- item end -->
-      </div><!-- char end -->
-    </div><!-- col3 end -->
+<!--              INVENTORY          -->
+
+          <h3> Weapons</h3>
+          <div id="weapons">
+            <div id="woodSword" class="pull-left">
+              <img src="img/woodSword.png"><br>
+              <p>Wood Sword</p>
+            </div><!-- wood end -->
+            <div id="metalSword">
+              <img src="img/metalSword.png"><br>
+              <p>Metal Sword</p>
+            </div><!-- metal end -->
+            <div id="bow" class="pull-left">
+              <img src="img/bow.png"><br>
+              <p>Mystic Bow</p>
+            </div><!-- bow end -->
+            <div id="warHammer">
+              <img src="img/woodSword.png"><p>War Hammer</p>
+            </div><!-- hammer end -->
+          </div><!-- weapons end -->
+
+          <h3> Items</h3>
+            <div id="items">
+              <div id="potion" class="pull-left">
+                <img src="img/potionHealth.png"><br><p>Potion x <span>3</span></p>
+              </div><!-- potion end -->
+              <div id="potion" class="pull-left">
+                <img src="img/potionHealth.png"><br><p>Key x <span>3</span></p>
+              </div><!-- potion end -->
+              <div id="potion" class="pull-left">
+                <img src="img/potionHealth.png"><br><p>puzzle item<span></span></p>
+              </div><!-- potion end -->
+              <div id="potion" class="pull-left">
+                <img src="img/potionHealth.png"><br><p>puzzle item<span></span></p>
+              </div><!-- potion end -->
+              <div id="potion" class="pull-left">
+                <img src="img/potionHealth.png"><br><p>puzzle item<span></span></p>
+              </div><!-- potion end -->
+              <div id="potion" class="pull-left">
+                <img src="img/potionHealth.png"><br><p>puzzle item<span></span></p>
+              </div><!-- potion end -->
+            </div><!-- item end -->
+          </div><!-- Character end -->
+        </div><!-- col3 end -->
       </div><!-- row1 end -->
 
+<!--              Input          -->
 
-    <div class="row">
-      <div id="middle">
-        <div class="col-md-7">
-      <div id="user-input-display">
-        <form id="input-form">
-          <div class="form-group">
-            <h3 id="command-label">Command:</h3>
-            <input id="user-input" class="form-control" type="text" placeholder="Enter a command." autocomplete="off">
-          </div>
-        </form>
-      </div><!-- envir end -->
-    </div> <!--col end-->
+      <div class="row">
+        <div id="middle">
+          <div class="col-md-7">
+            <div id="user-input-display">
+              <form id="input-form">
+                <div class="form-group">
+                  <h3 id="command-label">Command:</h3>
+                  <input id="user-input" class="form-control" type="text" placeholder="Enter a command." autocomplete="off">
+                </div><!-- form group end -->
+              </form>
+            </div><!-- user input display end -->
+          </div> <!--col end-->
 
-      <div class="col-md-5">
-      <div id="available-options">
-        <li>Open Door - open</li>
-        <li>Pick Up Item - pick up</li>
-        <li>Attack Monster - monster</li>
-        <li>Use Item - use</li>
-        <li>Equip Weapon - equip</li>
-        <!-- <h4>movement</h4> -->
-      </div><!-- help end -->
-    </div> <!--col end-->
+<!--              Available Options          -->
+          <div class="col-md-5">
+            <div id="available-options">
+              <li>Open Door - open</li>
+              <li>Pick Up Item - pick up</li>
+              <li>Attack Monster - monster</li>
+              <li>Use Item - use</li>
+              <li>Equip Weapon - equip</li>
+            </div><!-- help end -->
+          </div> <!--col end-->
+        </div><!-- middle end -->
+      </div> <!--row end-->
 
+<!--              Help           -->
+      <div class="row">
+        <div id="player-options">
+          <div class="col-md-4">
+        <div id="help">
+          <h4>Help Commands</h4>
+          <ul>
+            <h5>Movement</h5>
+            <li>Arrow keys for movement</li>
+            <h5>Search</h5>
+            <li>Search</li>
+            <h5>Items</h5>
+            <li>Equip</li>
+            <li>Pick up</li>
+            <li>Use Item</li>
+            <h5>Combat</h5>
+            <li>Attack</li>
+            <li>Run Away</li>
+            <li>Befriend</li>
+          </ul>
+        </div><!-- help end -->
+        </div> <!--col end-->
+
+<!--              Environment           -->
+        <div class="col-md-5">
+          <div id="environment"><p></p>
+            <div id="combat-display">
+            </div>
+          </div><!-- envir end -->
+        </div> <!--col end-->
       </div><!-- player option end -->
     </div> <!--row end-->
-
-    <div class="row">
-      <div id="player-options">
-
-        <div class="col-md-4">
-      <div id="help">
-        <h4>Help Commands</h4>
-        <ul><h5>Movement</h5>
-        <li>Arrow keys for movement</li>
-        <h5>Search</h5>
-        <li>Search</li>
-        <h5>Items</h5>
-        <li>Equip</li>
-        <li>Pick up</li>
-        <li>Use Item</li>
-        <h5>Combat</h5>
-        <li>Attack</li>
-        <li>Run Away</li>
-        <li>Befriend</li>
-
-
-        </ul>
-      </div><!-- help end -->
-    </div> <!--col end-->
-
-      <div class="col-md-5">
-      <div id="environment">
-        <p>test text</p>
-        <div id="combat-display">
-
-        </div>
-      </div><!-- envir end -->
-    </div> <!--col end-->
-
-      </div><!-- player option end -->
-    </div> <!--row end-->
-
-
 
     </div><!-- Con end -->
   </body>
