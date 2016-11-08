@@ -292,8 +292,8 @@ Monster.prototype.healthBar = function() {
 	var percentage = Math.floor((this.currentHealth / this.maxHealth) * 100);
   console.log("percentage: " + percentage);
   // Need jQuery here
-  $("div#monster-health-bar").empty();
-  $("div#monster-health-bar").append("<div id=\"health-bar-outer\"><div id=\"health-bar-inner\"></div></div>");
+  $("div#monster-health").empty();
+  $("div#monster-health").append("<div id=\"health-bar-outer\"><div id=\"health-bar-inner\"></div></div>");
   $("#health-bar-inner").css("width", percentage + "%");
 }
 
