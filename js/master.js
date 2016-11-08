@@ -245,7 +245,7 @@ function combatEnder() {
 // Function for the flee command
 function playerFlee(player) {
   var fleeChance = Math.floor((Math.random() * 10) + 1);
-  if(fleeChance > 10) {
+  if(fleeChance > 1) {
     combatEnder(player);
     $("#combat-display").empty();
     $("#combat-display").text("You flee from the monster.");
@@ -308,7 +308,7 @@ Player.prototype.whatDamage = function() {
 Player.prototype.takeDamage = function(damageAmount) {
 	this.currentHealth -= damageAmount;
   this.healthBar();
-  $("#combat-display").append("<p>You're attacked with " + damageAmount + "damage, your health is " + this.currentHealth + ".</p>");
+  $("#combat-display").append("<p>You're attacked with " + damageAmount + " damage, your health is " + this.currentHealth + ".</p>");
   if(this.currentHealth <= 0) {
     this.currentHealth = 0;
     alert("You're dead!"); // end the game
@@ -465,13 +465,14 @@ Monster.prototype.healthBar = function() {
 Monster.prototype.statReset = function() {
   this.alive = true;
   this.currentHealth = this.maxHealth;
+  this.healthBar();
 }
 
 // Prototype method for monsters to take damage. Changes alive property to false if their currentHealth falls to 0 or below.
 Monster.prototype.takeDamage = function(damageAmount) {
 	this.currentHealth -= damageAmount;
   this.healthBar();
-  $("#combat-display").append("<p>You attack with " + damageAmount + "damage, the monster's health is " + this.currentHealth + ".</p>");
+  $("#combat-display").append("<p>You attack with " + damageAmount + " damage, the monster's health is " + this.currentHealth + ".</p>");
   if(this.currentHealth <= 0) {
   	this.alive = false;
     combatEnder();
@@ -706,18 +707,37 @@ $(function() {
       var userInput = $("#user-input").val().toLowerCase();
 
       if(playerInCombat) {
-        if(userCommands.includes(userInput)) {
-          if(userInput === "attack") {
-            $("#combat-display").empty();
-            var attackDamage = testPlayer.whatDamage()
-            console.log("player attacks")
-            attack(attackDamage, currentEnemy);
+        if(equipTyped) {
+          console.log("Enter equipTyped if");
+          testPlayer.equipWeapon(userInput);
+          equipTyped = false;
+        } else {
+          if(userCommands.includes(userInput)) {
+            if(userInput === "attack") {
+              $("#combat-display").empty();
+              var attackDamage = testPlayer.whatDamage()
+              console.log("player attacks")
+              attack(attackDamage, currentEnemy);
 
-            if(playerInCombat) {
-              monsterRetaliater(currentEnemy, testPlayer);
+              if(playerInCombat) {
+                monsterRetaliater(currentEnemy, testPlayer);
+              }
+            } else if (userInput === "flee") {
+              playerFlee(testPlayer);
+            } else if (userInput === "potion") {
+              testPlayer.drinkPotion();
+            } else if(userInput === "equip") {
+              var weaponNames = [];
+              for(var idx = 0; idx < testPlayer.weapons.length; idx++) {
+                weaponNames.push(testPlayer.weapons[idx].name);
+              }
+              $("#combat-display").text("What would you like to equip? Type its name the command space. Available weapons: " + "| " + weaponNames.join(" | ") + " |");
+              equipTyped = true;
+            } else {
+              $("#combat-display").text("You can't do that.");
             }
-          } else if (userInput === "flee") {
-            playerFlee(testPlayer);
+          } else {
+            $("#combat-display").text("You can't do that.");
           }
         }
       } else {
