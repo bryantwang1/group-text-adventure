@@ -468,7 +468,7 @@ Monster.prototype.statReset = function() {
   this.healthBar();
 }
 
-// Prototype method for monsters to take damage. Changes alive property to false if their currentHealth falls to 0 or below.
+// Prototype method for monsters to take damage. Changes alive property to false if their currentHealth falls to 0 or below. Hard coded testPlayer in for potions.
 Monster.prototype.takeDamage = function(damageAmount) {
 	this.currentHealth -= damageAmount;
   this.healthBar();
@@ -477,7 +477,13 @@ Monster.prototype.takeDamage = function(damageAmount) {
   	this.alive = false;
     combatEnder();
     $("#combat-display").empty();
-    $("#combat-display").text("The monster is dead!");
+    var potionDropChance = Math.floor((Math.random() * 3) + 1);
+    if(potionDropChance === 1) {
+      testPlayer.items.push(potion);
+      $("#combat-display").text("The monster is dead! You find a potion on its mangled corpse.");
+    } else {
+      $("#combat-display").text("The monster is dead!");
+    }
   }
 }
 
