@@ -195,7 +195,14 @@ function searcher(player) {
     }
   }
 }
-// Function to start monster encounters.
+// Function to run for when a player starts combat
+function combatStarter(monster) {
+  $("#combat-display").text("You have entered combat with a " + monster.name + ".");
+  $("#monster-description").text(monster.description);
+  $("#monster-name").text(monster.name);
+  monster.healthBar();
+}
+// Function to start random monster encounters.
 function monsterEncounter(player) {
   var playerTile = mapArrays[player.y][player.x];
   playerTile.monsterHere = true;
@@ -204,9 +211,7 @@ function monsterEncounter(player) {
   var newEnemy = getMonster();
 
   console.log(newEnemy);
-  $("#monster-description").text(newEnemy.description);
-  $("#monster-name").text(newEnemy.name);
-  newEnemy.healthBar();
+  combatStarter(newEnemy);
 }
 // Function that checks if the player's tile spawns a monster and takes the appropriate actions if it does.
 function spawnChecker(player) {
@@ -215,7 +220,6 @@ function spawnChecker(player) {
   console.log("run spawnchecker, spawner: " + spawner + "playerTile: " + playerTile.spawnChance);
 
   if(spawner <= playerTile.spawnChance) {
-    $("#combat-display").text("You have entered combat.");
     monsterEncounter(player);
     spawnResetter();
     // Add the random monster selector here or something
@@ -260,8 +264,10 @@ Player.prototype.whatDamage = function() {
 
 Player.prototype.takeDamage = function(damageAmount) {
 	this.currentHealth -= damageAmount;
-  alert("You're attacked with " + damageAmount + ", your health is " + this.currentHealth);
+  this.healthBar();
+  $("#combat-display").text("You're attacked with " + damageAmount + ", your health is " + this.currentHealth);
   if(this.currentHealth <= 0) {
+    this.currentHealth = 0;
     alert("You're dead!"); // end the game
   }
 }
@@ -327,12 +333,12 @@ function positionUpdater(player, oldY, oldX) {
 }
 //
 function moveChecklist(player, spawnPercentage) {
-  // spawnChecker(player);
+  $("#combat-display").empty();
+  spawnChecker(player);
   spawnAdjuster(spawnPercentage);
   surroundingChecker(player);
   mapDisplayer();
   playerDisplayer(player);
-  $("#combat-display").empty();
 }
 
 // Move Up
@@ -422,11 +428,12 @@ Monster.prototype.statReset = function() {
 Monster.prototype.takeDamage = function(damageAmount) {
 	this.currentHealth -= damageAmount;
   this.healthBar();
-  alert("You attack with " + damageAmount + ", the monster's health is " + this.currentHealth);
+  $("#combat-display").text("You attack with " + damageAmount + ", the monster's health is " + this.currentHealth);
   if(this.currentHealth <= 0) {
   	this.alive = false;
+    this.currentHealth = 0;
     playerInCombat = false;
-    alert("The monster is dead!");
+    $("#combat-display").text("The monster is dead!");
   }
 }
 
@@ -435,6 +442,7 @@ Monster.prototype.restoreHealth = function(healthAmount) {
   if(this.currentHealth > this.maxHealth) {
     this.currentHealth = this.maxHealth;
   }
+  this.healthBar();
 }
 
 // Example of a function for a chance to hit a monster instead of a sure hit.
@@ -620,25 +628,25 @@ $(function() {
       if(playerInCombat === false) {
         moveLeft(testPlayer);
       } else {
-        alert("You can't move while in combat!");
+        $("#combat-display").text("You can't move while in combat!");
       }
     } else if(event.which === 38) {
       if(playerInCombat === false) {
         moveUp(testPlayer);
       } else {
-        alert("You can't move while in combat!");
+        $("#combat-display").text("You can't move while in combat!");
       }
     } else if(event.which === 39) {
       if(playerInCombat === false) {
         moveRight(testPlayer);
       } else {
-        alert("You can't move while in combat!");
+        $("#combat-display").text("You can't move while in combat!");
       }
     } else if(event.which === 40) {
       if(playerInCombat === false) {
         moveDown(testPlayer);
       } else {
-        alert("You can't move while in combat!");
+        $("#combat-display").text("You can't move while in combat!");
       }
     }
   });
