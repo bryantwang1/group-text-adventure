@@ -21,3 +21,14 @@ body {
 .gold {
   color: gold;
 }
+
+#health-bar-outer {
+  background-color: white;
+  width: 200px;
+  height: 50px;
+}
+
+#health-bar-inner {
+  background-color: red;
+  height: 50px;
+}

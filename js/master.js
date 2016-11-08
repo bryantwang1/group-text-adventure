@@ -3,6 +3,7 @@ var userCommands = [];
 var playerInCombat = false;
 var mobMonsters = ["goblin", "spider", "skeleton"];
 var toughMonsters = ["wizard", "golem"];
+var testMonster = new Monster("testes", 50, 10, 10);
 
 // Constructor for locations, defaults to floor type
 function Location(yCoord, xCoord) {
@@ -274,9 +275,6 @@ function Monster(name, health, minDamage, maxDamage) {
  this.vocalizations = [];
 }
 
-var testMonster = new Monster("testes", 50, 10, 10);
-testMonster.defense = 2;
-
 // Prototype method for monster to emit a random vocalization from its library.
 Monster.prototype.saySomething = function() {
 	var howMany = this.vocalizations.length;
@@ -287,16 +285,18 @@ Monster.prototype.saySomething = function() {
 
 // Prototype method for generating a health bar based on current and max health. Needs to be tested. Should update the health bar everytime it's run as well. Don't forget the accompanying css.
 Monster.prototype.healthBar = function() {
-	var percentage = Math.floor((currentHealth / maxHealth) * 10);
+	var percentage = Math.floor((this.currentHealth / this.maxHealth) * 100);
+  console.log("percentage: " + percentage);
   // Need jQuery here
   $("div#monster-health-bar").empty();
   $("div#monster-health-bar").append("<div id=\"health-bar-outer\"><div id=\"health-bar-inner\"></div></div>");
-  $("div#health-bar-inner").css({"width":"\"" + percentage +"%\";"});
+  $("#health-bar-inner").css("width", percentage + "%");
 }
 
 // Prototype method for monsters to take damage. Changes alive property to false if their currentHealth falls to 0 or below.
 Monster.prototype.takeDamage = function(damageAmount) {
 	this.currentHealth -= damageAmount;
+  this.healthBar();
   alert("You attack with " + damageAmount + ", the monster's health is " + this.currentHealth);
   if(this.currentHealth <= 0) {
   	this.alive = false;
@@ -447,6 +447,11 @@ $(function() {
   testPlayer.y = 5;
   testPlayer.x = 5;
   mapArrays[5][5].playerHere = true;
+
+  testMonster.defense = 2;
+  testMonster.currentHealth = 30;
+
+  testMonster.healthBar();
 
   playerDisplayer(testPlayer);
 
