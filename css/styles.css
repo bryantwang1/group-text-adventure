@@ -209,15 +209,17 @@ ul {
   list-style: none;
 }
 
-li {
+#help li {
   font-size: 0.8em;
   font-style: italic;
+
 
 }
 
 h5 {
   font-size: 1.2em;
   color: #D2D2D2;
+    margin-bottom: 0px;
 }
 
 #command-label {
