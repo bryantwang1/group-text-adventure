@@ -143,17 +143,28 @@ function surroundingChecker(player) {
   userCommands = [];
 
   for(var idx = y; idx < y+3; idx++) {
-  	for(var idx2 = x; idx2 > x+3; idx2++) {
+  	for(var idx2 = x; idx2 < x+3; idx2++) {
     	// This if statement is how we skip checking the center tile(the one the player is on).
     	if(idx === player.y && idx2 === player.x) {
-
       } else {
       	var area = mapArrays[idx][idx2];
         if(area.searchable) {
+          if(userCommands.includes("search")) {
+          } else {
           userCommands.push("search");
+          }
         }
         if(area.monsterHere) {
+          if(userCommands.includes("fight")) {
+          } else {
           userCommands.push("fight");
+          }
+        }
+        if(area.terrainType === "door") {
+          if(userCommands.includes("open door")) {
+          } else {
+          userCommands.push("open door");
+          }
         }
         // Add more later
     	}
@@ -497,6 +508,7 @@ $(function() {
   mapArrays[5][5].playerHere = true;
 
   playerDisplayer(testPlayer);
+  surroundingChecker(testPlayer);
 
   // Code to make arrow keys work to move
   $(document).on("keydown", function(event) {
