@@ -2,11 +2,11 @@ body {
   background-color: black;
 }
 
-#map-display p {
+#map p {
   letter-spacing: 2em;
 }
 
-#map-display {
+#map {
   text-align: center;
 }
 
@@ -20,4 +20,16 @@ body {
 
 .gold {
   color: gold;
+}
+
+ /*Remember to move health-bar styling to styles.css*/
+#health-bar-outer {
+  background-color: white;
+  width: 200px;
+  height: 30px;
+}
+
+#health-bar-inner {
+  background-color: red;
+  height: 30px;
 }
