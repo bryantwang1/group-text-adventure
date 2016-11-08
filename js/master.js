@@ -616,11 +616,11 @@ var woodSword = new Weapon("wood sword", 10, 15, 20);
 woodSword.description = "A warrior's first weapon.";
 this.image = "images/###.jpg";
 
-var metalSword = new Weapon("metal sword", 26, 34, 30);
+var metalSword = new Weapon("metal sword", 24, 34, 30);
 metalSword.description = "Sharp, Brutal, and Highly Effective.";
 this.image = "images/###.jpg";
 
-var warHammer = new Weapon("war hammer", 15, 25, 60);
+var warHammer = new Weapon("war hammer", 15, 25, 70);
 warHammer.description = "Blunt edge with crushing power.";
 this.image = "images/###.jpg";
 
