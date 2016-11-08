@@ -22,6 +22,10 @@ body {
   color: gold;
 }
 
+.purple {
+  color: purple;
+}
+
  /*Remember to move health-bar styling to styles.css*/
 #health-bar-outer {
   background-color: white;

@@ -1,5 +1,6 @@
 var mapArrays = [];
 var userCommands = [];
+var chests = [];
 var playerInCombat = false;
 
 // Constructor for locations, defaults to floor type
@@ -15,6 +16,7 @@ function Location(yCoord, xCoord) {
   this.searchable = false;
   this.spawnChance = 10;
   this.monsterHere = false;
+  this.drops = [];
 }
 // Prototype method that increases spawn chance by the argument
 Location.prototype.increaseSpawn = function(percentage) {
@@ -23,6 +25,25 @@ Location.prototype.increaseSpawn = function(percentage) {
 // Prototype method that resets the spawn chance
 Location.prototype.resetSpawn = function() {
   this.spawnChance = 8;
+}
+// Function for creating a variable number of chests.
+function chestCreator(amount) {
+  for(var idx = 0; idx < amount; idx++) {
+    var chest = new Location(-1, -1);
+    chest.canMove = false;
+    chest.description = "An old wooden chest.";
+    chest.terrainType = "chest";
+    chest.symbol = "∃";
+    chest.color = "purple";
+    chest.searchable = true;
+    chest.drops = [];
+
+    chests.push(chest);
+  }
+}
+// Function for resetting amount of chests
+function chestResetter() {
+  chests = [];
 }
 // Function to apply the adjusted spawn chance to every tile
 function spawnAdjuster(percentage) {
@@ -88,7 +109,21 @@ function wallMaker() {
     waller(toWall2);
   }
 }
+//
+function chestTester() {
+  chestResetter();
+  chestCreator(3);
+  chests[0].y = 1;
+  chests[0].x = 8;
+  chests[1].y = 5;
+  chests[1].x = 6;
+  chests[2].y = 6;
+  chests[2].x = 6;
 
+  mapArrays[chests[0].y][chests[0].x] = chests[0];
+  mapArrays[chests[1].y][chests[1].x] = chests[1];
+  mapArrays[chests[2].y][chests[2].x] = chests[2];
+}
 // Function to display the map in html
 function mapDisplayer() {
   $("#map").empty();
@@ -453,6 +488,7 @@ this.image = "images/###.jpg";
 $(function() {
   mapCreator(10,10);
   wallMaker();
+  chestTester();
   mapDisplayer();
 
   var testPlayer = new Player("tester");
