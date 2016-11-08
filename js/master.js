@@ -163,12 +163,9 @@ function searcher(player) {
   $("#combat-display").empty();
   var y = player.y - 1;
 	var x = player.x - 1;
-  console.log("searching");
 
   for(var idx = y; idx < y+3; idx++) {
-    console.log("searching y " + idx);
   	for(var idx2 = x; idx2 < x+3; idx2++) {
-      console.log("searching x");
       if(idx === player.y && idx2 === player.x) {
       } else {
         var area = mapArrays[idx][idx2];
@@ -244,6 +241,13 @@ function Player(userName) {
   this.equippedWeapon = {};
   // Not sure if we need to actually keep track of armor or if it would be a permanent upgrade once it's picked up
   this.equippedArmor = {};
+}
+
+Player.prototype.healthBar = function() {
+	var percentage = Math.floor((this.currentHealth / this.maxHealth) * 100);
+  $("div#hero-health").empty();
+  $("div#hero-health").append("<div id=\"health-bar-outer\"><div id=\"health-bar-inner\"></div></div>");
+  $("#health-bar-inner").css("width", percentage + "%");
 }
 
 // Prototype method to see how much damage a player will deal.
@@ -380,8 +384,6 @@ Monster.prototype.saySomething = function() {
 // Prototype method for generating a health bar based on current and max health. Needs to be tested. Should update the health bar everytime it's run as well. Don't forget the accompanying css.
 Monster.prototype.healthBar = function() {
 	var percentage = Math.floor((this.currentHealth / this.maxHealth) * 100);
-  console.log("percentage: " + percentage);
-  // Need jQuery here
   $("div#monster-health").empty();
   $("div#monster-health").append("<div id=\"health-bar-outer\"><div id=\"health-bar-inner\"></div></div>");
   $("#health-bar-inner").css("width", percentage + "%");
@@ -406,6 +408,9 @@ Monster.prototype.takeDamage = function(damageAmount) {
 
 Monster.prototype.restoreHealth = function(healthAmount) {
   this.currentHealth += healthAmount;
+  if(this.currentHealth > this.maxHealth) {
+    this.currentHealth = this.maxHealth;
+  }
 }
 
 // Example of a function for a chance to hit a monster instead of a sure hit.
