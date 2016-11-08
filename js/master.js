@@ -135,7 +135,7 @@ function monsterEncounter(player) {
 
   console.log(newEnemy);
   $("#monster-description").text(newEnemy.description);
-  newEnemy.currentHealth = 1;
+  $("#monster-name").text(newEnemy.name);
   newEnemy.healthBar();
 }
 // Function that checks if the player's tile spawns a monster and takes the appropriate actions if it does.
