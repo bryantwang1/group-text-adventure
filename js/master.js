@@ -182,9 +182,18 @@ function searcher(player) {
                   displayText += " \"" + area.drops[0].name + "\"";
                   area.drops.shift();
                 } else if(area.drops[0].itemType === "item") {
-                  player.items.push(area.drops[0]);
-                  displayText += " \"" + area.drops[0].name + "\"";
-                  area.drops.shift();
+                  if(area.drops[0].name === "potion") {
+                    var potionAmount = Math.floor((Math.random() * 5) + 1);
+                    for(var idx4 = 0; idx4 < potionAmount; idx4++) {
+                      player.items.push(potion);
+                      area.drops.shift();
+                    }
+                    displayText += " \"" + "potion" + "(" + potionAmount + ")" + "\"";
+                  } else {
+                    player.items.push(area.drops[0]);
+                    displayText += " \"" + area.drops[0].name + "\"";
+                    area.drops.shift();
+                  }
                 }
               }
             }
