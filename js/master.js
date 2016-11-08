@@ -126,7 +126,7 @@ function mapDisplayer() {
 function surroundingChecker(player) {
   var y = player.y - 1;
 	var x = player.x - 1;
-  userCommands = ["equip"];
+  userCommands = ["equip", "drink potion"];
 
   for(var idx = y; idx < y+3; idx++) {
   	for(var idx2 = x; idx2 < x+3; idx2++) {
@@ -274,10 +274,12 @@ Player.prototype.restoreHealth = function(healthAmount) {
 }
 // Allows users to drink a potion from their inventory, removing it upon use.
 Player.prototype.drinkPotion = function() {
+  $("#combat-display").text("You have no potions to drink!");
   for(var idx = 0; idx < this.items.length; idx++) {
     if(this.items[idx].name === "potion") {
       this.restoreHealth(this.items[idx].addHealth);
       $("#combat-display").text("You drank a potion.");
+      this.healthBar();
       this.items.splice(idx, idx+1);
       idx--;
       break;
@@ -576,6 +578,7 @@ $(function() {
   testPlayer.y = 5;
   testPlayer.x = 5;
   mapArrays[5][5].playerHere = true;
+  testPlayer.healthBar()
 
   playerDisplayer(testPlayer);
   surroundingChecker(testPlayer);
@@ -616,6 +619,8 @@ $(function() {
 
       if(userInput === "search") {
         searcher(testPlayer);
+      } else if (userInput === "drink potion") {
+        testPlayer.drinkPotion();
       } else {
         $("#combat-display").text("You can't do that.")
       }
