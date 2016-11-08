@@ -127,6 +127,12 @@ function surroundingChecker(player) {
     }
   }
 }
+// Function to start monster encounters.
+function monsterEncounter(player) {
+  var playerTile = mapArrays[player.y][player.x];
+  playerTile.monsterHere = true;
+  playerInCombat = true;
+}
 // Function that checks if the player's tile spawns a monster and takes the appropriate actions if it does.
 function spawnChecker(player) {
   var playerTile = mapArrays[player.y][player.x];
@@ -134,13 +140,13 @@ function spawnChecker(player) {
   console.log("run spawnchecker, spawner: " + spawner + "playerTile: " + playerTile.spawnChance);
 
   if(spawner <= playerTile.spawnChance) {
-    console.log("entered combat!");
-    playerTile.monsterHere = true;
-    playerInCombat = true;
+    $("#combat-display").text("You have entered combat.");
+    monsterEncounter(player);
     spawnResetter();
     // Add the random monster selector here or something
   }
 }
+
 
 // PLAYER STUFF BELOW THIS LINE
 
