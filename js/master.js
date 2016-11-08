@@ -109,21 +109,7 @@ function wallMaker() {
     waller(toWall2);
   }
 }
-//
-function chestTester() {
-  chestResetter();
-  chestCreator(3);
-  chests[0].y = 1;
-  chests[0].x = 8;
-  chests[1].y = 5;
-  chests[1].x = 6;
-  chests[2].y = 6;
-  chests[2].x = 6;
 
-  mapArrays[chests[0].y][chests[0].x] = chests[0];
-  mapArrays[chests[1].y][chests[1].x] = chests[1];
-  mapArrays[chests[2].y][chests[2].x] = chests[2];
-}
 // Function to display the map in html
 function mapDisplayer() {
   $("#map").empty();
@@ -171,6 +157,47 @@ function surroundingChecker(player) {
     }
   }
 }
+// Function similar to surroundingChecker, to run when user inputs a search command.
+function searcher(player) {
+  // Make this item display later
+  $("#combat-display").empty();
+  var y = player.y - 1;
+	var x = player.x - 1;
+  console.log("searching");
+
+  for(var idx = y; idx < y+3; idx++) {
+    console.log("searching y " + idx);
+  	for(var idx2 = x; idx2 < x+3; idx2++) {
+      console.log("searching x");
+      if(idx === player.y && idx2 === player.x) {
+      } else {
+        var area = mapArrays[idx][idx2];
+        if(area.searchable) {
+          var displayText = "You searched a " + area.terrainType + ", you found";
+          var howLong = area.drops.length;
+          if(howLong > 0){
+            for(var idx3 = 0; idx3 < howLong; idx3++) {
+              if(area.drops.length > 0) {
+                if(area.drops[0].itemType === "weapon") {
+                  player.weapons.push(area.drops[0]);
+                  displayText += " \"" + area.drops[0].name + "\"";
+                  area.drops.shift();
+                } else if(area.drops[0].itemType === "item") {
+                  player.items.push(area.drops[0]);
+                  displayText += " \"" + area.drops[0].name + "\"";
+                  area.drops.shift();
+                }
+              }
+            }
+            displayText += ". They have been added to your inventory.";
+            // Make this item display later
+            $("#combat-display").append("<p>" + displayText + "</p>");
+          }
+        }
+      }
+    }
+  }
+}
 // Function to start monster encounters.
 function monsterEncounter(player) {
   var playerTile = mapArrays[player.y][player.x];
@@ -197,7 +224,6 @@ function spawnChecker(player) {
     // Add the random monster selector here or something
   }
 }
-
 
 // PLAYER STUFF BELOW THIS LINE
 
@@ -256,11 +282,12 @@ function positionUpdater(player, oldY, oldX) {
 }
 //
 function moveChecklist(player, spawnPercentage) {
-  spawnChecker(player);
+  // spawnChecker(player);
   spawnAdjuster(spawnPercentage);
   surroundingChecker(player);
   mapDisplayer();
   playerDisplayer(player);
+  $("#combat-display").empty();
 }
 
 // Move Up
@@ -451,6 +478,7 @@ function Weapon(name, damage, criticalHit) {
  this.description = "";
  this.symbol = "";
  this.image = "";
+ this.itemType = "weapon";
 }
 
 //Weapons
@@ -479,6 +507,7 @@ function Item(name, addHealth, addShield, openDoor) {
  this.description = "";
  this.symbol = "";
  this.image = "";
+ this.itemType = "item";
 }
 
 //items
@@ -493,7 +522,26 @@ this.image = "images/###.jpg";
 var shield = new Item("shield", 0, 100, false);
 potion.description = "Increases Defense chance";
 this.image = "images/###.jpg";
+// Generates the chests for our dev room
+function chestTester() {
+  chestResetter();
+  chestCreator(3);
+  chests[0].y = 1;
+  chests[0].x = 8;
+  chests[1].y = 5;
+  chests[1].x = 6;
+  chests[2].y = 6;
+  chests[2].x = 6;
 
+  chests[0].drops.push(mysticBow);
+  chests[1].drops.push(woodSword, potion);
+  chests[2].drops.push(key)
+
+  mapArrays[chests[0].y][chests[0].x] = chests[0];
+  mapArrays[chests[1].y][chests[1].x] = chests[1];
+  mapArrays[chests[2].y][chests[2].x] = chests[2];
+}
+  var testPlayer = new Player("tester");
 // Front-end below this line
 
 $(function() {
@@ -502,7 +550,7 @@ $(function() {
   chestTester();
   mapDisplayer();
 
-  var testPlayer = new Player("tester");
+
   testPlayer.y = 5;
   testPlayer.x = 5;
   mapArrays[5][5].playerHere = true;
@@ -538,4 +586,18 @@ $(function() {
       }
     }
   });
-})
+
+  $("form#input-form").submit(function(event) {
+      event.preventDefault();
+
+      var userInput = $("#user-input").val().toLowerCase();
+
+      if(userInput === "search") {
+        searcher(testPlayer);
+      } else {
+        $("#combat-display").text("You can't do that.")
+      }
+
+      $("#user-input").val("");
+  });
+});
