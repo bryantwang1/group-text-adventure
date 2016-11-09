@@ -213,6 +213,10 @@ padding: 10px 8px 6px 8px ;
   text-align: center;
   margin-left: 12px;
 }
+
+#woodSword, #metalSword, #bow, #warHammer {
+  display:none;
+}
 /* ----   Items   ----*/
 #items {
   width: 240px;

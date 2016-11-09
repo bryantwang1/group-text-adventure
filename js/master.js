@@ -347,6 +347,7 @@ function searcher(player) {
             displayText += ". They have been added to your inventory.";
             player.reviveCounter();
             player.keyCounter();
+            player.weaponDisplayer();
             // Make this item display later
             $("#combat-display").append("<p>" + displayText + "</p>");
           } else {
@@ -617,6 +618,20 @@ Player.prototype.keyCounter = function() {
     }
   }
   $("span#player-keys").text(keyAmount);
+}
+
+Player.prototype.weaponDisplayer = function() {
+  for(var idx= 0; idx < this.weapons.length; idx++) {
+    if(this.weapons[idx].name === "wood sword") {
+      $("#woodSword").fadeIn("slow");
+    } else if(this.weapons[idx].name === "metal sword") {
+      $("#metalSword").fadeIn("slow");
+    } else if(this.weapons[idx].name === "war hammer") {
+      $("#warHammer").fadeIn("slow");
+    } else if(this.weapons[idx].name === "mystic bow") {
+      $("#bow").fadeIn("slow");
+    }
+  }
 }
 
 function playerDisplayer(player) {
