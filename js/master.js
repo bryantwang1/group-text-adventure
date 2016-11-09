@@ -1308,7 +1308,157 @@ room3.generator = function(player, createdBefore, whereFrom) {
     mapArrays[8][8].playerHere = true;
   } else {
     if(whereFrom === "room2") {
-      console.log("coming to room 3 from room 2");
+      player.y = 8;
+      player.x = 8;
+      mapArrays[8][8].playerHere = true;
+    } else {
+      player.y = 1;
+      player.x = 1;
+      mapArrays[1][1].playerHere = true;
+    }
+  }
+  mapDisplayer();
+  room.displayer();
+  playerDisplayer(player);
+  surroundingChecker(player);
+}
+
+var room4 = new Room("room4");
+room4.displayName = "Room 4";
+room4.description = "Filler description for room 4";
+rooms.push(room4);
+room4.generator = function(player, createdBefore, whereFrom) {
+  var room = this;
+  function itemPlacer(runCreator) {
+    if(runCreator) {
+      doorCreator(2, room);
+      chestCreator(2, room);
+      spikeCreator(6, room);
+    }
+    room.doors[0].y = 0;
+    room.doors[0].x = 1;
+    room.doors[1].y = 9;
+    room.doors[1].x = 8;
+    room.chests[0].y = 1;
+    room.chests[0].x = 4;
+    room.chests[1].y = 5;
+    room.chests[1].x = 8;
+    room.spikes[0].y = 3;
+    room.spikes[0].x = 5;
+    room.spikes[1].y = 5;
+    room.spikes[1].x = 1;
+    room.spikes[2].y = 5;
+    room.spikes[2].x = 4;
+    room.spikes[3].y = 5;
+    room.spikes[3].x = 7;
+    room.spikes[4].y = 7;
+    room.spikes[4].x = 4;
+    room.spikes[5].y = 7;
+    room.spikes[5].x = 6;
+    //switch at y=7,x=8
+    //removable wall at y=7,x=1
+
+    mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
+    mapArrays[room.doors[1].y][room.doors[1].x] = room.doors[1];
+    mapArrays[room.chests[0].y][room.chests[0].x] = room.chests[0];
+    mapArrays[room.chests[1].y][room.chests[1].x] = room.chests[1];
+    mapArrays[room.spikes[0].y][room.spikes[0].x] = room.spikes[0];
+    mapArrays[room.spikes[1].y][room.spikes[1].x] = room.spikes[1];
+    mapArrays[room.spikes[2].y][room.spikes[2].x] = room.spikes[2];
+    mapArrays[room.spikes[3].y][room.spikes[3].x] = room.spikes[3];
+    mapArrays[room.spikes[4].y][room.spikes[4].x] = room.spikes[4];
+    mapArrays[room.spikes[5].y][room.spikes[5].x] = room.spikes[5];
+
+    miniWallMaker(2,2);
+    miniWallMaker(2,3);
+    miniWallMaker(2,4);
+    miniWallMaker(2,5);
+    miniWallMaker(2,7);
+    miniWallMaker(1,5);
+    miniWallMaker(3,4);
+    miniWallMaker(3,7);
+    miniWallMaker(4,2);
+    miniWallMaker(4,7);
+    miniWallMaker(5,2);
+    miniWallMaker(5,3);
+    miniWallMaker(5,5);
+    miniWallMaker(6,7);
+    miniWallMaker(6,8);
+    miniWallMaker(7,2);
+    miniWallMaker(7,3);
+    miniWallMaker(7,5);
+    miniWallMaker(7,7);
+  }
+  function itemFiller() {
+    room.doors[0].locked = true;
+    room.doors[0].firstTime = true;
+    room.doors[0].leadsTo = "room5";
+    room.doors[0].fromWhere = "room4";
+    room.doors[1].leadsTo = "room3";
+    room.doors[1].fromWhere = "room4";
+
+    room.chests[0].drops.push(potion);
+  }
+
+  mapCreator(10,10);
+  wallMaker();
+  itemPlacer(createdBefore);
+  if(createdBefore){
+    itemFiller();
+    player.y = 8;
+    player.x = 8;
+    mapArrays[8][8].playerHere = true;
+  } else {
+    if(whereFrom === "room3") {
+      player.y = 8;
+      player.x = 8;
+      mapArrays[8][8].playerHere = true;
+    } else {
+      player.y = 1;
+      player.x = 1;
+      mapArrays[1][1].playerHere = true;
+    }
+  }
+  mapDisplayer();
+  room.displayer();
+  playerDisplayer(player);
+  surroundingChecker(player);
+}
+
+var room5 = new Room("room5");
+room5.displayName = "Room 5";
+room5.description = "Filler description for room 5";
+rooms.push(room5);
+room5.generator = function(player, createdBefore, whereFrom) {
+  var room = this;
+  function itemPlacer(runCreator) {
+    if(runCreator) {
+      doorCreator(2, room);
+      chestCreator(1, room);
+      lavaCreator(48, room);
+    }
+    room.doors[0].y = 0;
+    room.doors[0].x = 1;
+
+    mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
+
+    // for(var lavaIdx = 0; )
+  }
+  function itemFiller() {
+    room.doors[0].leadsTo = "room4";
+    room.doors[0].fromWhere = "room5";
+  }
+
+  mapCreator(10,10);
+  wallMaker();
+  itemPlacer(createdBefore);
+  if(createdBefore){
+    itemFiller();
+    player.y = 8;
+    player.x = 8;
+    mapArrays[8][8].playerHere = true;
+  } else {
+    if(whereFrom === "room2") {
       player.y = 8;
       player.x = 8;
       mapArrays[8][8].playerHere = true;
