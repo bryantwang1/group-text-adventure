@@ -1,9 +1,13 @@
 var mapArrays = [];
 var userCommands = [];
 var playerInCombat = false;
+var playerDead = false;
 var currentEnemy = {};
+var currentEnemyY = 0;
+var currentEnemyX = 0;
+var placedMonsterCombat = false;
 var rooms = [];
-var atmosphericStrings = ["Something furry scurries by your feet.", "You hear a fluttering sound pass by overhead."];
+var atmosphericStrings = ["Something furry scurries by your feet.", "You feel a slow and steady dripping of water from the ceiling.", "A musty and unpleasant smell wafts in front of you.", "A bat flies past your head and disappears into the darkness.", "In the far distance your hear something shuffle toward you.", "The stone floor here is slick and slippery.", "Surely there’s a door nearby?", "You note a trickle of liquid on your arm, feel it, and taste your blood.", "A creaking and groaning as of rusty hinges starts from a far area of the room, then stops just as quickly.", "A tendril of mist curls around you.", "The ceiling seems to be closing in, but maybe that’s just you.", "The tile you’re on is loose, and it rattles loudly beneath you.", "A sound of stone scraping against stone reverberates for a short time, then seems to muffle itself."];
 
 // Constructor for rooms
 function Room(roomName) {
@@ -13,6 +17,9 @@ function Room(roomName) {
   this.chests = [];
   this.monsters = [];
   this.doors = [];
+  this.waters = [];
+  this.lavas = [];
+  this.spikes = [];
 }
 
 Room.prototype.displayer = function() {
@@ -72,9 +79,81 @@ function doorCreator(amount, room) {
     door.locked = false;
     door.leadsTo = "";
     door.firstTime = false;
+    door.fromWhere = "";
 
     room.doors.push(door);
   }
+}
+// Function similar to chestCreator but for water
+function waterCreator(amount, room) {
+  for(var idx = 0; idx < amount; idx++) {
+    var water = new Location(-1, -1);
+    water.canMove = true;
+    water.description = "Murky water. You can't tell how deep it is.";
+    water.terrainType = "water";
+    water.symbol = "w";
+    water.color = "blue";
+    water.searchable = false;
+    water.drops = [];
+
+    room.waters.push(water);
+  }
+}
+// Function similar to chestCreator but for lava
+function lavaCreator(amount, room) {
+  for(var idx = 0; idx < amount; idx++) {
+    var lava = new Location(-1, -1);
+    lava.canMove = true;
+    lava.description = "Fiery hot lava";
+    lava.terrainType = "lava";
+    lava.symbol = "w";
+    lava.color = "bright-red";
+    lava.searchable = false;
+    lava.drops = [];
+
+    room.lavas.push(lava);
+  }
+}
+// Function similar to chestCreator but for spikes
+function spikeCreator(amount, room) {
+  for(var idx = 0; idx < amount; idx++) {
+    var spike = new Location(-1, -1);
+    spike.canMove = true;
+    spike.description = "Several sharp points stick up from the ground";
+    spike.terrainType = "spike";
+    spike.symbol = "#";
+    spike.color = "spikes";
+    spike.searchable = false;
+    spike.drops = [];
+
+    room.spikes.push(spike);
+  }
+}
+// Function similar to chestCreator but for placed monsters
+function placedMonsterCreator(type, room) {
+  var monster = new Location(-1, -1);
+  monster.canMove = false;
+  monster.terrainType = "monster";
+  monster.searchable = false;
+  monster.color = "yellow";
+  monster.monsterType = "";
+
+  if(type === "golem") {
+    monster.description = "A golem, much larger than any you've previously seen.";
+    monster.symbol = "Ώ";
+    monster.monsterType = "special golem";
+  } else if(type === "dragon") {
+    monster.description = "A massive scaled creature slumbers here. Its wings flap a little everytime it takes a breath. The air around the beast shimmers like the air around an intense fire."
+    monster.symbol = "♠";
+    monster.monsterType = "dragon";
+  } else if(type === "random") {
+    var randomMonster = getMonster();
+    monster.description = "A monster of indeterminate type.";
+    monster.monsterType = "random";
+    monster.symbol = "!";
+  }
+
+  room.monsters.push(monster);
 }
 // Function to apply the adjusted spawn chance to every tile
 function spawnAdjuster(percentage) {
@@ -184,7 +263,7 @@ function surroundingChecker(player) {
           userCommands.push("search");
           }
         }
-        if(area.monsterHere) {
+        if(area.terrainType === "monster") {
           if(userCommands.includes("fight")) {
           } else {
           userCommands.push("fight");
@@ -282,6 +361,7 @@ function roomMover(player, doorLocation, firstTime) {
   var playerTile = mapArrays[player.y][player.x];
   playerTile.playerHere = false;
   var whereToGo = doorLocation.leadsTo;
+  var whereComeFrom = doorLocation.fromWhere;
   var roomNames = [];
   for(var roomIdx = 0; roomIdx < rooms.length; roomIdx++) {
     roomNames.push(rooms[roomIdx].name);
@@ -298,7 +378,7 @@ function roomMover(player, doorLocation, firstTime) {
   if(firstTime) {
     rooms[whichRoomIndex].generator(player, true);
   } else {
-    rooms[whichRoomIndex].generator(player, false);
+    rooms[whichRoomIndex].generator(player, false, whereComeFrom);
   }
 
   $("#combat-display").empty();
@@ -367,10 +447,10 @@ function combatStarter(monster) {
   $("#combat-display").text("You have entered combat with a " + monster.name + ".");
   $("#monster-description").text(monster.description);
   $("#monster-name").text(monsterName);
+  $("#room-description").hide();
   $("#monster-health").show();
   $("#monster-health-number").show();
   $("#" + monster.name + "-image").show();
-  $("#room-description").hide();
   monster.saySomething();
   monster.healthBar();
   playerInCombat = true;
@@ -378,7 +458,7 @@ function combatStarter(monster) {
   commandDisplayer();
 }
 // Function for the command "fight" which will initiate a fight with a monster on an adjacent tile. If there are multiple monsters for some reason it will initiate a fight with the first monster found.
-function fight() {
+function fighter(player) {
   var y = player.y - 1;
 	var x = player.x - 1;
 
@@ -387,9 +467,22 @@ function fight() {
       if(idx === player.y && idx2 === player.x) {
       } else {
         var area = mapArrays[idx][idx2];
-        if(area.monsterHere) {
-          currentEnemy = area.occupiedBy;
+        if(area.terrainType === "monster") {
+          if(area.monsterType === "special golem") {
+            currentEnemy = specialGolem;
+          } else if(area.monsterType === "dragon") {
+            currentEnemy = dragon;
+          } else if(area.monsterType === "random") {
+            currentEnemy = getMonster();
+          }
           combatStarter(currentEnemy);
+          if(area.monsterType === "dragon") {
+            userCommands = ["attack", "potion", "equip"];
+            commandDisplayer();
+          }
+          placedMonsterCombat = true;
+          currentEnemyY = area.y;
+          currentEnemyX = area.x;
           break;
         }
       }
@@ -422,10 +515,13 @@ function combatEnder() {
 // Function for the flee command
 function playerFlee(player) {
   var fleeChance = Math.floor((Math.random() * 10) + 1);
-  if(fleeChance > 1) {
+  if(fleeChance > 6) {
     combatEnder(player);
     $("#combat-display").empty();
     $("#combat-display").text("You flee from the monster.");
+    if(placedMonsterCombat) {
+      placedMonsterCombat = false;
+    }
   } else {
     $("#combat-display").empty();
     $("#combat-display").append("You attempt to flee, but can't get away from the monster.");
@@ -495,11 +591,16 @@ Player.prototype.reviver = function() {
   $("#combat-display").text("You have no revives left!");
   for(var idx = 0; idx < this.items.length; idx++) {
     if(this.items[idx].name === "revive") {
+      playerDead = false;
       this.restoreHealth(1000);
       this.revives -= 1;
       this.healthBar();
-      combatEnder();
-      $("#combat-display").text("You have been successfully revived!");
+      if(currentEnemy !== dragon && currentEnemy !== specialGolem) {
+        combatEnder();
+      }
+      $("#combat-display").text("Before you breathe no more you manage to empty your revival potion into your throat. As the darkness of death lifts, you are comforted by the knowledge that death’s door will not shut on you…this time. ");
+      $("#death-message").fadeOut("slow");
+      $("#map").delay(600).fadeIn("slow");
       $("#hero-dead").fadeOut("slow");
       $("#hero-image").delay(600).fadeIn("slow");
       this.items.splice(idx, 1);
@@ -517,10 +618,13 @@ Player.prototype.takeDamage = function(damageAmount) {
   if(this.currentHealth <= 0) {
     this.currentHealth = 0;
     this.healthBar();
+    playerDead = true;
     userCommands = ["revive"];
     commandDisplayer();
     $("#hero-image").fadeOut("slow");
     $("#hero-dead").delay(600).fadeIn("slow");
+    $("#map").fadeOut("slow");
+    $("#death-message").delay(600).fadeIn("slow");
     $("#combat-display").empty();
     $("#combat-display").append("<p>You died. Sorry.</p>")
   }
@@ -647,7 +751,7 @@ function playerDisplayer(player) {
 
 // Function to display random atmospheric strings or none at all.
 function atmosphericDisplayer() {
-  var atmosphericOrNot = Math.floor(Math.random() * 4) + 1;
+  var atmosphericOrNot = Math.floor(Math.random() * 2) + 1;
 
   if(atmosphericOrNot === 1) {
     var whichAtmospheric = Math.floor(Math.random() * atmosphericStrings.length);
@@ -667,6 +771,28 @@ function moveChecklist(player, spawnPercentage) {
   $("#weapon-descriptions").text("");
   surroundingChecker(player);
   spawnChecker(player);
+  var checkTile = mapArrays[player.y][player.x];
+  if(checkTile.terrainType === "water") {
+    player.takeDamage(50);
+    $("#combat-display").text("The water contains leeches! They drain 50 points of health from your body.");
+    if(playerInCombat) {
+      $("#combat-display").append("<p>You have entered combat with a " + currentEnemy.name + ".</p>");
+    }
+  } else if(checkTile.terrainType === "spike") {
+    player.takeDamage(250);
+    $("#combat-display").text("You stumble into a pit of carefully sharpened spikes, and are unable to dodge all of them. You are still alive, but sport a few deep wounds reminding you to be wary of such traps in the future.");
+    if(playerInCombat) {
+      $("#combat-display").append("<p>You have entered combat with a " + currentEnemy.name + ".</p>");
+    }
+  } else if(checkTile.terrainType === "lava") {
+    if(playerInCombat) {
+      combatEnder();
+    }
+    player.takeDamage(1000);
+    userCommands = [];
+    commandDisplayer();
+    $("#combat-display").prepend("<p>You walked on lava.</p>")
+  }
   spawnAdjuster(spawnPercentage);
   mapDisplayer();
   playerDisplayer(player);
@@ -773,6 +899,18 @@ Monster.prototype.takeDamage = function(damageAmount) {
   $("#combat-display").append("<p>You attack with " + damageAmount + " damage, the monster's health is " + this.currentHealth + ".</p>");
   if(this.currentHealth <= 0) {
   	this.alive = false;
+    if(placedMonsterCombat) {
+      var enemyTile = mapArrays[currentEnemyY][currentEnemyX];
+      enemyTile.canMove = true;
+      enemyTile.description = "A floor tile";
+      enemyTile.terrainType = "floor";
+      enemyTile.playerHere = false;
+      enemyTile.symbol = "#";
+      enemyTile.color = "tiles";
+      enemyTile.monsterType = "";
+
+      placedMonsterCombat = false;
+    }
     combatEnder();
     $("#combat-display").empty();
     var potionDropChance = Math.floor((Math.random() * 3) + 1);
@@ -826,8 +964,10 @@ function monsterRetaliater(monster, player) {
 function commandDisplayer() {
   $("#available-options").empty();
   $("#available-options").append("<li>Possible Commands:</li>")
-  for(var idx = 0; idx < userCommands.length; idx++) {
-    $("#available-options").append("<li>" + userCommands[idx] + "</li>")
+  if(userCommands.length > 0) {
+    for(var idx = 0; idx < userCommands.length; idx++) {
+      $("#available-options").append("<li>" + userCommands[idx] + "</li>")
+    }
   }
 }
 
@@ -862,6 +1002,12 @@ golem.description = "A giant rock monster that is brooding and slow blocks your 
 golem.defense = 0;
 golem.drops = ["puzzle item", "armor", "potion"];
 golem.vocalizations = ["Rock crush you...", "Ugh!", "I slow. Hold still!", "Rock mad!", "Leave me alone...", "Oof!"];
+
+var specialGolem = new Monster("golem", 1000, 25, 100);
+specialGolem.description = "A massive rock monster, every time it moves the ground quakes.";
+specialGolem.defense = 3;
+specialGolem.drops = ["puzzle item", "armor", "potion"];
+specialGolem.vocalizations = ["Rock crush you...", "Ugh!", "I slow. Hold still!", "Rock mad!", "Leave me alone...", "Oof!"];
 
 var skeleton = new Monster("skeleton", 120, 15, 40);
 skeleton.description = "A member of the undead legions approaches you with malice in the very marrow of its bones.";
@@ -948,6 +1094,12 @@ this.image = "images/###.jpg";
 var revive = new Item("revive", 0, 0, false);
 revive.description = "Brings you back from the dead";
 
+var unlitTorch = new Item("torch", 0, 0, false);
+unlitTorch.description = "An unlit torch";
+
+var torch = new Item("torch", 0, 0, false);
+torch.description = "A lit torch";
+
 // ROOM GENERATION BELOW THIS LINE
 
 var room1 = new Room("room1");
@@ -955,33 +1107,56 @@ room1.displayName = "It begins...";
 room1.description = "Filler description for room 1";
 rooms.push(room1);
 // This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide true.
-room1.generator = function(player, createdBefore) {
+room1.generator = function(player, createdBefore, whereFrom) {
   var room = this;
-  // Generates the chests for our dev room
+  // Generates the items for the room
   function itemPlacer(runCreator) {
     if(runCreator) {
       doorCreator(1, room);
       chestCreator(3, room);
+      waterCreator(2, room);
+      lavaCreator(1, room);
+      spikeCreator(2, room);
+      placedMonsterCreator("random", room);
     }
     room.doors[0].y = 0;
     room.doors[0].x = 5;
     room.chests[0].y = 1;
-    room.chests[0].x = 8;
+    room.chests[0].x = 1;
     room.chests[1].y = 5;
     room.chests[1].x = 6;
     room.chests[2].y = 6;
     room.chests[2].x = 6;
+    room.waters[0].y = 4;
+    room.waters[0].x = 1;
+    room.waters[1].y = 4;
+    room.waters[1].x = 2;
+    room.lavas[0].y = 7;
+    room.lavas[0].x = 5;
+    room.monsters[0].y = 8;
+    room.monsters[0].x = 1;
+    room.spikes[0].y = 2;
+    room.spikes[0].x = 5;
+    room.spikes[1].y = 2;
+    room.spikes[1].x = 4;
 
     mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
     mapArrays[room.chests[0].y][room.chests[0].x] = room.chests[0];
     mapArrays[room.chests[1].y][room.chests[1].x] = room.chests[1];
     mapArrays[room.chests[2].y][room.chests[2].x] = room.chests[2];
+    mapArrays[room.waters[0].y][room.waters[0].x] = room.waters[0];
+    mapArrays[room.waters[1].y][room.waters[1].x] = room.waters[1];
+    mapArrays[room.lavas[0].y][room.lavas[0].x] = room.lavas[0];
+    mapArrays[room.monsters[0].y][room.monsters[0].x] = room.monsters[0];
+    mapArrays[room.spikes[0].y][room.spikes[0].x] = room.spikes[0];
+    mapArrays[room.spikes[1].y][room.spikes[1].x] = room.spikes[1];
   }
-  // Don't run chest fillers more than once
+  // Don't run item fillers after the first time
   function itemFiller() {
     room.doors[0].locked = true;
     room.doors[0].leadsTo = "room2";
     room.doors[0].firstTime = true;
+    room.doors[0].fromWhere = "room1";
 
     room.chests[0].drops.push(mysticBow);
     room.chests[1].drops.push(woodSword, potion);
@@ -997,9 +1172,11 @@ room1.generator = function(player, createdBefore) {
     player.x = 5;
     mapArrays[5][5].playerHere = true;
   } else {
-    player.y = 1;
-    player.x = 5;
-    mapArrays[2][5].playerHere = true;
+    if(whereFrom === "room2") {
+      player.y = 1;
+      player.x = 5;
+      mapArrays[2][5].playerHere = true;
+    }
   }
   mapDisplayer();
   room.displayer();
@@ -1011,10 +1188,8 @@ var room2 = new Room("room2");
 room2.displayName = "It continues...";
 room2.description = "Filler description for room 2";
 rooms.push(room2);
-// This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide true.
-room2.generator = function(player, createdBefore) {
+room2.generator = function(player, createdBefore, whereFrom) {
   var room = this;
-  // Generates the chests for our dev room
   function itemPlacer(runCreator) {
     if(runCreator) {
       doorCreator(2, room);
@@ -1024,7 +1199,7 @@ room2.generator = function(player, createdBefore) {
     room.doors[0].x = 5;
     room.doors[1].y = 9;
     room.doors[1].x = 5;
-    room.chests[0].y = 1;
+    room.chests[0].y = 2;
     room.chests[0].x = 1;
     room.chests[1].y = 1;
     room.chests[1].x = 6;
@@ -1051,12 +1226,13 @@ room2.generator = function(player, createdBefore) {
     miniWallMaker(6, 7);
     miniWallMaker(6, 8);
   }
-  // Don't run chest fillers more than once
   function itemFiller() {
     room.doors[0].locked = true;
     room.doors[0].firstTime = true;
-    room.doors[0].leadsTo = "room2";
+    room.doors[0].leadsTo = "room3";
+    room.doors[0].fromWhere = "room2";
     room.doors[1].leadsTo = "room1";
+    room.doors[1].fromWhere = "room2";
 
     room.chests[0].drops.push(potion);
     room.chests[1].drops.push();
@@ -1073,9 +1249,74 @@ room2.generator = function(player, createdBefore) {
     player.x = 5;
     mapArrays[8][5].playerHere = true;
   } else {
+    if(whereFrom === "room3") {
+      player.y = 1;
+      player.x = 5;
+      mapArrays[8][5].playerHere = true;
+    } else {
+      player.y = 8;
+      player.x = 5;
+      mapArrays[8][5].playerHere = true;
+    }
+  }
+  mapDisplayer();
+  room.displayer();
+  playerDisplayer(player);
+  surroundingChecker(player);
+}
+
+var room3 = new Room("room3");
+room3.displayName = "Room 3";
+room3.description = "Filler description for room 3";
+rooms.push(room3);
+room3.generator = function(player, createdBefore, whereFrom) {
+  var room = this;
+  function itemPlacer(runCreator) {
+    if(runCreator) {
+      doorCreator(2, room);
+      chestCreator(1, room);
+    }
+    room.doors[0].y = 0;
+    room.doors[0].x = 1;
+    room.doors[1].y = 9;
+    room.doors[1].x = 8;
+    room.chests[0].y = 1;
+    room.chests[0].x = 8;
+
+    mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
+    mapArrays[room.doors[1].y][room.doors[1].x] = room.doors[1];
+    mapArrays[room.chests[0].y][room.chests[0].x] = room.chests[0];
+  }
+  function itemFiller() {
+    room.doors[0].locked = true;
+    room.doors[0].firstTime = true;
+    room.doors[0].leadsTo = "room4";
+    room.doors[0].fromWhere = "room3";
+    room.doors[1].leadsTo = "room2";
+    room.doors[1].fromWhere = "room3";
+
+    room.chests[0].drops.push(potion);
+  }
+
+  mapCreator(10,10);
+  wallMaker();
+  itemPlacer(createdBefore);
+  if(createdBefore){
+    itemFiller();
     player.y = 8;
-    player.x = 5;
-    mapArrays[8][5].playerHere = true;
+    player.x = 8;
+    mapArrays[8][8].playerHere = true;
+  } else {
+    if(whereFrom === "room2") {
+      console.log("coming to room 3 from room 2");
+      player.y = 8;
+      player.x = 8;
+      mapArrays[8][8].playerHere = true;
+    } else {
+      player.y = 1;
+      player.x = 1;
+      mapArrays[1][1].playerHere = true;
+    }
   }
   mapDisplayer();
   room.displayer();
@@ -1100,28 +1341,44 @@ $(function() {
   // Code to make arrow keys work to move
   $(document).on("keydown", function(event) {
     if(event.which === 37) {
-      if(playerInCombat === false) {
+      if(playerInCombat === false && playerDead === false) {
         moveLeft(testPlayer);
       } else {
-        $("#combat-display").text("You can't move while in combat!");
+        if(playerDead) {
+          $("#combat-display").text("You can't move...you're dead!");
+        } else if(playerInCombat) {
+          $("#combat-display").text("You can't move while in combat!");
+        }
       }
     } else if(event.which === 38) {
-      if(playerInCombat === false) {
+      if(playerInCombat === false && playerDead === false) {
         moveUp(testPlayer);
       } else {
-        $("#combat-display").text("You can't move while in combat!");
+        if(playerDead) {
+          $("#combat-display").text("You can't move...you're dead!");
+        } else if(playerInCombat) {
+          $("#combat-display").text("You can't move while in combat!");
+        }
       }
     } else if(event.which === 39) {
-      if(playerInCombat === false) {
+      if(playerInCombat === false && playerDead === false) {
         moveRight(testPlayer);
       } else {
-        $("#combat-display").text("You can't move while in combat!");
+        if(playerDead) {
+          $("#combat-display").text("You can't move...you're dead!");
+        } else if(playerInCombat) {
+          $("#combat-display").text("You can't move while in combat!");
+        }
       }
     } else if(event.which === 40) {
-      if(playerInCombat === false) {
+      if(playerInCombat === false && playerDead === false) {
         moveDown(testPlayer);
       } else {
-        $("#combat-display").text("You can't move while in combat!");
+        if(playerDead) {
+          $("#combat-display").text("You can't move...you're dead!");
+        } else if(playerInCombat) {
+          $("#combat-display").text("You can't move while in combat!");
+        }
       }
     }
   });
@@ -1188,6 +1445,8 @@ $(function() {
               looker(testPlayer);
             } else if(userInput === "open door") {
               doorOpener(testPlayer);
+            } else if(userInput === "fight") {
+              fighter(testPlayer);
             } else {
               $("#combat-display").text("You can't do that.");
             }

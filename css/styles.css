@@ -332,13 +332,12 @@ background-color: #111;
 padding: 20px;
 margin: 20px 0px 0px 0px;
 border-radius: 15px;
-padding: 30px 20px;
+padding: 40px 20px;
+padding-left: 50px;
 }
 #map p {
-  letter-spacing: 49px;
-  line-height: 3em;
-
-
+  letter-spacing: 40px;
+  line-height: 2.8em;
 }
 #map-placement {
   margin-top: 50px;
@@ -349,6 +348,12 @@ padding: 30px 20px;
   margin: 20px 10px -10px 10px;
   text-align: center;
   letter-spacing: 2px;
+}
+#death-message {
+  text-align: center;
+  margin-top: 150px;
+  color: darkred;
+  display: none;
 }
 /*walls icon*/
 .wall {
@@ -368,4 +373,20 @@ padding: 30px 20px;
 /*chests and doors*/
 .purple {
   color: #D07E0E;
+}
+/*water*/
+.blue {
+  color: blue;
+}
+/*lava*/
+.bright-red {
+  color: #ff3300;
+}
+/*placed monsters*/
+.yellow {
+  color: #ffff33;
+}
+/*spikes icon*/
+.spikes {
+  color: #8e7978;
 }
