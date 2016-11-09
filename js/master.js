@@ -373,7 +373,7 @@ Player.prototype.drinkPotion = function() {
       this.restoreHealth(this.items[idx].addHealth);
       $("#combat-display").text("You drank a potion.");
       this.healthBar();
-      this.items.splice(idx, idx+1);
+      this.items.splice(idx, 1);
       idx--;
       break;
     }
