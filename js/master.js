@@ -2,6 +2,7 @@ var mapArrays = [];
 var userCommands = [];
 var playerInCombat = false;
 var currentEnemy = {};
+var rooms = [];
 
 // Constructor for rooms
 function Room(roomName) {
@@ -46,6 +47,7 @@ function chestCreator(amount, room) {
     chest.searchable = true;
     chest.drops = [];
 
+    console.log(room.chests);
     room.chests.push(chest);
   }
 }
@@ -63,6 +65,7 @@ function doorCreator(amount, room) {
     door.locked = false;
     door.leadsTo = "";
 
+    console.log(room.doors);
     room.doors.push(door);
   }
 }
@@ -213,18 +216,24 @@ function doorOpener(player) {
       }
     }
   }
-
-  for(var idx = y; idx < y+3; idx++) {
-  	for(var idx2 = x; idx2 < x+3; idx2++) {
-      if(idx === player.y && idx2 === player.x) {
-      } else {
-        var area = mapArrays[idx][idx2];
-        if(area.terrainType === "door") {
-          if(area.locked) {
-            if(keyChecker()) {
-              roomMover(player, area);
-            } else {
-              $("#combat-display").text("You don't have a key to unlock this door.");
+doorOpenerLoops: {
+    for(var idx = y; idx < y+3; idx++) {
+    	for(var idx2 = x; idx2 < x+3; idx2++) {
+        if(idx === player.y && idx2 === player.x) {
+        } else {
+          var area = mapArrays[idx][idx2];
+          if(area.terrainType === "door") {
+            if(area.locked) {
+              if(keyChecker()) {
+                area.locked = false;
+                roomMover(player, area, true);
+                break doorOpenerLoops;
+              } else {
+                $("#combat-display").text("You don't have a key to unlock this door.");
+              }
+            } else if(area.locked === false) {
+              roomMover(player, area, false);
+              break doorOpenerLoops;
             }
           }
         }
@@ -233,9 +242,27 @@ function doorOpener(player) {
   }
 }
 //
-function roomMover(player, doorLocation) {
+function roomMover(player, doorLocation, firstTime) {
   var playerTile = mapArrays[player.y][player.x];
   playerTile.playerHere = false;
+  var whereToGo = doorLocation.leadsTo;
+  var tempRooms = [];
+  for(var roomIdx = 0; roomIdx < rooms.length; roomIdx++) {
+    tempRooms.push(rooms[roomIdx].name);
+  }
+
+  function whichRoom(element) {
+        return element === whereToGo;
+  }
+
+  var whichRoomIndex = tempRooms.findIndex(whichRoom);
+  console.log("room index: " + whichRoomIndex);
+
+  if(firstTime) {
+    rooms[whichRoomIndex].generator(player, true);
+  } else {
+    rooms[whichRoomIndex].generator(player, false);
+  }
 }
 // Function similar to surroundingChecker, to run when user inputs a search command.
 function searcher(player) {
@@ -807,14 +834,17 @@ var shield = new Item("shield", 0, 100, false);
 potion.description = "Increases Defense chance";
 this.image = "images/###.jpg";
 
+var room1 = new Room("room1");
+rooms.push(room1);
 // This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide true.
-function room1Generator(room, player, createdBefore) {
+room1.generator = function(player, createdBefore) {
+  var room = this;
   // Generates the chests for our dev room
-  function room1ItemPlacer(room2, runCreator) {
+  function room1ItemPlacer(runCreator) {
     if(runCreator) {
       console.log("enter creator");
-      doorCreator(1, room2);
-      chestCreator(3, room2);
+      doorCreator(1, room);
+      chestCreator(3, room);
     }
     room.doors[0].y = 0;
     room.doors[0].x = 5;
@@ -831,21 +861,72 @@ function room1Generator(room, player, createdBefore) {
     mapArrays[room.chests[2].y][room.chests[2].x] = room.chests[2];
   }
   // Don't run chest fillers more than once
-  function room1ItemFiller(room2) {
+  function room1ItemFiller() {
     room.doors[0].locked = true;
-    room.doors[0].leadsTo = "room1";
+    room.doors[0].leadsTo = "room2";
 
     room.chests[0].drops.push(mysticBow);
     room.chests[1].drops.push(woodSword, potion);
     room.chests[2].drops.push(key);
   }
 
-  var created = createdBefore;
   mapCreator(10,10);
   wallMaker();
-  room1ItemPlacer(room, created);
-  if(created){
-    room1ItemFiller(room);
+  room1ItemPlacer(createdBefore);
+  if(createdBefore){
+    room1ItemFiller();
+    player.y = 5;
+    player.x = 5;
+    mapArrays[5][5].playerHere = true;
+  } else {
+    player.y = 1;
+    player.x = 5;
+    mapArrays[2][5].playerHere = true;
+  }
+  mapDisplayer();
+}
+
+var room2 = new Room("room2");
+rooms.push(room2);
+// This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide true.
+room2.generator = function(player, createdBefore) {
+  var room = this;
+  // Generates the chests for our dev room
+  function room1ItemPlacer(runCreator) {
+    if(runCreator) {
+      console.log("enter creator");
+      doorCreator(1, room);
+      chestCreator(3, room);
+    }
+    room.doors[0].y = 0;
+    room.doors[0].x = 5;
+    room.chests[0].y = 1;
+    room.chests[0].x = 8;
+    room.chests[1].y = 5;
+    room.chests[1].x = 6;
+    room.chests[2].y = 6;
+    room.chests[2].x = 6;
+
+    mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
+    mapArrays[room.chests[0].y][room.chests[0].x] = room.chests[0];
+    mapArrays[room.chests[1].y][room.chests[1].x] = room.chests[1];
+    mapArrays[room.chests[2].y][room.chests[2].x] = room.chests[2];
+  }
+  // Don't run chest fillers more than once
+  function room1ItemFiller() {
+    room.doors[0].locked = true;
+    room.doors[0].leadsTo = "room2";
+
+    room.chests[0].drops.push(mysticBow);
+    room.chests[1].drops.push(woodSword, potion);
+    room.chests[2].drops.push(key);
+  }
+
+  mapCreator(10,10);
+  wallMaker();
+  room1ItemPlacer(createdBefore);
+  if(createdBefore){
+    room1ItemFiller();
     player.y = 5;
     player.x = 5;
     mapArrays[5][5].playerHere = true;
@@ -863,8 +944,7 @@ var testPlayer = new Player("You");
 
 $(function() {
   var equipTyped = false;
-  var room1 = new Room("room1");
-  room1Generator(room1, testPlayer, true);
+  room1.generator(testPlayer, true);
   testPlayer.healthBar()
   testPlayer.weapons.push(bareHands);
   testPlayer.equippedWeapon = bareHands;
