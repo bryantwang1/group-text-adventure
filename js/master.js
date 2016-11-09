@@ -216,6 +216,7 @@ function combatStarter(monster) {
   $("#combat-display").text("You have entered combat with a " + monster.name + ".");
   $("#monster-description").text(monster.description);
   $("#monster-name").text(monsterName);
+  monster.saySomething();
   monster.healthBar();
   playerInCombat = true;
   userCommands = ["attack", "flee", "potion", "equip"];
@@ -395,6 +396,25 @@ Player.prototype.equipWeapon = function(string) {
         this.equippedWeapon = this.weapons[idx];
         $("#combat-display").text("You have equipped " + this.weapons[idx].name + "!");
         haveWeapon = true;
+        function unwrapper() {
+          $(".equipped").children().unwrap();
+        }
+
+        if(this.weapons[idx].name === "bare hands") {
+          unwrapper();
+        } else if (this.weapons[idx].name === "wood sword") {
+          unwrapper();
+          $("#woodSword p").wrap("<div class=\"equipped\"></div>");
+        } else if (this.weapons[idx].name === "metal sword") {
+          unwrapper();
+          $("#metalSword p").wrap("<div class=\"equipped\"></div>");
+        } else if (this.weapons[idx].name === "mystic bow") {
+          unwrapper();
+          $("#bow p").wrap("<div class=\"equipped\"></div>");
+        } else if (this.weapons[idx].name === "war hammer") {
+          unwrapper();
+          $("#warHammer p").wrap("<div class=\"equipped\"></div>");
+        }
         break;
       }
     }
@@ -539,6 +559,7 @@ Monster.prototype.takeDamage = function(damageAmount) {
     var potionDropChance = Math.floor((Math.random() * 3) + 1);
     if(potionDropChance === 1) {
       testPlayer.items.push(potion);
+      testPlayer.potionCounter();
       $("#combat-display").text("The monster is dead! You find a potion on its mangled corpse.");
     } else {
       $("#combat-display").text("The monster is dead!");
@@ -604,7 +625,7 @@ var wizard = new Monster("wizard", 200, 20, 50);
 wizard.description = "A dark mage appears before you with a crackle of elemental magic.";
 wizard.defense = 2;
 wizard.drops = ["key", "potion"];
-wizard.vocalizations = ["Behold!", "This is your end!", "You are mine!", "Ow! That tickles!", "You sword's a little short.", "This is my domain. You won't leave alive."];
+wizard.vocalizations = ["Behold!", "This is your end!", "You are mine!", "Ow! That tickles!", "Your sword's a little short.", "This is my domain. You won't leave alive."];
 
 var dragon = new Monster("dragon", 1000, 75, 125);
 dragon.description = "A monsterous beast with a wicked temper and fiery breath unfurls before you. Its sheer maginitude is astonishing and hard to believe.";
