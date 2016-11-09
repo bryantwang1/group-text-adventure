@@ -1,15 +1,23 @@
 var mapArrays = [];
 var userCommands = [];
-var chests = [];
 var playerInCombat = false;
 var currentEnemy = {};
+var rooms = [];
+var atmosphericStrings = ["Something furry scurries by your feet.", "You hear a fluttering sound pass by overhead."];
 
+// Constructor for rooms
+function Room(roomName) {
+  this.name = roomName;
+  this.chests = [];
+  this.monsters = [];
+  this.doors = [];
+}
 // Constructor for locations, defaults to floor type
 function Location(yCoord, xCoord) {
   this.y = yCoord;
   this.x = xCoord;
 	this.canMove = true;
-  this.description = "A floor tile.";
+  this.description = "A floor tile";
   this.terrainType = "floor";
   this.playerHere = false;
   this.symbol = "#";
@@ -29,23 +37,36 @@ Location.prototype.resetSpawn = function() {
   this.spawnChance = 8;
 }
 // Function for creating a variable number of chests.
-function chestCreator(amount) {
+function chestCreator(amount, room) {
   for(var idx = 0; idx < amount; idx++) {
     var chest = new Location(-1, -1);
     chest.canMove = false;
-    chest.description = "An old wooden chest.";
+    chest.description = "An old wooden chest";
     chest.terrainType = "chest";
     chest.symbol = "∃";
     chest.color = "purple";
     chest.searchable = true;
     chest.drops = [];
 
-    chests.push(chest);
+    room.chests.push(chest);
   }
 }
-// Function for resetting amount of chests
-function chestResetter() {
-  chests = [];
+// Function similar to chestCreator but for doors
+function doorCreator(amount, room) {
+  for(var idx = 0; idx < amount; idx++) {
+    var door = new Location(-1, -1);
+    door.canMove = false;
+    door.description = "A sturdy door of oak planks with iron strips tying it together";
+    door.terrainType = "door";
+    door.symbol = "@";
+    door.color = "purple";
+    door.searchable = false;
+    door.drops = [];
+    door.locked = false;
+    door.leadsTo = "";
+
+    room.doors.push(door);
+  }
 }
 // Function to apply the adjusted spawn chance to every tile
 function spawnAdjuster(percentage) {
@@ -87,7 +108,7 @@ function wallMaker() {
   // A little callback function created inside wallMaker so that we don't have to repeat the same 3 commands.
   function waller(wallThis) {
     wallThis.canMove = false;
-    wallThis.description = "A wall.";
+    wallThis.description = "A wall";
   	wallThis.terrainType = "wall";
     wallThis.symbol = "^";
     wallThis.color = "wall";
@@ -128,7 +149,7 @@ function mapDisplayer() {
 function surroundingChecker(player) {
   var y = player.y - 1;
 	var x = player.x - 1;
-  userCommands = ["equip", "potion"];
+  userCommands = ["equip", "potion", "look"];
 
   for(var idx = y; idx < y+3; idx++) {
   	for(var idx2 = x; idx2 < x+3; idx2++) {
@@ -159,6 +180,91 @@ function surroundingChecker(player) {
     }
   }
   commandDisplayer();
+}
+// Function similar to surroundingChecker, to run when user inputs a look command.
+function looker(player) {
+  $("#combat-display").empty();
+  var y = player.y - 1;
+	var x = player.x - 1;
+  var descriptions = [];
+
+  for(var idx = y; idx < y+3; idx++) {
+  	for(var idx2 = x; idx2 < x+3; idx2++) {
+    	// This if statement is how we skip checking the center tile(the one the player is on).
+    	if(idx === player.y && idx2 === player.x) {
+      } else {
+      	var area = mapArrays[idx][idx2];
+        descriptions.push(area.description);
+    	}
+    }
+  }
+  var detailString = "Northwest: " + descriptions[0] + "; North: " + descriptions[1] + "; Northeast: " + descriptions[2] + "; West: " + descriptions[3] + "; East: " + descriptions[4] + "; Southwest: " + descriptions[5] + "; South: " + descriptions[6] + "; Southeast: " + descriptions[7] + ".";
+
+  $("#combat-display").text(detailString);
+}
+// Function similar to surroundingChecker, to run when user inputs an open door command
+function doorOpener(player) {
+  $("#combat-display").empty();
+  var y = player.y - 1;
+	var x = player.x - 1;
+  function keyChecker() {
+    for(var keyIdx = 0; keyIdx < player.items.length; keyIdx++) {
+      if(player.items[keyIdx].name === "key") {
+        return true;
+        break;
+      }
+    }
+  }
+doorOpenerLoops: {
+    for(var idx = y; idx < y+3; idx++) {
+    	for(var idx2 = x; idx2 < x+3; idx2++) {
+        if(idx === player.y && idx2 === player.x) {
+        } else {
+          var area = mapArrays[idx][idx2];
+          if(area.terrainType === "door") {
+            if(area.locked) {
+              if(keyChecker()) {
+                area.locked = false;
+                roomMover(player, area, true);
+                break doorOpenerLoops;
+              } else {
+                $("#combat-display").text("You don't have a key to unlock this door.");
+              }
+            } else if(area.locked === false) {
+              roomMover(player, area, false);
+              break doorOpenerLoops;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+//
+function roomMover(player, doorLocation, firstTime) {
+  var playerTile = mapArrays[player.y][player.x];
+  playerTile.playerHere = false;
+  var whereToGo = doorLocation.leadsTo;
+  var tempRooms = [];
+  for(var roomIdx = 0; roomIdx < rooms.length; roomIdx++) {
+    tempRooms.push(rooms[roomIdx].name);
+  }
+
+  function whichRoom(element) {
+        return element === whereToGo;
+  }
+
+  var whichRoomIndex = tempRooms.findIndex(whichRoom);
+
+  if(firstTime) {
+    rooms[whichRoomIndex].generator(player, true);
+  } else {
+    rooms[whichRoomIndex].generator(player, false);
+  }
+
+  $("#combat-display").empty();
+  atmosphericDisplayer();
+  $("#combat-display").text("You enter another room.");
 }
 // Function similar to surroundingChecker, to run when user inputs a search command.
 function searcher(player) {
@@ -202,6 +308,8 @@ function searcher(player) {
             displayText += ". They have been added to your inventory.";
             // Make this item display later
             $("#combat-display").append("<p>" + displayText + "</p>");
+          } else {
+            $("#combat-display").text("The surrounding containers are empty.");
           }
         }
       }
@@ -273,6 +381,7 @@ function playerFlee(player) {
     monsterRetaliater(currentEnemy, player);
   }
 }
+
 // Function that checks if the player's tile spawns a monster and takes the appropriate actions if it does.
 function spawnChecker(player) {
   var playerTile = mapArrays[player.y][player.x];
@@ -373,7 +482,7 @@ Player.prototype.drinkPotion = function() {
       this.restoreHealth(this.items[idx].addHealth);
       $("#combat-display").text("You drank a potion.");
       this.healthBar();
-      this.items.splice(idx, idx+1);
+      this.items.splice(idx, 1);
       idx--;
       break;
     }
@@ -443,6 +552,17 @@ function playerDisplayer(player) {
 
 // PLAYER STUFF ABOVE THIS LINE. MOVEMENT STUFF BELOW.
 
+// Function to display random atmospheric strings or none at all.
+function atmosphericDisplayer() {
+  var atmosphericOrNot = Math.floor(Math.random() * 4) + 1;
+
+  if(atmosphericOrNot === 1) {
+    var whichAtmospheric = Math.floor(Math.random() * atmosphericStrings.length);
+    $("#atmospheric-display").text(atmosphericStrings[whichAtmospheric]);
+  } else {
+    $("#atmospheric-display").text("");
+  }
+}
 // Example of what would update the map on move.
 function positionUpdater(player, oldY, oldX) {
   mapArrays[player.y + oldY][player.x + oldX].playerHere = false;
@@ -456,6 +576,7 @@ function moveChecklist(player, spawnPercentage) {
   spawnAdjuster(spawnPercentage);
   mapDisplayer();
   playerDisplayer(player);
+  atmosphericDisplayer();
 }
 
 // Move Up
@@ -465,7 +586,8 @@ function moveUp(player) {
     positionUpdater(player,1,0);
     moveChecklist(player, 2);
   } else {
-    alert("You can't move there!");
+    $("#combat-display").empty();
+    $("#combat-display").text("You can't move north from here!");
   }
 }
 
@@ -476,7 +598,8 @@ function moveDown(player) {
     positionUpdater(player,-1,0);
     moveChecklist(player, 2);
   } else {
-    alert("You can't move there!");
+    $("#combat-display").empty();
+    $("#combat-display").text("You can't move south from here!");
   }
 }
 
@@ -487,7 +610,8 @@ function moveLeft(player) {
     positionUpdater(player,0,1);
     moveChecklist(player, 2);
   } else {
-    alert("You can't move there!");
+    $("#combat-display").empty();
+    $("#combat-display").text("You can't move west from here!");
   }
 }
 
@@ -498,7 +622,8 @@ function moveRight(player) {
     positionUpdater(player,0,-1);
     moveChecklist(player, 2);
   } else {
-    alert("You can't move there!");
+    $("#combat-display").empty();
+    $("#combat-display").text("You can't move east from here!");
   }
 }
 
@@ -579,7 +704,7 @@ Monster.prototype.restoreHealth = function(healthAmount) {
 function attack(damage, target) {
 	// Generates and stores a random number from 1 to 10.
 	var hitChance = Math.floor(Math.random() * 10) + 1;
-  console.log("The hit chance was: " +hitChance);
+  console.log("The hit chance was: " + hitChance);
   var defense = target.defense;
 
   if(hitChance <= defense) {
@@ -600,7 +725,6 @@ Monster.prototype.whatDamage = function() {
 // Function for monsters to react after player turn
 function monsterRetaliater(monster, player) {
   var retaliationDamage = monster.whatDamage();
-  console.log("run retaliater")
   attack(retaliationDamage, player);
   monster.saySomething();
 }
@@ -726,47 +850,124 @@ this.image = "images/###.jpg";
 var shield = new Item("shield", 0, 100, false);
 potion.description = "Increases Defense chance";
 this.image = "images/###.jpg";
-// Generates the chests for our dev room
-function chestTester() {
-  chestResetter();
-  chestCreator(3);
-  chests[0].y = 1;
-  chests[0].x = 8;
-  chests[1].y = 5;
-  chests[1].x = 6;
-  chests[2].y = 6;
-  chests[2].x = 6;
 
-  chests[0].drops.push(mysticBow);
-  chests[1].drops.push(woodSword, potion);
-  chests[2].drops.push(key)
+var room1 = new Room("room1");
+rooms.push(room1);
+// This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide true.
+room1.generator = function(player, createdBefore) {
+  var room = this;
+  // Generates the chests for our dev room
+  function itemPlacer(runCreator) {
+    if(runCreator) {
+      doorCreator(1, room);
+      chestCreator(3, room);
+    }
+    room.doors[0].y = 0;
+    room.doors[0].x = 5;
+    room.chests[0].y = 1;
+    room.chests[0].x = 8;
+    room.chests[1].y = 5;
+    room.chests[1].x = 6;
+    room.chests[2].y = 6;
+    room.chests[2].x = 6;
 
-  mapArrays[chests[0].y][chests[0].x] = chests[0];
-  mapArrays[chests[1].y][chests[1].x] = chests[1];
-  mapArrays[chests[2].y][chests[2].x] = chests[2];
+    mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
+    mapArrays[room.chests[0].y][room.chests[0].x] = room.chests[0];
+    mapArrays[room.chests[1].y][room.chests[1].x] = room.chests[1];
+    mapArrays[room.chests[2].y][room.chests[2].x] = room.chests[2];
+  }
+  // Don't run chest fillers more than once
+  function itemFiller() {
+    room.doors[0].locked = true;
+    room.doors[0].leadsTo = "room2";
+
+    room.chests[0].drops.push(mysticBow);
+    room.chests[1].drops.push(woodSword, potion);
+    room.chests[2].drops.push(key);
+  }
+
+  mapCreator(10,10);
+  wallMaker();
+  itemPlacer(createdBefore);
+  if(createdBefore){
+    itemFiller();
+    player.y = 5;
+    player.x = 5;
+    mapArrays[5][5].playerHere = true;
+  } else {
+    player.y = 1;
+    player.x = 5;
+    mapArrays[2][5].playerHere = true;
+  }
+  mapDisplayer();
+  playerDisplayer(player);
+  surroundingChecker(player);
 }
-  var testPlayer = new Player("You");
+
+var room2 = new Room("room2");
+rooms.push(room2);
+// This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide true.
+room2.generator = function(player, createdBefore) {
+  var room = this;
+  // Generates the chests for our dev room
+  function itemPlacer(runCreator) {
+    if(runCreator) {
+      doorCreator(2, room);
+      chestCreator(2, room);
+    }
+    room.doors[0].y = 0;
+    room.doors[0].x = 5;
+    room.doors[1].y = 9;
+    room.doors[1].x = 5;
+    room.chests[0].y = 1;
+    room.chests[0].x = 3;
+    room.chests[1].y = 7;
+    room.chests[1].x = 7;
+
+    mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
+    mapArrays[room.doors[1].y][room.doors[1].x] = room.doors[1];
+    mapArrays[room.chests[0].y][room.chests[0].x] = room.chests[0];
+    mapArrays[room.chests[1].y][room.chests[1].x] = room.chests[1];
+  }
+  // Don't run chest fillers more than once
+  function itemFiller() {
+    room.doors[0].locked = true;
+    room.doors[0].leadsTo = "room2";
+    room.doors[1].leadsTo = "room1";
+
+    room.chests[0].drops.push(metalSword);
+    room.chests[1].drops.push(warHammer, potion);
+  }
+
+  mapCreator(10,9);
+  wallMaker();
+  itemPlacer(createdBefore);
+  if(createdBefore){
+    itemFiller();
+    player.y = 8;
+    player.x = 5;
+    mapArrays[8][5].playerHere = true;
+  } else {
+    player.y = 8;
+    player.x = 5;
+    mapArrays[8][5].playerHere = true;
+  }
+  mapDisplayer();
+  playerDisplayer(player);
+  surroundingChecker(player);
+}
+
+// Only in back-end for testing purposes
+var testPlayer = new Player("You");
 // Front-end below this line
 
 $(function() {
   var equipTyped = false;
-
-  mapCreator(10,10);
-  wallMaker();
-  chestTester();
-  mapDisplayer();
-
-
-  testPlayer.y = 5;
-  testPlayer.x = 5;
-  mapArrays[5][5].playerHere = true;
+  room1.generator(testPlayer, true);
   testPlayer.healthBar()
   testPlayer.weapons.push(bareHands);
   testPlayer.equippedWeapon = bareHands;
   testPlayer.potionCounter();
-
-  playerDisplayer(testPlayer);
-  surroundingChecker(testPlayer);
 
   // Code to make arrow keys work to move
   $(document).on("keydown", function(event) {
@@ -804,7 +1005,6 @@ $(function() {
 
       if(playerInCombat) {
         if(equipTyped) {
-          console.log("Enter equipTyped if");
           testPlayer.equipWeapon(userInput);
           equipTyped = false;
         } else {
@@ -827,7 +1027,7 @@ $(function() {
               for(var idx = 0; idx < testPlayer.weapons.length; idx++) {
                 weaponNames.push(testPlayer.weapons[idx].name);
               }
-              $("#combat-display").text("What would you like to equip? Type its name the command space. Available weapons: " + "| " + weaponNames.join(" | ") + " |");
+              $("#combat-display").text("What would you like to equip? Type its name in the command space and hit enter. Available weapons: " + "| " + weaponNames.join(" | ") + " |");
               equipTyped = true;
             } else if(userInput === "revive") {
               testPlayer.reviver();
@@ -840,7 +1040,6 @@ $(function() {
         }
       } else {
         if(equipTyped) {
-          console.log("Enter equipTyped if");
           testPlayer.equipWeapon(userInput);
           equipTyped = false;
         } else {
@@ -854,8 +1053,12 @@ $(function() {
               for(var idx = 0; idx < testPlayer.weapons.length; idx++) {
                 weaponNames.push(testPlayer.weapons[idx].name);
               }
-              $("#combat-display").text("What would you like to equip? Type its name the command space. Available weapons: " + "| " + weaponNames.join(" | ") + " |");
+              $("#combat-display").text("What would you like to equip? Type its name in the command space and hit enter. Available weapons: " + "| " + weaponNames.join(" | ") + " |");
               equipTyped = true;
+            } else if(userInput === "look") {
+              looker(testPlayer);
+            } else if(userInput === "open door") {
+              doorOpener(testPlayer);
             } else {
               $("#combat-display").text("You can't do that.");
             }
@@ -864,8 +1067,6 @@ $(function() {
           }
         }
       }
-
-      console.log("equipTyped: " + equipTyped);
       $("#user-input").val("");
   });
 });
