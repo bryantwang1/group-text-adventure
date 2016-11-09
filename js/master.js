@@ -1,9 +1,15 @@
 var mapArrays = [];
 var userCommands = [];
-var chests = [];
 var playerInCombat = false;
 var currentEnemy = {};
 
+// Constructor for rooms
+function Room(roomNumber) {
+  this.number = roomNumber;
+  this.chests = [];
+  this.monsters = [];
+  this.doors = [];
+}
 // Constructor for locations, defaults to floor type
 function Location(yCoord, xCoord) {
   this.y = yCoord;
@@ -29,7 +35,24 @@ Location.prototype.resetSpawn = function() {
   this.spawnChance = 8;
 }
 // Function for creating a variable number of chests.
-function chestCreator(amount) {
+function chestCreator(amount, room) {
+  for(var idx = 0; idx < amount; idx++) {
+    var chest = new Location(-1, -1);
+    chest.canMove = false;
+    chest.description = "An old wooden chest";
+    chest.terrainType = "chest";
+    chest.symbol = "∃";
+    chest.color = "purple";
+    chest.searchable = true;
+    chest.drops = [];
+    // New property to help check if the chests array already contains something
+    chest.checker = true;
+
+    room.chests.push(chest);
+  }
+}
+
+function doorCreator(amount) {
   for(var idx = 0; idx < amount; idx++) {
     var chest = new Location(-1, -1);
     chest.canMove = false;
@@ -42,10 +65,6 @@ function chestCreator(amount) {
 
     chests.push(chest);
   }
-}
-// Function for resetting amount of chests
-function chestResetter() {
-  chests = [];
 }
 // Function to apply the adjusted spawn chance to every tile
 function spawnAdjuster(percentage) {
@@ -750,33 +769,38 @@ var shield = new Item("shield", 0, 100, false);
 potion.description = "Increases Defense chance";
 this.image = "images/###.jpg";
 // Generates the chests for our dev room
-function chestTester() {
-  chestResetter();
-  chestCreator(3);
-  chests[0].y = 1;
-  chests[0].x = 8;
-  chests[1].y = 5;
-  chests[1].x = 6;
-  chests[2].y = 6;
-  chests[2].x = 6;
+function room1ChestPlacer(room) {
+  chestCreator(3, room);
+  room.chests[0].y = 1;
+  room.chests[0].x = 8;
+  room.chests[1].y = 5;
+  room.chests[1].x = 6;
+  room.chests[2].y = 6;
+  room.chests[2].x = 6;
 
-  chests[0].drops.push(mysticBow);
-  chests[1].drops.push(woodSword, potion);
-  chests[2].drops.push(key)
-
-  mapArrays[chests[0].y][chests[0].x] = chests[0];
-  mapArrays[chests[1].y][chests[1].x] = chests[1];
-  mapArrays[chests[2].y][chests[2].x] = chests[2];
+  mapArrays[room.chests[0].y][room.chests[0].x] = room.chests[0];
+  mapArrays[room.chests[1].y][room.chests[1].x] = room.chests[1];
+  mapArrays[room.chests[2].y][room.chests[2].x] = room.chests[2];
 }
-  var testPlayer = new Player("You");
+// Don't run chest fillers more than once
+function room1ChestFiller(room) {
+  room.chests[0].drops.push(mysticBow);
+  room.chests[1].drops.push(woodSword, potion);
+  room.chests[2].drops.push(key);
+}
+
+
+// Only in back-end for testing purposes
+var testPlayer = new Player("You");
 // Front-end below this line
 
 $(function() {
   var equipTyped = false;
-
+  var room1 = new Room(1);
   mapCreator(10,10);
   wallMaker();
-  chestTester();
+  room1ChestPlacer(room1);
+  room1ChestFiller(room1);
   mapDisplayer();
 
 
