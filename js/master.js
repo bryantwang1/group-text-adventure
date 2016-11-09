@@ -3,6 +3,9 @@ var userCommands = [];
 var playerInCombat = false;
 var playerDead = false;
 var currentEnemy = {};
+var currentEnemyY = 0;
+var currentEnemyX = 0;
+var placedMonsterCombat = false;
 var rooms = [];
 var atmosphericStrings = ["Something furry scurries by your feet.", "You feel a slow and steady dripping of water from the ceiling.", "A musty and unpleasant smell wafts in front of you.", "A bat flies past your head and disappears into the darkness.", "In the far distance your hear something shuffle toward you.", "The stone floor here is slick and slippery.", "Surely there’s a door nearby?", "You note a trickle of liquid on your arm, feel it, and taste your blood.", "A creaking and groaning as of rusty hinges starts from a far area of the room, then stops just as quickly.", "A tendril of mist curls around you.", "The ceiling seems to be closing in, but maybe that’s just you.", "The tile you’re on is loose, and it rattles loudly beneath you.", "A sound of stone scraping against stone reverberates for a short time, then seems to muffle itself."];
 
@@ -449,6 +452,9 @@ function fighter(player) {
             currentEnemy = getMonster();
           }
           combatStarter(currentEnemy);
+          placedMonsterCombat = true;
+          currentEnemyY = area.y;
+          currentEnemyX = area.x;
           break;
         }
       }
@@ -485,6 +491,9 @@ function playerFlee(player) {
     combatEnder(player);
     $("#combat-display").empty();
     $("#combat-display").text("You flee from the monster.");
+    if(placedMonsterCombat) {
+      placedMonsterCombat = false;
+    }
   } else {
     $("#combat-display").empty();
     $("#combat-display").append("You attempt to flee, but can't get away from the monster.");
@@ -854,6 +863,18 @@ Monster.prototype.takeDamage = function(damageAmount) {
   $("#combat-display").append("<p>You attack with " + damageAmount + " damage, the monster's health is " + this.currentHealth + ".</p>");
   if(this.currentHealth <= 0) {
   	this.alive = false;
+    if(placedMonsterCombat) {
+      var enemyTile = mapArrays[currentEnemyY][currentEnemyX];
+      enemyTile.canMove = true;
+      enemyTile.description = "A floor tile";
+      enemyTile.terrainType = "floor";
+      enemyTile.playerHere = false;
+      enemyTile.symbol = "#";
+      enemyTile.color = "tiles";
+      enemyTile.monsterType = "";
+
+      placedMonsterCombat = false;
+    }
     combatEnder();
     $("#combat-display").empty();
     var potionDropChance = Math.floor((Math.random() * 3) + 1);
