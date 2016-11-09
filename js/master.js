@@ -202,6 +202,8 @@ function searcher(player) {
             displayText += ". They have been added to your inventory.";
             // Make this item display later
             $("#combat-display").append("<p>" + displayText + "</p>");
+          } else {
+            $("#combat-display").text("The surrounding containers are empty.");
           }
         }
       }
