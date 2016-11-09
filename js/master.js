@@ -86,7 +86,7 @@ function waterCreator(amount, room) {
     water.canMove = true;
     water.description = "Murky water. You can't tell how deep it is.";
     water.terrainType = "water";
-    water.symbol = "W";
+    water.symbol = "w";
     water.color = "blue";
     water.searchable = false;
     water.drops = [];
@@ -101,7 +101,7 @@ function lavaCreator(amount, room) {
     lava.canMove = true;
     lava.description = "Fiery hot lava";
     lava.terrainType = "lava";
-    lava.symbol = "W";
+    lava.symbol = "w";
     lava.color = "bright-red";
     lava.searchable = false;
     lava.drops = [];
@@ -110,7 +110,7 @@ function lavaCreator(amount, room) {
   }
 }
 // Function similar to chestCreator but for placed monsters
-function monsterPlacer(type, room) {
+function placedMonsterCreator(type, room) {
   var monster = new Location(-1, -1);
   monster.canMove = false;
   monster.terrainType = "monster";
@@ -126,7 +126,7 @@ function monsterPlacer(type, room) {
     var randomMonster = getMonster();
     monster.description = "A monster of indeterminate type.";
     monster.monsterType = "random";
-    monster.symbol = "?";
+    monster.symbol = "!";
   }
 
   room.monsters.push(monster);
@@ -239,7 +239,7 @@ function surroundingChecker(player) {
           userCommands.push("search");
           }
         }
-        if(area.monsterHere) {
+        if(area.terrainType === "monster") {
           if(userCommands.includes("fight")) {
           } else {
           userCommands.push("fight");
@@ -433,7 +433,7 @@ function combatStarter(monster) {
   commandDisplayer();
 }
 // Function for the command "fight" which will initiate a fight with a monster on an adjacent tile. If there are multiple monsters for some reason it will initiate a fight with the first monster found.
-function fighter() {
+function fighter(player) {
   var y = player.y - 1;
 	var x = player.x - 1;
 
@@ -1047,6 +1047,7 @@ room1.generator = function(player, createdBefore) {
       chestCreator(3, room);
       waterCreator(2, room);
       lavaCreator(1, room);
+      placedMonsterCreator("random", room);
     }
     room.doors[0].y = 0;
     room.doors[0].x = 5;
@@ -1062,6 +1063,8 @@ room1.generator = function(player, createdBefore) {
     room.waters[1].x = 2;
     room.lavas[0].y = 7;
     room.lavas[0].x = 5;
+    room.monsters[0].y = 8;
+    room.monsters[0].x = 1;
 
     mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
     mapArrays[room.chests[0].y][room.chests[0].x] = room.chests[0];
@@ -1070,6 +1073,7 @@ room1.generator = function(player, createdBefore) {
     mapArrays[room.waters[0].y][room.waters[0].x] = room.waters[0];
     mapArrays[room.waters[1].y][room.waters[1].x] = room.waters[1];
     mapArrays[room.lavas[0].y][room.lavas[0].x] = room.lavas[0];
+    mapArrays[room.monsters[0].y][room.monsters[0].x] = room.monsters[0];
   }
   // Don't run item fillers after the first time
   function itemFiller() {
@@ -1333,6 +1337,8 @@ $(function() {
               looker(testPlayer);
             } else if(userInput === "open door") {
               doorOpener(testPlayer);
+            } else if(userInput === "fight") {
+              fighter(testPlayer);
             } else {
               $("#combat-display").text("You can't do that.");
             }
