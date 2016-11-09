@@ -251,6 +251,7 @@ doorOpenerLoops: {
                 for(var itemsIdx = 0; itemsIdx < player.items.length; itemsIdx++) {
                   if(player.items[itemsIdx].name === "key") {
                     player.items.splice(itemsIdx, 1);
+                    player.keyCounter();
                     break;
                   }
                 }
@@ -345,6 +346,7 @@ function searcher(player) {
             }
             displayText += ". They have been added to your inventory.";
             player.reviveCounter();
+            player.keyCounter();
             // Make this item display later
             $("#combat-display").append("<p>" + displayText + "</p>");
           } else {
@@ -605,6 +607,16 @@ Player.prototype.reviveCounter = function() {
     }
   }
   $("span#player-revives").text(reviveAmount);
+}
+
+Player.prototype.keyCounter = function() {
+  var keyAmount = 0;
+  for(var idx= 0; idx < this.items.length; idx++) {
+    if(this.items[idx].name === "key") {
+      keyAmount++;
+    }
+  }
+  $("span#player-keys").text(keyAmount);
 }
 
 function playerDisplayer(player) {
@@ -1065,6 +1077,7 @@ $(function() {
   testPlayer.equippedWeapon = bareHands;
   testPlayer.potionCounter();
   testPlayer.reviveCounter();
+  testPlayer.keyCounter();
 
   // Code to make arrow keys work to move
   $(document).on("keydown", function(event) {
