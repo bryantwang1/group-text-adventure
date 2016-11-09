@@ -284,6 +284,8 @@ function roomMover(player, doorLocation, firstTime) {
   }
 
   var whichRoomIndex = roomNames.findIndex(whichRoom);
+  $("#map").fadeOut("fast");
+  $("#map").fadeIn("fast");
 
   if(firstTime) {
     rooms[whichRoomIndex].generator(player, true);
