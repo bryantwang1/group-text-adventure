@@ -19,6 +19,7 @@ function Room(roomName) {
   this.doors = [];
   this.waters = [];
   this.lavas = [];
+  this.spikes = [];
 }
 
 Room.prototype.displayer = function() {
@@ -111,6 +112,21 @@ function lavaCreator(amount, room) {
     lava.drops = [];
 
     room.lavas.push(lava);
+  }
+}
+// Function similar to chestCreator but for spikes
+function spikeCreator(amount, room) {
+  for(var idx = 0; idx < amount; idx++) {
+    var spike = new Location(-1, -1);
+    spike.canMove = true;
+    spike.description = "Several sharp points stick up from the ground";
+    spike.terrainType = "spike";
+    spike.symbol = "#";
+    spike.color = "spikes";
+    spike.searchable = false;
+    spike.drops = [];
+
+    room.spikes.push(spike);
   }
 }
 // Function similar to chestCreator but for placed monsters
@@ -750,6 +766,12 @@ function moveChecklist(player, spawnPercentage) {
     if(playerInCombat) {
       $("#combat-display").append("<p>You have entered combat with a " + currentEnemy.name + ".</p>");
     }
+  } else if(checkTile.terrainType === "spike") {
+    player.takeDamage(75);
+    $("#combat-display").text("You stumble into a pit of carefully sharpened spikes, and are unable to dodge all of them. You are still alive, but sport a few deep wounds reminding you to be wary of such traps in the future.");
+    if(playerInCombat) {
+      $("#combat-display").append("<p>You have entered combat with a " + currentEnemy.name + ".</p>");
+    }
   } else if(checkTile.terrainType === "lava") {
     if(playerInCombat) {
       combatEnder();
@@ -1070,6 +1092,7 @@ room1.generator = function(player, createdBefore, whereFrom) {
       chestCreator(3, room);
       waterCreator(2, room);
       lavaCreator(1, room);
+      spikeCreator(2, room);
       placedMonsterCreator("random", room);
     }
     room.doors[0].y = 0;
@@ -1088,6 +1111,10 @@ room1.generator = function(player, createdBefore, whereFrom) {
     room.lavas[0].x = 5;
     room.monsters[0].y = 8;
     room.monsters[0].x = 1;
+    room.spikes[0].y = 2;
+    room.spikes[0].x = 5;
+    room.spikes[1].y = 2;
+    room.spikes[1].x = 4;
 
     mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
     mapArrays[room.chests[0].y][room.chests[0].x] = room.chests[0];
@@ -1097,6 +1124,8 @@ room1.generator = function(player, createdBefore, whereFrom) {
     mapArrays[room.waters[1].y][room.waters[1].x] = room.waters[1];
     mapArrays[room.lavas[0].y][room.lavas[0].x] = room.lavas[0];
     mapArrays[room.monsters[0].y][room.monsters[0].x] = room.monsters[0];
+    mapArrays[room.spikes[0].y][room.spikes[0].x] = room.spikes[0];
+    mapArrays[room.spikes[1].y][room.spikes[1].x] = room.spikes[1];
   }
   // Don't run item fillers after the first time
   function itemFiller() {
