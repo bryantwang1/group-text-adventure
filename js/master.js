@@ -99,7 +99,7 @@ function lavaCreator(amount, room) {
   for(var idx = 0; idx < amount; idx++) {
     var lava = new Location(-1, -1);
     lava.canMove = true;
-    lava.description = "Fiery hot lava.";
+    lava.description = "Fiery hot lava";
     lava.terrainType = "lava";
     lava.symbol = "W";
     lava.color = "bright-red";
@@ -108,6 +108,22 @@ function lavaCreator(amount, room) {
 
     room.lavas.push(lava);
   }
+}
+// Function similar to chestCreator but for placed monsters
+function monsterPlacer(type, room) {
+  var monster = new Location(-1, -1);
+  monster.canMove = false;
+  monster.terrainType = "monster";
+  monster.searchable = false;
+  monster.color = "yellow";
+  monster.monsterType = "";
+
+  if(type === "golem")
+  monster.description = "A golem, much larger than any you've previously seen.";
+  monster.symbol = "W";
+  monster.monsterType = "special golem";
+
+  room.monsters.push(lava);
 }
 // Function to apply the adjusted spawn chance to every tile
 function spawnAdjuster(percentage) {
@@ -706,17 +722,23 @@ function moveChecklist(player, spawnPercentage) {
   $("#combat-display").empty();
   $("#weapon-descriptions").text("");
   surroundingChecker(player);
+  spawnChecker(player);
   var checkTile = mapArrays[player.y][player.x];
   if(checkTile.terrainType === "water") {
     player.takeDamage(50);
     $("#combat-display").text("The water contains leeches! They drain 50 points of health from your body.");
+    if(playerInCombat) {
+      $("#combat-display").append("<p>You have entered combat with a " + currentEnemy.name + ".</p>");
+    }
   } else if(checkTile.terrainType === "lava") {
+    if(playerInCombat) {
+      combatEnder();
+    }
     player.takeDamage(1000);
     userCommands = [];
     commandDisplayer();
     $("#combat-display").prepend("<p>You walked on lava.</p>")
   }
-  spawnChecker(player);
   spawnAdjuster(spawnPercentage);
   mapDisplayer();
   playerDisplayer(player);
