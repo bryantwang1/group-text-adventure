@@ -252,16 +252,16 @@ function roomMover(player, doorLocation, firstTime) {
   var playerTile = mapArrays[player.y][player.x];
   playerTile.playerHere = false;
   var whereToGo = doorLocation.leadsTo;
-  var tempRooms = [];
+  var roomNames = [];
   for(var roomIdx = 0; roomIdx < rooms.length; roomIdx++) {
-    tempRooms.push(rooms[roomIdx].name);
+    roomNames.push(rooms[roomIdx].name);
   }
 
   function whichRoom(element) {
         return element === whereToGo;
   }
 
-  var whichRoomIndex = tempRooms.findIndex(whichRoom);
+  var whichRoomIndex = roomNames.findIndex(whichRoom);
 
   if(firstTime) {
     rooms[whichRoomIndex].generator(player, true);
