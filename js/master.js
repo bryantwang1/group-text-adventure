@@ -142,6 +142,10 @@ function placedMonsterCreator(type, room) {
     monster.description = "A golem, much larger than any you've previously seen.";
     monster.symbol = "Ώ";
     monster.monsterType = "special golem";
+  } else if(type === "dragon") {
+    monster.description = "A massive scaled creature slumbers here. Its wings flap a little everytime it takes a breath. The air around the beast shimmers like the air around an intense fire."
+    monster.symbol = "♠";
+    monster.monsterType = "dragon";
   } else if(type === "random") {
     var randomMonster = getMonster();
     monster.description = "A monster of indeterminate type.";
@@ -443,10 +447,10 @@ function combatStarter(monster) {
   $("#combat-display").text("You have entered combat with a " + monster.name + ".");
   $("#monster-description").text(monster.description);
   $("#monster-name").text(monsterName);
+  $("#room-description").hide();
   $("#monster-health").show();
   $("#monster-health-number").show();
   $("#" + monster.name + "-image").show();
-  $("#room-description").hide();
   monster.saySomething();
   monster.healthBar();
   playerInCombat = true;
@@ -466,10 +470,16 @@ function fighter(player) {
         if(area.terrainType === "monster") {
           if(area.monsterType === "special golem") {
             currentEnemy = specialGolem;
+          } else if(area.monsterType === "dragon") {
+            currentEnemy = dragon;
           } else if(area.monsterType === "random") {
             currentEnemy = getMonster();
           }
           combatStarter(currentEnemy);
+          if(area.monsterType === "dragon") {
+            userCommands = ["attack", "potion", "equip"];
+            commandDisplayer();
+          }
           placedMonsterCombat = true;
           currentEnemyY = area.y;
           currentEnemyX = area.x;
@@ -585,7 +595,9 @@ Player.prototype.reviver = function() {
       this.restoreHealth(1000);
       this.revives -= 1;
       this.healthBar();
-      combatEnder();
+      if(currentEnemy !== dragon) {
+        combatEnder();
+      }
       $("#combat-display").text("Before you breathe no more you manage to empty your revival potion into your throat. As the darkness of death lifts, you are comforted by the knowledge that death’s door will not shut on you…this time. ");
       $("#death-message").fadeOut("slow");
       $("#map").delay(600).fadeIn("slow");
@@ -990,6 +1002,12 @@ golem.description = "A giant rock monster that is brooding and slow blocks your 
 golem.defense = 0;
 golem.drops = ["puzzle item", "armor", "potion"];
 golem.vocalizations = ["Rock crush you...", "Ugh!", "I slow. Hold still!", "Rock mad!", "Leave me alone...", "Oof!"];
+
+var specialGolem = new Monster("golem", 1000, 25, 100);
+specialGolem.description = "A massive rock monster, every time it moves the ground quakes.";
+specialGolem.defense = 3;
+specialGolem.drops = ["puzzle item", "armor", "potion"];
+specialGolem.vocalizations = ["Rock crush you...", "Ugh!", "I slow. Hold still!", "Rock mad!", "Leave me alone...", "Oof!"];
 
 var skeleton = new Monster("skeleton", 120, 15, 40);
 skeleton.description = "A member of the undead legions approaches you with malice in the very marrow of its bones.";
