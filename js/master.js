@@ -767,7 +767,7 @@ function moveChecklist(player, spawnPercentage) {
       $("#combat-display").append("<p>You have entered combat with a " + currentEnemy.name + ".</p>");
     }
   } else if(checkTile.terrainType === "spike") {
-    player.takeDamage(75);
+    player.takeDamage(250);
     $("#combat-display").text("You stumble into a pit of carefully sharpened spikes, and are unable to dodge all of them. You are still alive, but sport a few deep wounds reminding you to be wary of such traps in the future.");
     if(playerInCombat) {
       $("#combat-display").append("<p>You have entered combat with a " + currentEnemy.name + ".</p>");
@@ -1076,6 +1076,12 @@ this.image = "images/###.jpg";
 var revive = new Item("revive", 0, 0, false);
 revive.description = "Brings you back from the dead";
 
+var unlitTorch = new Item("torch", 0, 0, false);
+unlitTorch.description = "An unlit torch";
+
+var torch = new Item("torch", 0, 0, false);
+torch.description = "A lit torch";
+
 // ROOM GENERATION BELOW THIS LINE
 
 var room1 = new Room("room1");
@@ -1284,13 +1290,14 @@ room3.generator = function(player, createdBefore, whereFrom) {
     mapArrays[8][8].playerHere = true;
   } else {
     if(whereFrom === "room2") {
-      player.y = 1;
-      player.x = 1;
-      mapArrays[1][1].playerHere = true;
-    } else {
+      console.log("coming to room 3 from room 2");
       player.y = 8;
       player.x = 8;
       mapArrays[8][8].playerHere = true;
+    } else {
+      player.y = 1;
+      player.x = 1;
+      mapArrays[1][1].playerHere = true;
     }
   }
   mapDisplayer();
@@ -1316,10 +1323,14 @@ $(function() {
   // Code to make arrow keys work to move
   $(document).on("keydown", function(event) {
     if(event.which === 37) {
-      if(playerInCombat === false) {
+      if(playerInCombat === false && playerDead === false) {
         moveLeft(testPlayer);
       } else {
-        $("#combat-display").text("You can't move while in combat!");
+        if(playerDead) {
+          $("#combat-display").text("You can't move...you're dead!");
+        } else if(playerInCombat) {
+          $("#combat-display").text("You can't move while in combat!");
+        }
       }
     } else if(event.which === 38) {
       if(playerInCombat === false && playerDead === false) {
@@ -1332,16 +1343,24 @@ $(function() {
         }
       }
     } else if(event.which === 39) {
-      if(playerInCombat === false) {
+      if(playerInCombat === false && playerDead === false) {
         moveRight(testPlayer);
       } else {
-        $("#combat-display").text("You can't move while in combat!");
+        if(playerDead) {
+          $("#combat-display").text("You can't move...you're dead!");
+        } else if(playerInCombat) {
+          $("#combat-display").text("You can't move while in combat!");
+        }
       }
     } else if(event.which === 40) {
-      if(playerInCombat === false) {
+      if(playerInCombat === false && playerDead === false) {
         moveDown(testPlayer);
       } else {
-        $("#combat-display").text("You can't move while in combat!");
+        if(playerDead) {
+          $("#combat-display").text("You can't move...you're dead!");
+        } else if(playerInCombat) {
+          $("#combat-display").text("You can't move while in combat!");
+        }
       }
     }
   });
