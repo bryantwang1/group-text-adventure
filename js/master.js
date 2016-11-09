@@ -3,6 +3,7 @@ var userCommands = [];
 var playerInCombat = false;
 var currentEnemy = {};
 var rooms = [];
+var atmosphericStrings = ["Something furry scurries by your feet.", "You hear a fluttering sound pass by overhead."];
 
 // Constructor for rooms
 function Room(roomName) {
