@@ -58,13 +58,13 @@ function doorCreator(amount, room) {
     door.canMove = false;
     door.description = "A sturdy door of oak planks with iron strips tying it together";
     door.terrainType = "door";
-    door.symbol = "@";
+    door.symbol = "∏";
     door.color = "purple";
     door.searchable = false;
     door.drops = [];
     door.locked = false;
     door.leadsTo = "";
-    door.firstTime = true;
+    door.firstTime = false;
 
     room.doors.push(door);
   }
@@ -132,6 +132,19 @@ function wallMaker() {
     waller(toWall1);
     waller(toWall2);
   }
+}
+// Makes individual tiles into walls
+function miniWallMaker(yLocation, xLocation) {
+  function waller(wallThis) {
+    wallThis.canMove = false;
+    wallThis.description = "A wall";
+  	wallThis.terrainType = "wall";
+    wallThis.symbol = "^";
+    wallThis.color = "wall";
+  }
+
+  var toWall = mapArrays[yLocation][xLocation];
+  waller(toWall);
 }
 
 // Function to display the map in html
@@ -227,7 +240,16 @@ doorOpenerLoops: {
               if(keyChecker()) {
                 area.locked = false;
                 area.firstTime = false;
+
+                for(var itemsIdx = 0; itemsIdx < player.items.length; itemsIdx++) {
+                  if(player.items[itemsIdx].name === "key") {
+                    player.items.splice(itemsIdx, 1);
+                    break;
+                  }
+                }
+
                 roomMover(player, area, true);
+
                 break doorOpenerLoops;
               } else {
                 $("#combat-display").text("You don't have a key to unlock this door.");
@@ -887,6 +909,7 @@ room1.generator = function(player, createdBefore) {
   function itemFiller() {
     room.doors[0].locked = true;
     room.doors[0].leadsTo = "room2";
+    room.doors[0].firstTime = true;
 
     room.chests[0].drops.push(mysticBow);
     room.chests[1].drops.push(woodSword, potion);
@@ -920,33 +943,53 @@ room2.generator = function(player, createdBefore) {
   function itemPlacer(runCreator) {
     if(runCreator) {
       doorCreator(2, room);
-      chestCreator(2, room);
+      chestCreator(4, room);
     }
     room.doors[0].y = 0;
     room.doors[0].x = 5;
     room.doors[1].y = 9;
     room.doors[1].x = 5;
     room.chests[0].y = 1;
-    room.chests[0].x = 3;
-    room.chests[1].y = 7;
-    room.chests[1].x = 7;
+    room.chests[0].x = 1;
+    room.chests[1].y = 1;
+    room.chests[1].x = 6;
+    room.chests[2].y = 8;
+    room.chests[2].x = 1;
+    room.chests[3].y = 7;
+    room.chests[3].x = 8;
 
     mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
     mapArrays[room.doors[1].y][room.doors[1].x] = room.doors[1];
     mapArrays[room.chests[0].y][room.chests[0].x] = room.chests[0];
     mapArrays[room.chests[1].y][room.chests[1].x] = room.chests[1];
+    mapArrays[room.chests[2].y][room.chests[2].x] = room.chests[2];
+    mapArrays[room.chests[3].y][room.chests[3].x] = room.chests[3];
+
+    miniWallMaker(2, 4);
+    miniWallMaker(2, 5);
+    miniWallMaker(2, 6);
+    miniWallMaker(2, 7);
+    miniWallMaker(1, 7);
+    miniWallMaker(4, 3);
+    miniWallMaker(7, 4);
+    miniWallMaker(8, 4);
+    miniWallMaker(6, 7);
+    miniWallMaker(6, 8);
   }
   // Don't run chest fillers more than once
   function itemFiller() {
     room.doors[0].locked = true;
+    room.doors[0].firstTime = true;
     room.doors[0].leadsTo = "room2";
     room.doors[1].leadsTo = "room1";
 
-    room.chests[0].drops.push(metalSword);
-    room.chests[1].drops.push(warHammer, potion);
+    room.chests[0].drops.push(potion);
+    room.chests[1].drops.push();
+    room.chests[2].drops.push(key);
+    room.chests[3].drops.push();
   }
 
-  mapCreator(10,9);
+  mapCreator(10,10);
   wallMaker();
   itemPlacer(createdBefore);
   if(createdBefore){
