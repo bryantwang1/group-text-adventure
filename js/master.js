@@ -64,6 +64,7 @@ function doorCreator(amount, room) {
     door.drops = [];
     door.locked = false;
     door.leadsTo = "";
+    door.firstTime = true;
 
     room.doors.push(door);
   }
@@ -225,14 +226,20 @@ doorOpenerLoops: {
             if(area.locked) {
               if(keyChecker()) {
                 area.locked = false;
+                area.firstTime = false;
                 roomMover(player, area, true);
                 break doorOpenerLoops;
               } else {
                 $("#combat-display").text("You don't have a key to unlock this door.");
               }
             } else if(area.locked === false) {
-              roomMover(player, area, false);
-              break doorOpenerLoops;
+              if(area.firstTime) {
+                area.firstTime = false;
+                roomMover(player, area, true);
+              } else if (area.firstTime === false) {
+                roomMover(player, area, false);
+                break doorOpenerLoops;
+              }
             }
           }
         }
