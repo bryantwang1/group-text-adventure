@@ -1,6 +1,7 @@
 var mapArrays = [];
 var userCommands = [];
 var playerInCombat = false;
+var playerDead = false;
 var currentEnemy = {};
 var rooms = [];
 var atmosphericStrings = ["Something furry scurries by your feet.", "You feel a slow and steady dripping of water from the ceiling.", "A musty and unpleasant smell wafts in front of you.", "A bat flies past your head and disappears into the darkness.", "In the far distance your hear something shuffle toward you.", "The stone floor here is slick and slippery.", "Surely there’s a door nearby?", "You note a trickle of liquid on your arm, feel it, and taste your blood.", "A creaking and groaning as of rusty hinges starts from a far area of the room, then stops just as quickly.", "A tendril of mist curls around you.", "The ceiling seems to be closing in, but maybe that’s just you.", "The tile you’re on is loose, and it rattles loudly beneath you.", "A sound of stone scraping against stone reverberates for a short time, then seems to muffle itself."];
@@ -14,6 +15,7 @@ function Room(roomName) {
   this.monsters = [];
   this.doors = [];
   this.waters = [];
+  this.lavas = [];
 }
 
 Room.prototype.displayer = function() {
@@ -90,6 +92,21 @@ function waterCreator(amount, room) {
     water.drops = [];
 
     room.waters.push(water);
+  }
+}
+// Function similar to chestCreator but for lava
+function lavaCreator(amount, room) {
+  for(var idx = 0; idx < amount; idx++) {
+    var lava = new Location(-1, -1);
+    lava.canMove = true;
+    lava.description = "Fiery hot lava.";
+    lava.terrainType = "lava";
+    lava.symbol = "W";
+    lava.color = "bright-red";
+    lava.searchable = false;
+    lava.drops = [];
+
+    room.lavas.push(lava);
   }
 }
 // Function to apply the adjusted spawn chance to every tile
@@ -512,6 +529,7 @@ Player.prototype.reviver = function() {
   $("#combat-display").text("You have no revives left!");
   for(var idx = 0; idx < this.items.length; idx++) {
     if(this.items[idx].name === "revive") {
+      playerDead = false;
       this.restoreHealth(1000);
       this.revives -= 1;
       this.healthBar();
@@ -536,6 +554,7 @@ Player.prototype.takeDamage = function(damageAmount) {
   if(this.currentHealth <= 0) {
     this.currentHealth = 0;
     this.healthBar();
+    playerDead = true;
     userCommands = ["revive"];
     commandDisplayer();
     $("#hero-image").fadeOut("slow");
@@ -686,12 +705,17 @@ function positionUpdater(player, oldY, oldX) {
 function moveChecklist(player, spawnPercentage) {
   $("#combat-display").empty();
   $("#weapon-descriptions").text("");
+  surroundingChecker(player);
   var checkTile = mapArrays[player.y][player.x];
   if(checkTile.terrainType === "water") {
     player.takeDamage(50);
     $("#combat-display").text("The water contains leeches! They drain 50 points of health from your body.");
+  } else if(checkTile.terrainType === "lava") {
+    player.takeDamage(1000);
+    userCommands = [];
+    commandDisplayer();
+    $("#combat-display").prepend("<p>You walked on lava.</p>")
   }
-  surroundingChecker(player);
   spawnChecker(player);
   spawnAdjuster(spawnPercentage);
   mapDisplayer();
@@ -852,8 +876,10 @@ function monsterRetaliater(monster, player) {
 function commandDisplayer() {
   $("#available-options").empty();
   $("#available-options").append("<li>Possible Commands:</li>")
-  for(var idx = 0; idx < userCommands.length; idx++) {
-    $("#available-options").append("<li>" + userCommands[idx] + "</li>")
+  if(userCommands.length > 0) {
+    for(var idx = 0; idx < userCommands.length; idx++) {
+      $("#available-options").append("<li>" + userCommands[idx] + "</li>")
+    }
   }
 }
 
@@ -988,7 +1014,8 @@ room1.generator = function(player, createdBefore) {
     if(runCreator) {
       doorCreator(1, room);
       chestCreator(3, room);
-      waterCreator(2, room)
+      waterCreator(2, room);
+      lavaCreator(1, room);
     }
     room.doors[0].y = 0;
     room.doors[0].x = 5;
@@ -1002,6 +1029,8 @@ room1.generator = function(player, createdBefore) {
     room.waters[0].x = 1;
     room.waters[1].y = 4;
     room.waters[1].x = 2;
+    room.lavas[0].y = 7;
+    room.lavas[0].x = 5;
 
     mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
     mapArrays[room.chests[0].y][room.chests[0].x] = room.chests[0];
@@ -1009,6 +1038,7 @@ room1.generator = function(player, createdBefore) {
     mapArrays[room.chests[2].y][room.chests[2].x] = room.chests[2];
     mapArrays[room.waters[0].y][room.waters[0].x] = room.waters[0];
     mapArrays[room.waters[1].y][room.waters[1].x] = room.waters[1];
+    mapArrays[room.lavas[0].y][room.lavas[0].x] = room.lavas[0];
   }
   // Don't run item fillers after the first time
   function itemFiller() {
@@ -1186,10 +1216,14 @@ $(function() {
         $("#combat-display").text("You can't move while in combat!");
       }
     } else if(event.which === 38) {
-      if(playerInCombat === false) {
+      if(playerInCombat === false && playerDead === false) {
         moveUp(testPlayer);
       } else {
-        $("#combat-display").text("You can't move while in combat!");
+        if(playerDead) {
+          $("#combat-display").text("You can't move...you're dead!");
+        } else if(playerInCombat) {
+          $("#combat-display").text("You can't move while in combat!");
+        }
       }
     } else if(event.which === 39) {
       if(playerInCombat === false) {
