@@ -344,6 +344,7 @@ function searcher(player) {
               }
             }
             displayText += ". They have been added to your inventory.";
+            player.reviveCounter();
             // Make this item display later
             $("#combat-display").append("<p>" + displayText + "</p>");
           } else {
@@ -460,7 +461,6 @@ function Player(userName) {
   this.equippedWeapon = {};
   // Not sure if we need to actually keep track of armor or if it would be a permanent upgrade once it's picked up
   this.equippedArmor = {};
-  this.revives = 0;
 }
 
 Player.prototype.healthBar = function() {
@@ -488,16 +488,22 @@ Player.prototype.whatDamage = function() {
 }
 
 Player.prototype.reviver = function() {
-  if(this.revives > 0) {
-    this.restoreHealth(1000);
-    this.revives -= 1;
-    this.healthBar();
-    combatEnder();
-    $("#combat-display").text("You have been successfully revived!");
-  } else {
-    $("#combat-display").empty();
-    $("#combat-display").text("You have no revives left!");
+  $("#combat-display").text("You have no revives left!");
+  for(var idx = 0; idx < this.items.length; idx++) {
+    if(this.items[idx].name === "revive") {
+      this.restoreHealth(1000);
+      this.revives -= 1;
+      this.healthBar();
+      combatEnder();
+      $("#combat-display").text("You have been successfully revived!");
+      $("#hero-dead").fadeOut("slow");
+      $("#hero-image").delay(600).fadeIn("slow");
+      this.items.splice(idx, 1);
+      idx--;
+      break;
+    }
   }
+  this.reviveCounter();
 }
 
 Player.prototype.takeDamage = function(damageAmount) {
@@ -509,8 +515,10 @@ Player.prototype.takeDamage = function(damageAmount) {
     this.healthBar();
     userCommands = ["revive"];
     commandDisplayer();
+    $("#hero-image").fadeOut("slow");
+    $("#hero-dead").delay(600).fadeIn("slow");
     $("#combat-display").empty();
-    $("#combat-display").append("<p>You died. You suck.</p>")
+    $("#combat-display").append("<p>You died. Sorry.</p>")
   }
 }
 
@@ -587,6 +595,16 @@ Player.prototype.potionCounter = function() {
     }
   }
   $("span#player-potions").text(potionAmount);
+}
+
+Player.prototype.reviveCounter = function() {
+  var reviveAmount = 0;
+  for(var idx= 0; idx < this.items.length; idx++) {
+    if(this.items[idx].name === "revive") {
+      reviveAmount++;
+    }
+  }
+  $("span#player-revives").text(reviveAmount);
 }
 
 function playerDisplayer(player) {
@@ -894,8 +912,13 @@ potion.description = "Restores 250 HP";
 this.image = "images/###.jpg";
 
 var shield = new Item("shield", 0, 100, false);
-potion.description = "Increases Defense chance";
+shield.description = "Increases Defense chance";
 this.image = "images/###.jpg";
+
+var revive = new Item("revive", 0, 0, false);
+revive.description = "Brings you back from the dead";
+
+// ROOM GENERATION BELOW THIS LINE
 
 var room1 = new Room("room1");
 room1.displayName = "It begins...";
@@ -932,7 +955,7 @@ room1.generator = function(player, createdBefore) {
 
     room.chests[0].drops.push(mysticBow);
     room.chests[1].drops.push(woodSword, potion);
-    room.chests[2].drops.push(key);
+    room.chests[2].drops.push(key, revive);
   }
 
   mapCreator(10,10);
@@ -1041,6 +1064,7 @@ $(function() {
   testPlayer.weapons.push(bareHands);
   testPlayer.equippedWeapon = bareHands;
   testPlayer.potionCounter();
+  testPlayer.reviveCounter();
 
   // Code to make arrow keys work to move
   $(document).on("keydown", function(event) {
