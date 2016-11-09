@@ -595,7 +595,7 @@ Player.prototype.reviver = function() {
       this.restoreHealth(1000);
       this.revives -= 1;
       this.healthBar();
-      if(currentEnemy !== dragon) {
+      if(currentEnemy !== dragon && currentEnemy !== specialGolem) {
         combatEnder();
       }
       $("#combat-display").text("Before you breathe no more you manage to empty your revival potion into your throat. As the darkness of death lifts, you are comforted by the knowledge that death’s door will not shut on you…this time. ");
