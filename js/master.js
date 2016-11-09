@@ -13,6 +13,7 @@ function Room(roomName) {
   this.chests = [];
   this.monsters = [];
   this.doors = [];
+  this.waters = [];
 }
 
 Room.prototype.displayer = function() {
@@ -74,6 +75,21 @@ function doorCreator(amount, room) {
     door.firstTime = false;
 
     room.doors.push(door);
+  }
+}
+// Function similar to chestCreator but for water
+function waterCreator(amount, room) {
+  for(var idx = 0; idx < amount; idx++) {
+    var water = new Location(-1, -1);
+    water.canMove = true;
+    water.description = "Murky water. You can't tell how deep it is.";
+    water.terrainType = "water";
+    water.symbol = "W";
+    water.color = "blue";
+    water.searchable = false;
+    water.drops = [];
+
+    room.water.push(water);
   }
 }
 // Function to apply the adjusted spawn chance to every tile
@@ -401,6 +417,7 @@ function monsterEncounter(player) {
   var playerTile = mapArrays[player.y][player.x];
   playerTile.monsterHere = true;
   currentEnemy = getMonster();
+  $("#room-description").hide();
   combatStarter(currentEnemy);
 }
 // Hard coded to use testPlayer y and x for now
@@ -961,7 +978,7 @@ rooms.push(room1);
 // This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide true.
 room1.generator = function(player, createdBefore) {
   var room = this;
-  // Generates the chests for our dev room
+  // Generates the items for the room
   function itemPlacer(runCreator) {
     if(runCreator) {
       doorCreator(1, room);
@@ -970,7 +987,7 @@ room1.generator = function(player, createdBefore) {
     room.doors[0].y = 0;
     room.doors[0].x = 5;
     room.chests[0].y = 1;
-    room.chests[0].x = 8;
+    room.chests[0].x = 1;
     room.chests[1].y = 5;
     room.chests[1].x = 6;
     room.chests[2].y = 6;
@@ -981,7 +998,7 @@ room1.generator = function(player, createdBefore) {
     mapArrays[room.chests[1].y][room.chests[1].x] = room.chests[1];
     mapArrays[room.chests[2].y][room.chests[2].x] = room.chests[2];
   }
-  // Don't run chest fillers more than once
+  // Don't run item fillers after the first time
   function itemFiller() {
     room.doors[0].locked = true;
     room.doors[0].leadsTo = "room2";
@@ -1015,10 +1032,8 @@ var room2 = new Room("room2");
 room2.displayName = "It continues...";
 room2.description = "Filler description for room 2";
 rooms.push(room2);
-// This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide true.
 room2.generator = function(player, createdBefore) {
   var room = this;
-  // Generates the chests for our dev room
   function itemPlacer(runCreator) {
     if(runCreator) {
       doorCreator(2, room);
@@ -1028,7 +1043,7 @@ room2.generator = function(player, createdBefore) {
     room.doors[0].x = 5;
     room.doors[1].y = 9;
     room.doors[1].x = 5;
-    room.chests[0].y = 1;
+    room.chests[0].y = 2;
     room.chests[0].x = 1;
     room.chests[1].y = 1;
     room.chests[1].x = 6;
@@ -1055,11 +1070,10 @@ room2.generator = function(player, createdBefore) {
     miniWallMaker(6, 7);
     miniWallMaker(6, 8);
   }
-  // Don't run chest fillers more than once
   function itemFiller() {
     room.doors[0].locked = true;
     room.doors[0].firstTime = true;
-    room.doors[0].leadsTo = "room2";
+    room.doors[0].leadsTo = "room3";
     room.doors[1].leadsTo = "room1";
 
     room.chests[0].drops.push(potion);
@@ -1077,9 +1091,59 @@ room2.generator = function(player, createdBefore) {
     player.x = 5;
     mapArrays[8][5].playerHere = true;
   } else {
-    player.y = 8;
+    player.y = 1;
     player.x = 5;
     mapArrays[8][5].playerHere = true;
+  }
+  mapDisplayer();
+  room.displayer();
+  playerDisplayer(player);
+  surroundingChecker(player);
+}
+
+var room3 = new Room("room3");
+room3.displayName = "Room 3";
+room3.description = "Filler description for room 3";
+rooms.push(room3);
+room3.generator = function(player, createdBefore) {
+  var room = this;
+  function itemPlacer(runCreator) {
+    if(runCreator) {
+      doorCreator(2, room);
+      chestCreator(1, room);
+    }
+    room.doors[0].y = 0;
+    room.doors[0].x = 1;
+    room.doors[1].y = 9;
+    room.doors[1].x = 8;
+    room.chests[0].y = 1;
+    room.chests[0].x = 8;
+
+    mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
+    mapArrays[room.doors[1].y][room.doors[1].x] = room.doors[1];
+    mapArrays[room.chests[0].y][room.chests[0].x] = room.chests[0];
+  }
+  function itemFiller() {
+    room.doors[0].locked = true;
+    room.doors[0].firstTime = true;
+    room.doors[0].leadsTo = "room4";
+    room.doors[1].leadsTo = "room2";
+
+    room.chests[0].drops.push(potion);
+  }
+
+  mapCreator(10,10);
+  wallMaker();
+  itemPlacer(createdBefore);
+  if(createdBefore){
+    itemFiller();
+    player.y = 8;
+    player.x = 8;
+    mapArrays[8][8].playerHere = true;
+  } else {
+    player.y = 1;
+    player.x = 1;
+    mapArrays[1][1].playerHere = true;
   }
   mapDisplayer();
   room.displayer();
