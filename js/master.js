@@ -4,8 +4,8 @@ var playerInCombat = false;
 var currentEnemy = {};
 
 // Constructor for rooms
-function Room(roomNumber) {
-  this.number = roomNumber;
+function Room(roomName) {
+  this.name = roomName;
   this.chests = [];
   this.monsters = [];
   this.doors = [];
@@ -202,11 +202,15 @@ function looker(player) {
 }
 // Function similar to surroundingChecker, to run when user inputs an open door command
 function doorOpener(player) {
+  $("#combat-display").empty();
   var y = player.y - 1;
 	var x = player.x - 1;
   function keyChecker() {
     for(var keyIdx = 0; keyIdx < player.items.length; keyIdx++) {
-
+      if(player.items[keyIdx].name === "key") {
+        return true;
+        break;
+      }
     }
   }
 
@@ -217,13 +221,19 @@ function doorOpener(player) {
         var area = mapArrays[idx][idx2];
         if(area.terrainType === "door") {
           if(area.locked) {
-            if(player.items)
+            if(keyChecker()) {
+              roomMover(player, area);
+            } else {
+              $("#combat-display").text("You don't have a key to unlock this door.");
+            }
           }
         }
       }
     }
   }
-
+}
+//
+function roomMover(player, doorLocation) {
   var playerTile = mapArrays[player.y][player.x];
   playerTile.playerHere = false;
 }
@@ -853,7 +863,7 @@ var testPlayer = new Player("You");
 
 $(function() {
   var equipTyped = false;
-  var room1 = new Room(1);
+  var room1 = new Room("room1");
   room1Generator(room1, testPlayer, true);
   testPlayer.healthBar()
   testPlayer.weapons.push(bareHands);
