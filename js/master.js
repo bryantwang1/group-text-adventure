@@ -89,7 +89,7 @@ function waterCreator(amount, room) {
     water.searchable = false;
     water.drops = [];
 
-    room.water.push(water);
+    room.waters.push(water);
   }
 }
 // Function to apply the adjusted spawn chance to every tile
@@ -686,6 +686,11 @@ function positionUpdater(player, oldY, oldX) {
 function moveChecklist(player, spawnPercentage) {
   $("#combat-display").empty();
   $("#weapon-descriptions").text("");
+  var checkTile = mapArrays[player.y][player.x];
+  if(checkTile.terrainType === "water") {
+    player.takeDamage(50);
+    $("#combat-display").text("The water contains leeches! They drain 50 points of health from your body.");
+  }
   surroundingChecker(player);
   spawnChecker(player);
   spawnAdjuster(spawnPercentage);
@@ -983,6 +988,7 @@ room1.generator = function(player, createdBefore) {
     if(runCreator) {
       doorCreator(1, room);
       chestCreator(3, room);
+      waterCreator(2, room)
     }
     room.doors[0].y = 0;
     room.doors[0].x = 5;
@@ -992,11 +998,17 @@ room1.generator = function(player, createdBefore) {
     room.chests[1].x = 6;
     room.chests[2].y = 6;
     room.chests[2].x = 6;
+    room.waters[0].y = 4;
+    room.waters[0].x = 1;
+    room.waters[1].y = 4;
+    room.waters[1].x = 2;
 
     mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
     mapArrays[room.chests[0].y][room.chests[0].x] = room.chests[0];
     mapArrays[room.chests[1].y][room.chests[1].x] = room.chests[1];
     mapArrays[room.chests[2].y][room.chests[2].x] = room.chests[2];
+    mapArrays[room.waters[0].y][room.waters[0].x] = room.waters[0];
+    mapArrays[room.waters[1].y][room.waters[1].x] = room.waters[1];
   }
   // Don't run item fillers after the first time
   function itemFiller() {
