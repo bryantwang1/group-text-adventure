@@ -33,14 +33,87 @@ p{
   background-color: #888;
   border: solid 4px #0f345a;
 }
-#monster-image {
+#room-description p {
+  width: 240px;
+  height: 150px;
+  margin: 0px 0px 0px 0px;
+  padding: 10px;
+  color: #333;
+  letter-spacing: 1px;
+
+}
+#goblin-image {
   width: 240px;
   height: 360px;
   background-color: #555;
   margin-bottom: 10px;
   box-shadow: 5px 5px 15px #222;
-  background-image: url("../img/sample.png");
+  background-image: url("../img/goblin.png");
   border-radius: 15px;
+  display: none;
+}
+#wizard-image {
+  width: 240px;
+  height: 360px;
+  background-color: #555;
+  margin-bottom: 10px;
+  box-shadow: 5px 5px 15px #222;
+  background-image: url("../img/wizard.jpg");
+  border-radius: 15px;
+  display: none;
+
+}
+#golem-image {
+  width: 240px;
+  height: 360px;
+  background-color: #555;
+  margin-bottom: 10px;
+  box-shadow: 5px 5px 15px #222;
+  background-image: url("../img/golem.jpg");
+  border-radius: 15px;
+  display: none;
+}
+#dragon-image {
+  width: 240px;
+  height: 360px;
+  background-color: #555;
+  margin-bottom: 10px;
+  box-shadow: 5px 5px 15px #222;
+  background-image: url("../img/dragon.jpg");
+  border-radius: 15px;
+  display: none;
+}
+#spider-image {
+  width: 240px;
+  height: 360px;
+  background-color: #555;
+  margin-bottom: 10px;
+  box-shadow: 5px 5px 15px #222;
+  background-image: url("../img/spider.jpg");
+  border-radius: 15px;
+  display: none;
+
+}
+#skeleton-image {
+  width: 240px;
+  height: 360px;
+  background-color: #555;
+  margin-bottom: 10px;
+  box-shadow: 5px 5px 15px #222;
+  background-image: url("../img/skeleton.jpg");
+  border-radius: 15px;
+  display: none;
+
+}
+#chest {
+  width: 240px;
+  height: 360px;
+  background-color: #555;
+  margin-bottom: 10px;
+  box-shadow: 5px 5px 15px #222;
+  background-image: url("../img/chest.jpg");
+  border-radius: 15px;
+  display: none;
 }
 #monster-health-number {
   text-align: center;
@@ -92,6 +165,7 @@ margin: 20px 0px -20px -10px;
   box-shadow: 5px 5px 15px #222;
   background-image: url("../img/hero-dead.jpg");
   border-radius: 15px;
+  display: none;
 
 }
 #hero-image {
@@ -254,15 +328,17 @@ background-color: #111;
 padding: 20px;
 margin: 20px 0px 0px 0px;
 border-radius: 15px;
-text-align: center;
 padding: 30px 20px;
 }
 #map p {
-  letter-spacing: 3.5em;
+  letter-spacing: 49px;
   line-height: 3em;
+
+
 }
 #map-placement {
   margin-top: 50px;
+
 }
 #map-label h4 {
   color: #D2D2D2;
@@ -273,7 +349,7 @@ padding: 30px 20px;
 /*walls icon*/
 .wall {
   color: #4777A9;
-  font-size: 1.2em;
+
 }
 /*tiles icon*/
 .tiles {
@@ -282,5 +358,6 @@ padding: 30px 20px;
 /*character icon*/
 .character {
   color: #5BC656;
-  font-size: 1.6em;
+  font-size: .9em;
+
 }
