@@ -13,7 +13,7 @@ function Location(yCoord, xCoord) {
   this.terrainType = "floor";
   this.playerHere = false;
   this.symbol = "#";
-  this.color = "white";
+  this.color = "tiles";
   this.searchable = false;
   this.spawnChance = 10;
   this.monsterHere = false;
@@ -90,7 +90,7 @@ function wallMaker() {
     wallThis.description = "A wall.";
   	wallThis.terrainType = "wall";
     wallThis.symbol = "^";
-    wallThis.color = "green";
+    wallThis.color = "wall";
     // Or whatever symbol we want to set it to.
   }
   // Walls the top row.
@@ -438,7 +438,7 @@ function playerDisplayer(player) {
   console.log("#location-" + player.y + "-" + player.x);
   $("#location-" + player.y + "-" + player.x).text(player.symbol);
   $("#location-" + player.y + "-" + player.x).removeClass();
-  $("#location-" + player.y + "-" + player.x).addClass("gold");
+  $("#location-" + player.y + "-" + player.x).addClass("character");
 }
 
 // PLAYER STUFF ABOVE THIS LINE. MOVEMENT STUFF BELOW.

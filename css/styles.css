@@ -7,6 +7,9 @@
   background-color: #222;
   height: 1180px;
 }
+audio {
+  display: none;
+}
 h4 {
   color: #fff;
   font-size: 1.6em;
@@ -258,16 +261,16 @@ padding: 30px 20px;
   letter-spacing: 2px;
 }
 /*walls icon*/
-.green {
+.wall {
   color: #4777A9;
   font-size: 1.2em;
 }
 /*tiles icon*/
-.white {
+.tiles {
   color: #6A6A6A;
 }
 /*character icon*/
-.gold {
+.character {
   color: #5BC656;
   font-size: 1.6em;
 }
