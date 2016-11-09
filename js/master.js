@@ -353,6 +353,10 @@ function combatStarter(monster) {
   $("#combat-display").text("You have entered combat with a " + monster.name + ".");
   $("#monster-description").text(monster.description);
   $("#monster-name").text(monsterName);
+  $("#monster-health").show();
+  $("#monster-health-number").show();
+  $("#" + monster.name + "-image").show();
+  $("#room-description").hide();
   monster.saySomething();
   monster.healthBar();
   playerInCombat = true;
@@ -390,11 +394,15 @@ function combatEnder() {
   var playerTile = mapArrays[testPlayer.y][testPlayer.x];
   playerTile.monsterHere = false;
   currentEnemy.statReset();
+  $("#" + currentEnemy.name + "-image").fadeOut("slow");
   currentEnemy = {};
   playerInCombat = false;
   $("#monster-description").text("");
   $("#monster-name").text("");
   $("#monster-sounds").text("");
+  $("#monster-health-number").hide();
+  $("#monster-health").hide();
+  $("#room-description").delay(800).fadeIn("slow");
   surroundingChecker(testPlayer);
 }
 // Function for the flee command
