@@ -60,6 +60,8 @@ function doorCreator(amount, room) {
     door.color = "purple";
     door.searchable = false;
     door.drops = [];
+    door.locked = false;
+    door.leadsTo = "";
 
     room.doors.push(door);
   }
@@ -198,6 +200,33 @@ function looker(player) {
 
   $("#combat-display").text(detailString);
 }
+// Function similar to surroundingChecker, to run when user inputs an open door command
+function doorOpener(player) {
+  var y = player.y - 1;
+	var x = player.x - 1;
+  function keyChecker() {
+    for(var keyIdx = 0; keyIdx < player.items.length; keyIdx++) {
+
+    }
+  }
+
+  for(var idx = y; idx < y+3; idx++) {
+  	for(var idx2 = x; idx2 < x+3; idx2++) {
+      if(idx === player.y && idx2 === player.x) {
+      } else {
+        var area = mapArrays[idx][idx2];
+        if(area.terrainType === "door") {
+          if(area.locked) {
+            if(player.items)
+          }
+        }
+      }
+    }
+  }
+
+  var playerTile = mapArrays[player.y][player.x];
+  playerTile.playerHere = false;
+}
 // Function similar to surroundingChecker, to run when user inputs a search command.
 function searcher(player) {
   // Make this item display later
@@ -313,6 +342,7 @@ function playerFlee(player) {
     monsterRetaliater(currentEnemy, player);
   }
 }
+
 // Function that checks if the player's tile spawns a monster and takes the appropriate actions if it does.
 function spawnChecker(player) {
   var playerTile = mapArrays[player.y][player.x];
@@ -770,10 +800,14 @@ this.image = "images/###.jpg";
 // This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide true.
 function room1Generator(room, player, createdBefore) {
   // Generates the chests for our dev room
-  function room1ChestPlacer(room2, runCreator) {
+  function room1ItemPlacer(room2, runCreator) {
     if(runCreator) {
+      console.log("enter creator");
+      doorCreator(1, room2);
       chestCreator(3, room2);
     }
+    room.doors[0].y = 0;
+    room.doors[0].x = 5;
     room.chests[0].y = 1;
     room.chests[0].x = 8;
     room.chests[1].y = 5;
@@ -781,12 +815,16 @@ function room1Generator(room, player, createdBefore) {
     room.chests[2].y = 6;
     room.chests[2].x = 6;
 
+    mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
     mapArrays[room.chests[0].y][room.chests[0].x] = room.chests[0];
     mapArrays[room.chests[1].y][room.chests[1].x] = room.chests[1];
     mapArrays[room.chests[2].y][room.chests[2].x] = room.chests[2];
   }
   // Don't run chest fillers more than once
-  function room1ChestFiller(room2) {
+  function room1ItemFiller(room2) {
+    room.doors[0].locked = true;
+    room.doors[0].leadsTo = "room1";
+
     room.chests[0].drops.push(mysticBow);
     room.chests[1].drops.push(woodSword, potion);
     room.chests[2].drops.push(key);
@@ -795,14 +833,14 @@ function room1Generator(room, player, createdBefore) {
   var created = createdBefore;
   mapCreator(10,10);
   wallMaker();
-  room1ChestPlacer(room, created);
+  room1ItemPlacer(room, created);
   if(created){
-    room1ChestFiller(room);
+    room1ItemFiller(room);
     player.y = 5;
     player.x = 5;
     mapArrays[5][5].playerHere = true;
   } else {
-    player.y = 2;
+    player.y = 1;
     player.x = 5;
     mapArrays[2][5].playerHere = true;
   }
@@ -915,6 +953,8 @@ $(function() {
               equipTyped = true;
             } else if(userInput === "look") {
               looker(testPlayer);
+            } else if(userInput === "open door") {
+              doorOpener(testPlayer);
             } else {
               $("#combat-display").text("You can't do that.");
             }
