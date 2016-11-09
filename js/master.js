@@ -8,9 +8,16 @@ var atmosphericStrings = ["Something furry scurries by your feet.", "You hear a 
 // Constructor for rooms
 function Room(roomName) {
   this.name = roomName;
+  this.description = "";
+  this.displayName = "";
   this.chests = [];
   this.monsters = [];
   this.doors = [];
+}
+
+Room.prototype.displayer = function() {
+  $("#room-name").text(this.displayName);
+  $("#room-info").text(this.description);
 }
 // Constructor for locations, defaults to floor type
 function Location(yCoord, xCoord) {
@@ -244,6 +251,7 @@ doorOpenerLoops: {
                 for(var itemsIdx = 0; itemsIdx < player.items.length; itemsIdx++) {
                   if(player.items[itemsIdx].name === "key") {
                     player.items.splice(itemsIdx, 1);
+                    player.keyCounter();
                     break;
                   }
                 }
@@ -284,6 +292,8 @@ function roomMover(player, doorLocation, firstTime) {
   }
 
   var whichRoomIndex = roomNames.findIndex(whichRoom);
+  $("#map").fadeOut("fast");
+  $("#map").fadeIn("fast");
 
   if(firstTime) {
     rooms[whichRoomIndex].generator(player, true);
@@ -335,6 +345,9 @@ function searcher(player) {
               }
             }
             displayText += ". They have been added to your inventory.";
+            player.reviveCounter();
+            player.keyCounter();
+            player.weaponDisplayer();
             // Make this item display later
             $("#combat-display").append("<p>" + displayText + "</p>");
           } else {
@@ -353,6 +366,10 @@ function combatStarter(monster) {
   $("#combat-display").text("You have entered combat with a " + monster.name + ".");
   $("#monster-description").text(monster.description);
   $("#monster-name").text(monsterName);
+  $("#monster-health").show();
+  $("#monster-health-number").show();
+  $("#" + monster.name + "-image").show();
+  $("#room-description").hide();
   monster.saySomething();
   monster.healthBar();
   playerInCombat = true;
@@ -390,11 +407,15 @@ function combatEnder() {
   var playerTile = mapArrays[testPlayer.y][testPlayer.x];
   playerTile.monsterHere = false;
   currentEnemy.statReset();
+  $("#" + currentEnemy.name + "-image").fadeOut("slow");
   currentEnemy = {};
   playerInCombat = false;
   $("#monster-description").text("");
   $("#monster-name").text("");
   $("#monster-sounds").text("");
+  $("#monster-health-number").hide();
+  $("#monster-health").hide();
+  $("#room-description").delay(800).fadeIn("slow");
   surroundingChecker(testPlayer);
 }
 // Function for the flee command
@@ -443,7 +464,6 @@ function Player(userName) {
   this.equippedWeapon = {};
   // Not sure if we need to actually keep track of armor or if it would be a permanent upgrade once it's picked up
   this.equippedArmor = {};
-  this.revives = 0;
 }
 
 Player.prototype.healthBar = function() {
@@ -471,16 +491,22 @@ Player.prototype.whatDamage = function() {
 }
 
 Player.prototype.reviver = function() {
-  if(this.revives > 0) {
-    this.restoreHealth(1000);
-    this.revives -= 1;
-    this.healthBar();
-    combatEnder();
-    $("#combat-display").text("You have been successfully revived!");
-  } else {
-    $("#combat-display").empty();
-    $("#combat-display").text("You have no revives left!");
+  $("#combat-display").text("You have no revives left!");
+  for(var idx = 0; idx < this.items.length; idx++) {
+    if(this.items[idx].name === "revive") {
+      this.restoreHealth(1000);
+      this.revives -= 1;
+      this.healthBar();
+      combatEnder();
+      $("#combat-display").text("You have been successfully revived!");
+      $("#hero-dead").fadeOut("slow");
+      $("#hero-image").delay(600).fadeIn("slow");
+      this.items.splice(idx, 1);
+      idx--;
+      break;
+    }
   }
+  this.reviveCounter();
 }
 
 Player.prototype.takeDamage = function(damageAmount) {
@@ -492,8 +518,10 @@ Player.prototype.takeDamage = function(damageAmount) {
     this.healthBar();
     userCommands = ["revive"];
     commandDisplayer();
+    $("#hero-image").fadeOut("slow");
+    $("#hero-dead").delay(600).fadeIn("slow");
     $("#combat-display").empty();
-    $("#combat-display").append("<p>You died. You suck.</p>")
+    $("#combat-display").append("<p>You died. Sorry.</p>")
   }
 }
 
@@ -570,6 +598,40 @@ Player.prototype.potionCounter = function() {
     }
   }
   $("span#player-potions").text(potionAmount);
+}
+
+Player.prototype.reviveCounter = function() {
+  var reviveAmount = 0;
+  for(var idx= 0; idx < this.items.length; idx++) {
+    if(this.items[idx].name === "revive") {
+      reviveAmount++;
+    }
+  }
+  $("span#player-revives").text(reviveAmount);
+}
+
+Player.prototype.keyCounter = function() {
+  var keyAmount = 0;
+  for(var idx= 0; idx < this.items.length; idx++) {
+    if(this.items[idx].name === "key") {
+      keyAmount++;
+    }
+  }
+  $("span#player-keys").text(keyAmount);
+}
+
+Player.prototype.weaponDisplayer = function() {
+  for(var idx= 0; idx < this.weapons.length; idx++) {
+    if(this.weapons[idx].name === "wood sword") {
+      $("#woodSword").fadeIn("slow");
+    } else if(this.weapons[idx].name === "metal sword") {
+      $("#metalSword").fadeIn("slow");
+    } else if(this.weapons[idx].name === "war hammer") {
+      $("#warHammer").fadeIn("slow");
+    } else if(this.weapons[idx].name === "mystic bow") {
+      $("#bow").fadeIn("slow");
+    }
+  }
 }
 
 function playerDisplayer(player) {
@@ -877,10 +939,17 @@ potion.description = "Restores 250 HP";
 this.image = "images/###.jpg";
 
 var shield = new Item("shield", 0, 100, false);
-potion.description = "Increases Defense chance";
+shield.description = "Increases Defense chance";
 this.image = "images/###.jpg";
 
+var revive = new Item("revive", 0, 0, false);
+revive.description = "Brings you back from the dead";
+
+// ROOM GENERATION BELOW THIS LINE
+
 var room1 = new Room("room1");
+room1.displayName = "It begins...";
+room1.description = "Filler description for room 1";
 rooms.push(room1);
 // This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide true.
 room1.generator = function(player, createdBefore) {
@@ -913,7 +982,7 @@ room1.generator = function(player, createdBefore) {
 
     room.chests[0].drops.push(mysticBow);
     room.chests[1].drops.push(woodSword, potion);
-    room.chests[2].drops.push(key);
+    room.chests[2].drops.push(key, revive);
   }
 
   mapCreator(10,10);
@@ -930,11 +999,14 @@ room1.generator = function(player, createdBefore) {
     mapArrays[2][5].playerHere = true;
   }
   mapDisplayer();
+  room.displayer();
   playerDisplayer(player);
   surroundingChecker(player);
 }
 
 var room2 = new Room("room2");
+room2.displayName = "It continues...";
+room2.description = "Filler description for room 2";
 rooms.push(room2);
 // This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide true.
 room2.generator = function(player, createdBefore) {
@@ -1003,6 +1075,7 @@ room2.generator = function(player, createdBefore) {
     mapArrays[8][5].playerHere = true;
   }
   mapDisplayer();
+  room.displayer();
   playerDisplayer(player);
   surroundingChecker(player);
 }
@@ -1018,6 +1091,8 @@ $(function() {
   testPlayer.weapons.push(bareHands);
   testPlayer.equippedWeapon = bareHands;
   testPlayer.potionCounter();
+  testPlayer.reviveCounter();
+  testPlayer.keyCounter();
 
   // Code to make arrow keys work to move
   $(document).on("keydown", function(event) {
