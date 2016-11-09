@@ -45,25 +45,23 @@ function chestCreator(amount, room) {
     chest.color = "purple";
     chest.searchable = true;
     chest.drops = [];
-    // New property to help check if the chests array already contains something
-    chest.checker = true;
 
     room.chests.push(chest);
   }
 }
-
-function doorCreator(amount) {
+// Function similar to chestCreator but for doors
+function doorCreator(amount, room) {
   for(var idx = 0; idx < amount; idx++) {
-    var chest = new Location(-1, -1);
-    chest.canMove = false;
-    chest.description = "An old wooden chest";
-    chest.terrainType = "chest";
-    chest.symbol = "∃";
-    chest.color = "purple";
-    chest.searchable = true;
-    chest.drops = [];
+    var door = new Location(-1, -1);
+    door.canMove = false;
+    door.description = "A sturdy door of oak planks with iron strips tying it together";
+    door.terrainType = "door";
+    door.symbol = "@";
+    door.color = "purple";
+    door.searchable = false;
+    door.drops = [];
 
-    chests.push(chest);
+    room.doors.push(door);
   }
 }
 // Function to apply the adjusted spawn chance to every tile
@@ -769,11 +767,13 @@ var shield = new Item("shield", 0, 100, false);
 potion.description = "Increases Defense chance";
 this.image = "images/###.jpg";
 
-// This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide false.
+// This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide true.
 function room1Generator(room, player, createdBefore) {
   // Generates the chests for our dev room
-  function room1ChestPlacer(room2) {
-    chestCreator(3, room2);
+  function room1ChestPlacer(room2, runCreator) {
+    if(runCreator) {
+      chestCreator(3, room2);
+    }
     room.chests[0].y = 1;
     room.chests[0].x = 8;
     room.chests[1].y = 5;
@@ -795,8 +795,8 @@ function room1Generator(room, player, createdBefore) {
   var created = createdBefore;
   mapCreator(10,10);
   wallMaker();
-  room1ChestPlacer(room);
-  if(createdBefore){
+  room1ChestPlacer(room, created);
+  if(created){
     room1ChestFiller(room);
     player.y = 5;
     player.x = 5;
