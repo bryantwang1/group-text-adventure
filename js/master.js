@@ -788,7 +788,21 @@ function room1ChestFiller(room) {
   room.chests[1].drops.push(woodSword, potion);
   room.chests[2].drops.push(key);
 }
+// This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide false.
+function room1Generator(room, player, createdBefore) {
+  var created = createdBefore;
+  mapCreator(10,10);
+  wallMaker();
+  room1ChestPlacer(room);
+  if(createdBefore){
+    room1ChestFiller(room);
+  }
+  mapDisplayer();
 
+  player.y = 5;
+  player.x = 5;
+  mapArrays[5][5].playerHere = true;
+}
 
 // Only in back-end for testing purposes
 var testPlayer = new Player("You");
@@ -797,16 +811,7 @@ var testPlayer = new Player("You");
 $(function() {
   var equipTyped = false;
   var room1 = new Room(1);
-  mapCreator(10,10);
-  wallMaker();
-  room1ChestPlacer(room1);
-  room1ChestFiller(room1);
-  mapDisplayer();
-
-
-  testPlayer.y = 5;
-  testPlayer.x = 5;
-  mapArrays[5][5].playerHere = true;
+  room1Generator(room1, testPlayer, true);
   testPlayer.healthBar()
   testPlayer.weapons.push(bareHands);
   testPlayer.equippedWeapon = bareHands;
@@ -874,7 +879,7 @@ $(function() {
               for(var idx = 0; idx < testPlayer.weapons.length; idx++) {
                 weaponNames.push(testPlayer.weapons[idx].name);
               }
-              $("#combat-display").text("What would you like to equip? Type its name the command space. Available weapons: " + "| " + weaponNames.join(" | ") + " |");
+              $("#combat-display").text("What would you like to equip? Type its name in the command space and hit enter. Available weapons: " + "| " + weaponNames.join(" | ") + " |");
               equipTyped = true;
             } else if(userInput === "revive") {
               testPlayer.reviver();
