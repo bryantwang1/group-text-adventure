@@ -9,7 +9,7 @@ function Location(yCoord, xCoord) {
   this.y = yCoord;
   this.x = xCoord;
 	this.canMove = true;
-  this.description = "A floor tile.";
+  this.description = "A floor tile";
   this.terrainType = "floor";
   this.playerHere = false;
   this.symbol = "#";
@@ -33,7 +33,7 @@ function chestCreator(amount) {
   for(var idx = 0; idx < amount; idx++) {
     var chest = new Location(-1, -1);
     chest.canMove = false;
-    chest.description = "An old wooden chest.";
+    chest.description = "An old wooden chest";
     chest.terrainType = "chest";
     chest.symbol = "∃";
     chest.color = "purple";
@@ -87,7 +87,7 @@ function wallMaker() {
   // A little callback function created inside wallMaker so that we don't have to repeat the same 3 commands.
   function waller(wallThis) {
     wallThis.canMove = false;
-    wallThis.description = "A wall.";
+    wallThis.description = "A wall";
   	wallThis.terrainType = "wall";
     wallThis.symbol = "^";
     wallThis.color = "wall";
@@ -128,7 +128,7 @@ function mapDisplayer() {
 function surroundingChecker(player) {
   var y = player.y - 1;
 	var x = player.x - 1;
-  userCommands = ["equip", "potion"];
+  userCommands = ["equip", "potion", "look"];
 
   for(var idx = y; idx < y+3; idx++) {
   	for(var idx2 = x; idx2 < x+3; idx2++) {
@@ -159,6 +159,27 @@ function surroundingChecker(player) {
     }
   }
   commandDisplayer();
+}
+// Function similar to surroundingChecker, to run when user inputs a look command.
+function looker(player) {
+  $("#combat-display").empty();
+  var y = player.y - 1;
+	var x = player.x - 1;
+  var descriptions = [];
+
+  for(var idx = y; idx < y+3; idx++) {
+  	for(var idx2 = x; idx2 < x+3; idx2++) {
+    	// This if statement is how we skip checking the center tile(the one the player is on).
+    	if(idx === player.y && idx2 === player.x) {
+      } else {
+      	var area = mapArrays[idx][idx2];
+        descriptions.push(area.description);
+    	}
+    }
+  }
+  var detailString = "Northwest: " + descriptions[0] + "; North: " + descriptions[1] + "; Northeast: " + descriptions[2] + "; West: " + descriptions[3] + "; East: " + descriptions[4] + "; Southwest: " + descriptions[5] + "; South: " + descriptions[6] + "; Southeast: " + descriptions[7] + ".";
+
+  $("#combat-display").text(detailString);
 }
 // Function similar to surroundingChecker, to run when user inputs a search command.
 function searcher(player) {
@@ -858,6 +879,8 @@ $(function() {
               }
               $("#combat-display").text("What would you like to equip? Type its name the command space. Available weapons: " + "| " + weaponNames.join(" | ") + " |");
               equipTyped = true;
+            } else if(userInput === "look") {
+              looker(testPlayer);
             } else {
               $("#combat-display").text("You can't do that.");
             }
