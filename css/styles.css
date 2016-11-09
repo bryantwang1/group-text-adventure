@@ -350,6 +350,12 @@ padding: 30px 20px;
   text-align: center;
   letter-spacing: 2px;
 }
+#death-message {
+  text-align: center;
+  margin-top: 150px;
+  color: darkred;
+  display: none;
+}
 /*walls icon*/
 .wall {
   color: #4777A9;

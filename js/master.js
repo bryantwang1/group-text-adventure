@@ -499,7 +499,9 @@ Player.prototype.reviver = function() {
       this.revives -= 1;
       this.healthBar();
       combatEnder();
-      $("#combat-display").text("You have been successfully revived!");
+      $("#combat-display").text("Before you breathe no more you manage to empty your revival potion into your throat. As the darkness of death lifts, you are comforted by the knowledge that death’s door will not shut on you…this time. ");
+      $("#death-message").fadeOut("slow");
+      $("#map").delay(600).fadeIn("slow");
       $("#hero-dead").fadeOut("slow");
       $("#hero-image").delay(600).fadeIn("slow");
       this.items.splice(idx, 1);
@@ -521,6 +523,8 @@ Player.prototype.takeDamage = function(damageAmount) {
     commandDisplayer();
     $("#hero-image").fadeOut("slow");
     $("#hero-dead").delay(600).fadeIn("slow");
+    $("#map").fadeOut("slow");
+    $("#death-message").delay(600).fadeIn("slow");
     $("#combat-display").empty();
     $("#combat-display").append("<p>You died. Sorry.</p>")
   }
