@@ -325,6 +325,7 @@ function searcher(player) {
               if(area.drops.length > 0) {
                 if(area.drops[0].itemType === "weapon") {
                   player.weapons.push(area.drops[0]);
+                  $("#weapon-descriptions").text(area.drops[0].description);
                   displayText += " \"" + area.drops[0].name + "\"";
                   area.drops.shift();
                 } else if(area.drops[0].itemType === "item") {
@@ -561,6 +562,7 @@ Player.prototype.equipWeapon = function(string) {
       if(this.weapons[idx].name === string) {
         this.equippedWeapon = this.weapons[idx];
         $("#combat-display").text("You have equipped " + this.weapons[idx].name + "!");
+        $("#weapon-descriptions").text(this.weapons[idx].description);
         haveWeapon = true;
         function unwrapper() {
           $(".equipped").children().unwrap();
@@ -662,6 +664,7 @@ function positionUpdater(player, oldY, oldX) {
 //
 function moveChecklist(player, spawnPercentage) {
   $("#combat-display").empty();
+  $("#weapon-descriptions").text("");
   surroundingChecker(player);
   spawnChecker(player);
   spawnAdjuster(spawnPercentage);
@@ -898,23 +901,23 @@ function Weapon(name, minDamage, maxDamage, criticalHit) {
 
 //Weapons
 var bareHands = new Weapon("bare hands", 0, 0, 5);
-bareHands.description = "Your bare fists. Nice and simple.";
+bareHands.description = "Bare hands description: Your bare fists. Nice and simple.";
 this.image = "images/###.jpg";
 
 var woodSword = new Weapon("wood sword", 10, 15, 20);
-woodSword.description = "A warrior's first weapon.";
+woodSword.description = "Wood sword description: A short, sturdy, and well-used wooden sword balances itself well in your hand. A warrior's first weapon. Deals alright damage.";
 this.image = "images/###.jpg";
 
-var metalSword = new Weapon("metal sword", 24, 34, 30);
-metalSword.description = "Sharp, Brutal, and Highly Effective.";
+var metalSword = new Weapon("metal sword", 20, 34, 30);
+metalSword.description = "Metal sword description: You’ve obtained a sharp and surprisingly light metal sword engraved with a series of mysterious symbols. Sharp, Brutal, and Highly Effective. Deals a good amount of damage per attack but can be inconsistent.";
 this.image = "images/###.jpg";
 
 var warHammer = new Weapon("war hammer", 15, 25, 70);
-warHammer.description = "Blunt edge with crushing power.";
+warHammer.description = "War hammer description: A well-weighted and scratched war hammer. Difficult to wield, and with an inexperienced user such as yourself, it regularly deals less damage per attack than the metal sword. However, when you get a good swing in, it has the potential to deal heavy damage in a single strike.";
 this.image = "images/###.jpg";
 
 var mysticBow = new Weapon("mystic bow", 26, 28, 40);
-warHammer.description = "Long range weapon delivers blows with precision.";
+warHammer.description = "This mystic bow seems to be strung with something valuable as gold but strong as iron. A long range weapon that delivers blows with precision. Slightly less damage potential than the metal sword but much more consistent. A well aimed shot can ultimately be more effective than the slash from a sword.";
 this.image = "images/###.jpg";
 
 // Constructor for items
@@ -1127,6 +1130,7 @@ $(function() {
       event.preventDefault();
 
       var userInput = $("#user-input").val().toLowerCase();
+      $("#weapon-descriptions").text("");
 
       if(playerInCombat) {
         if(equipTyped) {
