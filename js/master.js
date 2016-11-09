@@ -78,6 +78,7 @@ function doorCreator(amount, room) {
     door.locked = false;
     door.leadsTo = "";
     door.firstTime = false;
+    door.fromWhere = "";
 
     room.doors.push(door);
   }
@@ -340,6 +341,7 @@ function roomMover(player, doorLocation, firstTime) {
   var playerTile = mapArrays[player.y][player.x];
   playerTile.playerHere = false;
   var whereToGo = doorLocation.leadsTo;
+  var whereComeFrom = doorLocation.fromWhere;
   var roomNames = [];
   for(var roomIdx = 0; roomIdx < rooms.length; roomIdx++) {
     roomNames.push(rooms[roomIdx].name);
@@ -356,7 +358,7 @@ function roomMover(player, doorLocation, firstTime) {
   if(firstTime) {
     rooms[whichRoomIndex].generator(player, true);
   } else {
-    rooms[whichRoomIndex].generator(player, false);
+    rooms[whichRoomIndex].generator(player, false, whereComeFrom);
   }
 
   $("#combat-display").empty();
@@ -1059,7 +1061,7 @@ room1.displayName = "It begins...";
 room1.description = "Filler description for room 1";
 rooms.push(room1);
 // This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide true.
-room1.generator = function(player, createdBefore) {
+room1.generator = function(player, createdBefore, whereFrom) {
   var room = this;
   // Generates the items for the room
   function itemPlacer(runCreator) {
@@ -1101,6 +1103,7 @@ room1.generator = function(player, createdBefore) {
     room.doors[0].locked = true;
     room.doors[0].leadsTo = "room2";
     room.doors[0].firstTime = true;
+    room.doors[0].fromWhere = "room1";
 
     room.chests[0].drops.push(mysticBow);
     room.chests[1].drops.push(woodSword, potion);
@@ -1116,9 +1119,11 @@ room1.generator = function(player, createdBefore) {
     player.x = 5;
     mapArrays[5][5].playerHere = true;
   } else {
-    player.y = 1;
-    player.x = 5;
-    mapArrays[2][5].playerHere = true;
+    if(whereFrom === "room2") {
+      player.y = 1;
+      player.x = 5;
+      mapArrays[2][5].playerHere = true;
+    }
   }
   mapDisplayer();
   room.displayer();
@@ -1130,7 +1135,7 @@ var room2 = new Room("room2");
 room2.displayName = "It continues...";
 room2.description = "Filler description for room 2";
 rooms.push(room2);
-room2.generator = function(player, createdBefore) {
+room2.generator = function(player, createdBefore, whereFrom) {
   var room = this;
   function itemPlacer(runCreator) {
     if(runCreator) {
@@ -1172,7 +1177,9 @@ room2.generator = function(player, createdBefore) {
     room.doors[0].locked = true;
     room.doors[0].firstTime = true;
     room.doors[0].leadsTo = "room3";
+    room.doors[0].fromWhere = "room2";
     room.doors[1].leadsTo = "room1";
+    room.doors[1].fromWhere = "room2";
 
     room.chests[0].drops.push(potion);
     room.chests[1].drops.push();
@@ -1189,9 +1196,15 @@ room2.generator = function(player, createdBefore) {
     player.x = 5;
     mapArrays[8][5].playerHere = true;
   } else {
-    player.y = 1;
-    player.x = 5;
-    mapArrays[8][5].playerHere = true;
+    if(whereFrom === "room3") {
+      player.y = 1;
+      player.x = 5;
+      mapArrays[8][5].playerHere = true;
+    } else {
+      player.y = 8;
+      player.x = 5;
+      mapArrays[8][5].playerHere = true;
+    }
   }
   mapDisplayer();
   room.displayer();
@@ -1203,7 +1216,7 @@ var room3 = new Room("room3");
 room3.displayName = "Room 3";
 room3.description = "Filler description for room 3";
 rooms.push(room3);
-room3.generator = function(player, createdBefore) {
+room3.generator = function(player, createdBefore, whereFrom) {
   var room = this;
   function itemPlacer(runCreator) {
     if(runCreator) {
@@ -1225,7 +1238,9 @@ room3.generator = function(player, createdBefore) {
     room.doors[0].locked = true;
     room.doors[0].firstTime = true;
     room.doors[0].leadsTo = "room4";
+    room.doors[0].fromWhere = "room3";
     room.doors[1].leadsTo = "room2";
+    room.doors[1].fromWhere = "room3";
 
     room.chests[0].drops.push(potion);
   }
@@ -1239,9 +1254,15 @@ room3.generator = function(player, createdBefore) {
     player.x = 8;
     mapArrays[8][8].playerHere = true;
   } else {
-    player.y = 1;
-    player.x = 1;
-    mapArrays[1][1].playerHere = true;
+    if(whereFrom === "room2") {
+      player.y = 1;
+      player.x = 1;
+      mapArrays[1][1].playerHere = true;
+    } else {
+      player.y = 8;
+      player.x = 8;
+      mapArrays[8][8].playerHere = true;
+    }
   }
   mapDisplayer();
   room.displayer();
