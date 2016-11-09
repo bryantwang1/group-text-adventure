@@ -84,6 +84,16 @@ border: solid 4px #0f345a;
 padding: 10px;
 margin: 20px 0px -20px -10px;
 }
+#hero-dead {
+  width: 240px;
+  height: 360px;
+  background-color: #555;
+  margin-bottom: 10px;
+  box-shadow: 5px 5px 15px #222;
+  background-image: url("../img/hero-dead.jpg");
+  border-radius: 15px;
+
+}
 #hero-image {
   width: 240px;
   height: 360px;
