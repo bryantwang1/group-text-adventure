@@ -422,7 +422,7 @@ function combatEnder() {
 // Function for the flee command
 function playerFlee(player) {
   var fleeChance = Math.floor((Math.random() * 10) + 1);
-  if(fleeChance > 1) {
+  if(fleeChance > 6) {
     combatEnder(player);
     $("#combat-display").empty();
     $("#combat-display").text("You flee from the monster.");
