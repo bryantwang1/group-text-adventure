@@ -586,7 +586,8 @@ function moveUp(player) {
     positionUpdater(player,1,0);
     moveChecklist(player, 2);
   } else {
-    alert("You can't move there!");
+    $("#combat-display").empty();
+    $("#combat-display").text("You can't move north from here!");
   }
 }
 
@@ -597,7 +598,8 @@ function moveDown(player) {
     positionUpdater(player,-1,0);
     moveChecklist(player, 2);
   } else {
-    alert("You can't move there!");
+    $("#combat-display").empty();
+    $("#combat-display").text("You can't move south from here!");
   }
 }
 
@@ -608,7 +610,8 @@ function moveLeft(player) {
     positionUpdater(player,0,1);
     moveChecklist(player, 2);
   } else {
-    alert("You can't move there!");
+    $("#combat-display").empty();
+    $("#combat-display").text("You can't move west from here!");
   }
 }
 
@@ -619,7 +622,8 @@ function moveRight(player) {
     positionUpdater(player,0,-1);
     moveChecklist(player, 2);
   } else {
-    alert("You can't move there!");
+    $("#combat-display").empty();
+    $("#combat-display").text("You can't move east from here!");
   }
 }
 
