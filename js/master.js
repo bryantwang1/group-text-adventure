@@ -768,40 +768,45 @@ this.image = "images/###.jpg";
 var shield = new Item("shield", 0, 100, false);
 potion.description = "Increases Defense chance";
 this.image = "images/###.jpg";
-// Generates the chests for our dev room
-function room1ChestPlacer(room) {
-  chestCreator(3, room);
-  room.chests[0].y = 1;
-  room.chests[0].x = 8;
-  room.chests[1].y = 5;
-  room.chests[1].x = 6;
-  room.chests[2].y = 6;
-  room.chests[2].x = 6;
 
-  mapArrays[room.chests[0].y][room.chests[0].x] = room.chests[0];
-  mapArrays[room.chests[1].y][room.chests[1].x] = room.chests[1];
-  mapArrays[room.chests[2].y][room.chests[2].x] = room.chests[2];
-}
-// Don't run chest fillers more than once
-function room1ChestFiller(room) {
-  room.chests[0].drops.push(mysticBow);
-  room.chests[1].drops.push(woodSword, potion);
-  room.chests[2].drops.push(key);
-}
 // This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide false.
 function room1Generator(room, player, createdBefore) {
+  // Generates the chests for our dev room
+  function room1ChestPlacer(room) {
+    chestCreator(3, room);
+    room.chests[0].y = 1;
+    room.chests[0].x = 8;
+    room.chests[1].y = 5;
+    room.chests[1].x = 6;
+    room.chests[2].y = 6;
+    room.chests[2].x = 6;
+
+    mapArrays[room.chests[0].y][room.chests[0].x] = room.chests[0];
+    mapArrays[room.chests[1].y][room.chests[1].x] = room.chests[1];
+    mapArrays[room.chests[2].y][room.chests[2].x] = room.chests[2];
+  }
+  // Don't run chest fillers more than once
+  function room1ChestFiller(room) {
+    room.chests[0].drops.push(mysticBow);
+    room.chests[1].drops.push(woodSword, potion);
+    room.chests[2].drops.push(key);
+  }
+  
   var created = createdBefore;
   mapCreator(10,10);
   wallMaker();
   room1ChestPlacer(room);
   if(createdBefore){
     room1ChestFiller(room);
+    player.y = 5;
+    player.x = 5;
+    mapArrays[5][5].playerHere = true;
+  } else {
+    player.y = 2;
+    player.x = 5;
+    mapArrays[2][5].playerHere = true;
   }
   mapDisplayer();
-
-  player.y = 5;
-  player.x = 5;
-  mapArrays[5][5].playerHere = true;
 }
 
 // Only in back-end for testing purposes
