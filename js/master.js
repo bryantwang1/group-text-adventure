@@ -8,9 +8,16 @@ var atmosphericStrings = ["Something furry scurries by your feet.", "You hear a 
 // Constructor for rooms
 function Room(roomName) {
   this.name = roomName;
+  this.description = "";
+  this.displayName = "";
   this.chests = [];
   this.monsters = [];
   this.doors = [];
+}
+
+Room.prototype.displayer = function() {
+  $("#room-name").text(this.displayName);
+  $("#room-info").text(this.description);
 }
 // Constructor for locations, defaults to floor type
 function Location(yCoord, xCoord) {
@@ -891,6 +898,8 @@ potion.description = "Increases Defense chance";
 this.image = "images/###.jpg";
 
 var room1 = new Room("room1");
+room1.displayName = "It begins...";
+room1.description = "Filler description for room 1";
 rooms.push(room1);
 // This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide true.
 room1.generator = function(player, createdBefore) {
@@ -940,11 +949,14 @@ room1.generator = function(player, createdBefore) {
     mapArrays[2][5].playerHere = true;
   }
   mapDisplayer();
+  room.displayer();
   playerDisplayer(player);
   surroundingChecker(player);
 }
 
 var room2 = new Room("room2");
+room2.displayName = "It continues...";
+room2.description = "Filler description for room 2";
 rooms.push(room2);
 // This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide true.
 room2.generator = function(player, createdBefore) {
@@ -1013,6 +1025,7 @@ room2.generator = function(player, createdBefore) {
     mapArrays[8][5].playerHere = true;
   }
   mapDisplayer();
+  room.displayer();
   playerDisplayer(player);
   surroundingChecker(player);
 }
