@@ -13,7 +13,7 @@ function Location(yCoord, xCoord) {
   this.terrainType = "floor";
   this.playerHere = false;
   this.symbol = "#";
-  this.color = "white";
+  this.color = "tiles";
   this.searchable = false;
   this.spawnChance = 10;
   this.monsterHere = false;
@@ -90,7 +90,7 @@ function wallMaker() {
     wallThis.description = "A wall.";
   	wallThis.terrainType = "wall";
     wallThis.symbol = "^";
-    wallThis.color = "green";
+    wallThis.color = "wall";
     // Or whatever symbol we want to set it to.
   }
   // Walls the top row.
@@ -158,6 +158,7 @@ function surroundingChecker(player) {
     	}
     }
   }
+  commandDisplayer();
 }
 // Function similar to surroundingChecker, to run when user inputs a search command.
 function searcher(player) {
@@ -188,6 +189,7 @@ function searcher(player) {
                       player.items.push(potion);
                       area.drops.shift();
                     }
+                    player.potionCounter();
                     displayText += " \"" + "potion" + "(" + potionAmount + ")" + "\"";
                   } else {
                     player.items.push(area.drops[0]);
@@ -208,12 +210,17 @@ function searcher(player) {
 }
 // Function to run for when a player starts combat
 function combatStarter(monster) {
+  var monsterName = monster.name.split("");
+  monsterName[0] = monsterName[0].toUpperCase();
+  monsterName = monsterName.join("");
   $("#combat-display").text("You have entered combat with a " + monster.name + ".");
   $("#monster-description").text(monster.description);
-  $("#monster-name").text(monster.name);
+  $("#monster-name").text(monsterName);
+  monster.saySomething();
   monster.healthBar();
   playerInCombat = true;
   userCommands = ["attack", "flee", "potion", "equip"];
+  commandDisplayer();
 }
 // Function for the command "fight" which will initiate a fight with a monster on an adjacent tile. If there are multiple monsters for some reason it will initiate a fight with the first monster found.
 function fight() {
@@ -250,6 +257,8 @@ function combatEnder() {
   playerInCombat = false;
   $("#monster-description").text("");
   $("#monster-name").text("");
+  $("#monster-sounds").text("");
+  surroundingChecker(testPlayer);
 }
 // Function for the flee command
 function playerFlee(player) {
@@ -296,6 +305,7 @@ function Player(userName) {
   this.equippedWeapon = {};
   // Not sure if we need to actually keep track of armor or if it would be a permanent upgrade once it's picked up
   this.equippedArmor = {};
+  this.revives = 0;
 }
 
 Player.prototype.healthBar = function() {
@@ -303,6 +313,8 @@ Player.prototype.healthBar = function() {
   $("div#hero-health").empty();
   $("div#hero-health").append("<div id=\"player-health-bar-outer\"><div id=\"player-health-bar-inner\"></div></div>");
   $("#player-health-bar-inner").css("width", percentage + "%");
+
+  $("#hero-health-display").text(this.currentHealth + "/" + this.maxHealth);
 }
 
 // Prototype method to see how much damage a player will deal.
@@ -320,13 +332,30 @@ Player.prototype.whatDamage = function() {
   return damage;
 }
 
+Player.prototype.reviver = function() {
+  if(this.revives > 0) {
+    this.restoreHealth(1000);
+    this.revives -= 1;
+    this.healthBar();
+    combatEnder();
+    $("#combat-display").text("You have been successfully revived!");
+  } else {
+    $("#combat-display").empty();
+    $("#combat-display").text("You have no revives left!");
+  }
+}
+
 Player.prototype.takeDamage = function(damageAmount) {
 	this.currentHealth -= damageAmount;
   this.healthBar();
   $("#combat-display").append("<p>You're attacked with " + damageAmount + " damage, your health is " + this.currentHealth + ".</p>");
   if(this.currentHealth <= 0) {
     this.currentHealth = 0;
-    alert("You're dead!"); // end the game
+    this.healthBar();
+    userCommands = ["revive"];
+    commandDisplayer();
+    $("#combat-display").empty();
+    $("#combat-display").append("<p>You died. You suck.</p>")
   }
 }
 
@@ -349,6 +378,7 @@ Player.prototype.drinkPotion = function() {
       break;
     }
   }
+  this.potionCounter();
 }
 
 Player.prototype.equipWeapon = function(string) {
@@ -366,6 +396,25 @@ Player.prototype.equipWeapon = function(string) {
         this.equippedWeapon = this.weapons[idx];
         $("#combat-display").text("You have equipped " + this.weapons[idx].name + "!");
         haveWeapon = true;
+        function unwrapper() {
+          $(".equipped").children().unwrap();
+        }
+
+        if(this.weapons[idx].name === "bare hands") {
+          unwrapper();
+        } else if (this.weapons[idx].name === "wood sword") {
+          unwrapper();
+          $("#woodSword p").wrap("<div class=\"equipped\"></div>");
+        } else if (this.weapons[idx].name === "metal sword") {
+          unwrapper();
+          $("#metalSword p").wrap("<div class=\"equipped\"></div>");
+        } else if (this.weapons[idx].name === "mystic bow") {
+          unwrapper();
+          $("#bow p").wrap("<div class=\"equipped\"></div>");
+        } else if (this.weapons[idx].name === "war hammer") {
+          unwrapper();
+          $("#warHammer p").wrap("<div class=\"equipped\"></div>");
+        }
         break;
       }
     }
@@ -375,11 +424,21 @@ Player.prototype.equipWeapon = function(string) {
   }
 }
 
+Player.prototype.potionCounter = function() {
+  var potionAmount = 0;
+  for(var idx= 0; idx < this.items.length; idx++) {
+    if(this.items[idx].name === "potion") {
+      potionAmount++;
+    }
+  }
+  $("span#player-potions").text(potionAmount);
+}
+
 function playerDisplayer(player) {
   console.log("#location-" + player.y + "-" + player.x);
   $("#location-" + player.y + "-" + player.x).text(player.symbol);
   $("#location-" + player.y + "-" + player.x).removeClass();
-  $("#location-" + player.y + "-" + player.x).addClass("gold");
+  $("#location-" + player.y + "-" + player.x).addClass("character");
 }
 
 // PLAYER STUFF ABOVE THIS LINE. MOVEMENT STUFF BELOW.
@@ -465,8 +524,11 @@ function Monster(name, health, minDamage, maxDamage) {
 Monster.prototype.saySomething = function() {
 	var howMany = this.vocalizations.length;
   var whichSound = Math.floor(Math.random() * howMany) + 1;
+  var monsterName = this.name.split("");
+  monsterName[0] = monsterName[0].toUpperCase();
+  monsterName = monsterName.join("");
 
-  $("span#someID").text(this.vocalizations[whichSound]);
+  $("#monster-sounds").text(monsterName + " says: " + this.vocalizations[whichSound-1]);
 }
 
 // Prototype method for generating a health bar based on current and max health. Needs to be tested. Should update the health bar everytime it's run as well. Don't forget the accompanying css.
@@ -475,6 +537,8 @@ Monster.prototype.healthBar = function() {
   $("div#monster-health").empty();
   $("div#monster-health").append("<div id=\"monster-health-bar-outer\"><div id=\"monster-health-bar-inner\"></div></div>");
   $("#monster-health-bar-inner").css("width", percentage + "%");
+
+  $("#monster-health-display").text(this.currentHealth + "/" + this.maxHealth);
 }
 
 Monster.prototype.statReset = function() {
@@ -495,6 +559,7 @@ Monster.prototype.takeDamage = function(damageAmount) {
     var potionDropChance = Math.floor((Math.random() * 3) + 1);
     if(potionDropChance === 1) {
       testPlayer.items.push(potion);
+      testPlayer.potionCounter();
       $("#combat-display").text("The monster is dead! You find a potion on its mangled corpse.");
     } else {
       $("#combat-display").text("The monster is dead!");
@@ -537,45 +602,54 @@ function monsterRetaliater(monster, player) {
   var retaliationDamage = monster.whatDamage();
   console.log("run retaliater")
   attack(retaliationDamage, player);
+  monster.saySomething();
+}
+// Displays currently available commands to the user
+function commandDisplayer() {
+  $("#available-options").empty();
+  $("#available-options").append("<li>Possible Commands:</li>")
+  for(var idx = 0; idx < userCommands.length; idx++) {
+    $("#available-options").append("<li>" + userCommands[idx] + "</li>")
+  }
 }
 
 // CONTENT BELOW THIS LINE (MONSTERS)
 
 var goblin = new Monster("goblin", 100, 10, 25);
 goblin.description = "A small minion with quick reflexes and an affinity for gold. It will attack anything shiny.";
-this.defense = 3;
-this.drops = ["potion"];
-this.vocalizations = ["Grunt", "Yargh!", "I eat you!", "Give me gold!", "Hold still!", "You're going to regret this...", "Such violence!"];
+goblin.defense = 3;
+goblin.drops = ["potion"];
+goblin.vocalizations = ["Grunt", "Yargh!", "I eat you!", "Give me gold!", "Hold still!", "You're going to regret this...", "Such violence!"];
 
 var wizard = new Monster("wizard", 200, 20, 50);
 wizard.description = "A dark mage appears before you with a crackle of elemental magic.";
-this.defense = 2;
-this.drops = ["key", "potion"];
-this.vocalizations = ["Behold!", "This is your end!", "You are mine!", "Ow! That tickles!", "You sword's a little short.", "This is my domain. You won't leave alive."];
+wizard.defense = 2;
+wizard.drops = ["key", "potion"];
+wizard.vocalizations = ["Behold!", "This is your end!", "You are mine!", "Ow! That tickles!", "Your sword's a little short.", "This is my domain. You won't leave alive."];
 
 var dragon = new Monster("dragon", 1000, 75, 125);
 dragon.description = "A monsterous beast with a wicked temper and fiery breath unfurls before you. Its sheer maginitude is astonishing and hard to believe.";
-this.defense = 0;
-this.drops = ["artifact"];
-this.vocalizations = ["Have some fire!", "ROOOOAAAARRRRRR!!", "I shall crush you like a bug!", "You tasty little morsel!", "This is your end!", "You'll never defeat me...", "I've been here since the beginning of this age..."];
+dragon.defense = 0;
+dragon.drops = ["artifact"];
+dragon.vocalizations = ["Have some fire!", "ROOOOAAAARRRRRR!!", "I shall crush you like a bug!", "You tasty little morsel!", "This is your end!", "You'll never defeat me...", "I've been here since the beginning of this age..."];
 
 var spider = new Monster("spider", 80, 10, 15);
 spider.description = "A creepy and stealthy hunter that stalks its prey from the shadows. Its prey is you.";
-this.defense = 3;
-this.drops = ["potion"];
-this.vocalizations = ["Squeal!", "Eek!", "Hiss!", "You look delicious!"];
+spider.defense = 3;
+spider.drops = ["potion"];
+spider.vocalizations = ["Squeal!", "Eek!", "Hiss!", "You look delicious!"];
 
 var golem = new Monster("golem", 300, 5, 50);
 golem.description = "A giant rock monster that is brooding and slow blocks your path.";
-this.defense = 0;
-this.drops = ["puzzle item", "armor", "potion"];
-this.vocalizations = ["Rock crush you...", "Ugh!", "I slow. Hold still!", "Rock mad!", "Leave me alone...", "Oof!"];
+golem.defense = 0;
+golem.drops = ["puzzle item", "armor", "potion"];
+golem.vocalizations = ["Rock crush you...", "Ugh!", "I slow. Hold still!", "Rock mad!", "Leave me alone...", "Oof!"];
 
 var skeleton = new Monster("skeleton", 120, 15, 40);
 skeleton.description = "A member of the undead legions approaches you with malice in the very marrow of its bones.";
-this.defense = 2;
-this.drops = ["potion"];
-this.vocalizations = ["[Bones clanking]", "Arg!", "Die!", "I'll hurt you...", "Do you feel pain?", "Take this!"];
+skeleton.defense = 2;
+skeleton.drops = ["potion"];
+skeleton.vocalizations = ["[Bones clanking]", "Arg!", "Die!", "I'll hurt you...", "Do you feel pain?", "Take this!"];
 
 var mobMonsters = [goblin, spider, skeleton];
 var toughMonsters = [wizard, golem];
@@ -689,6 +763,7 @@ $(function() {
   testPlayer.healthBar()
   testPlayer.weapons.push(bareHands);
   testPlayer.equippedWeapon = bareHands;
+  testPlayer.potionCounter();
 
   playerDisplayer(testPlayer);
   surroundingChecker(testPlayer);
@@ -743,9 +818,9 @@ $(function() {
               if(playerInCombat) {
                 monsterRetaliater(currentEnemy, testPlayer);
               }
-            } else if (userInput === "flee") {
+            } else if(userInput === "flee") {
               playerFlee(testPlayer);
-            } else if (userInput === "potion") {
+            } else if(userInput === "potion") {
               testPlayer.drinkPotion();
             } else if(userInput === "equip") {
               var weaponNames = [];
@@ -754,6 +829,8 @@ $(function() {
               }
               $("#combat-display").text("What would you like to equip? Type its name the command space. Available weapons: " + "| " + weaponNames.join(" | ") + " |");
               equipTyped = true;
+            } else if(userInput === "revive") {
+              testPlayer.reviver();
             } else {
               $("#combat-display").text("You can't do that.");
             }

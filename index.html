@@ -13,6 +13,9 @@
   </head>
   <body>
     <div class="container">
+      <audio autoplay loop>
+        <source src="music/normal.mp3" type="audio/mpeg">
+      </audio>
       <div class="row">
 
 <!--              MONSTER          -->
@@ -20,7 +23,7 @@
           <div id="monster">
             <div id="monster-image">
             </div><!-- he end -->
-            <div id="monster-health-number"><span>75/1000</span>
+            <div id="monster-health-number"><span id="monster-health-display"></span>
             </div><!-- health-number end -->
             <div id="health-bar">
               <div id="monster-health">
@@ -47,7 +50,7 @@
           <div id="character">
             <div id="hero-image">
             </div><!-- image end -->
-            <div id="hero-health-number"><span>500/500</span>
+            <div id="hero-health-number"><span id="hero-health-display"></span>
             </div><!-- health-number end -->
             <div id="health-bar">
             <div id="hero-health">
@@ -78,7 +81,7 @@
           <h3> Items</h3>
             <div id="items">
               <div id="potion" class="pull-left">
-                <img src="img/potionHealth.png"><br><p>Potion x <span>3</span></p>
+                <img src="img/potionHealth.png"><br><p>Potion x <span id="player-potions"></span></p>
               </div><!-- potion end -->
               <div id="potion" class="pull-left">
                 <img src="img/potionHealth.png"><br><p>Key x <span>3</span></p>
@@ -119,10 +122,6 @@
           <div class="col-md-5">
             <div id="available-options">
               <li>Open Door - open</li>
-              <li>Pick Up Item - pick up</li>
-              <li>Attack Monster - monster</li>
-              <li>Use Item - use</li>
-              <li>Equip Weapon - equip</li>
             </div><!-- help end -->
           </div> <!--col end-->
         </div><!-- middle end -->
@@ -154,6 +153,8 @@
 <!--              Environment           -->
         <div class="col-md-5">
           <div id="environment"><p></p>
+            <div id="monster-sounds">
+            </div>
             <div id="combat-display">
             </div>
           </div><!-- envir end -->
