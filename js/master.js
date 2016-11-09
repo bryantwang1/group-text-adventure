@@ -48,7 +48,6 @@ function chestCreator(amount, room) {
     chest.searchable = true;
     chest.drops = [];
 
-    console.log(room.chests);
     room.chests.push(chest);
   }
 }
@@ -66,7 +65,6 @@ function doorCreator(amount, room) {
     door.locked = false;
     door.leadsTo = "";
 
-    console.log(room.doors);
     room.doors.push(door);
   }
 }
@@ -257,7 +255,6 @@ function roomMover(player, doorLocation, firstTime) {
   }
 
   var whichRoomIndex = tempRooms.findIndex(whichRoom);
-  console.log("room index: " + whichRoomIndex);
 
   if(firstTime) {
     rooms[whichRoomIndex].generator(player, true);
@@ -266,6 +263,7 @@ function roomMover(player, doorLocation, firstTime) {
   }
 
   $("#combat-display").empty();
+  atmosphericDisplayer();
   $("#combat-display").text("You enter another room.");
 }
 // Function similar to surroundingChecker, to run when user inputs a search command.
@@ -554,6 +552,17 @@ function playerDisplayer(player) {
 
 // PLAYER STUFF ABOVE THIS LINE. MOVEMENT STUFF BELOW.
 
+// Function to display random atmospheric strings or none at all.
+function atmosphericDisplayer() {
+  var atmosphericOrNot = Math.floor(Math.random() * 4) + 1;
+
+  if(atmosphericOrNot === 1) {
+    var whichAtmospheric = Math.floor(Math.random() * atmosphericStrings.length);
+    $("#atmospheric-display").text(atmosphericStrings[whichAtmospheric]);
+  } else {
+    $("#atmospheric-display").text("");
+  }
+}
 // Example of what would update the map on move.
 function positionUpdater(player, oldY, oldX) {
   mapArrays[player.y + oldY][player.x + oldX].playerHere = false;
@@ -567,6 +576,7 @@ function moveChecklist(player, spawnPercentage) {
   spawnAdjuster(spawnPercentage);
   mapDisplayer();
   playerDisplayer(player);
+  atmosphericDisplayer();
 }
 
 // Move Up
@@ -690,7 +700,7 @@ Monster.prototype.restoreHealth = function(healthAmount) {
 function attack(damage, target) {
 	// Generates and stores a random number from 1 to 10.
 	var hitChance = Math.floor(Math.random() * 10) + 1;
-  console.log("The hit chance was: " +hitChance);
+  console.log("The hit chance was: " + hitChance);
   var defense = target.defense;
 
   if(hitChance <= defense) {
@@ -711,7 +721,6 @@ Monster.prototype.whatDamage = function() {
 // Function for monsters to react after player turn
 function monsterRetaliater(monster, player) {
   var retaliationDamage = monster.whatDamage();
-  console.log("run retaliater")
   attack(retaliationDamage, player);
   monster.saySomething();
 }
@@ -846,7 +855,6 @@ room1.generator = function(player, createdBefore) {
   // Generates the chests for our dev room
   function itemPlacer(runCreator) {
     if(runCreator) {
-      console.log("enter creator");
       doorCreator(1, room);
       chestCreator(3, room);
     }
@@ -900,7 +908,6 @@ room2.generator = function(player, createdBefore) {
   // Generates the chests for our dev room
   function itemPlacer(runCreator) {
     if(runCreator) {
-      console.log("enter creator");
       doorCreator(2, room);
       chestCreator(2, room);
     }
@@ -994,7 +1001,6 @@ $(function() {
 
       if(playerInCombat) {
         if(equipTyped) {
-          console.log("Enter equipTyped if");
           testPlayer.equipWeapon(userInput);
           equipTyped = false;
         } else {
@@ -1030,7 +1036,6 @@ $(function() {
         }
       } else {
         if(equipTyped) {
-          console.log("Enter equipTyped if");
           testPlayer.equipWeapon(userInput);
           equipTyped = false;
         } else {
@@ -1058,8 +1063,6 @@ $(function() {
           }
         }
       }
-
-      console.log("equipTyped: " + equipTyped);
       $("#user-input").val("");
   });
 });
