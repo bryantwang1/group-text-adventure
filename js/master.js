@@ -840,7 +840,7 @@ rooms.push(room1);
 room1.generator = function(player, createdBefore) {
   var room = this;
   // Generates the chests for our dev room
-  function room1ItemPlacer(runCreator) {
+  function itemPlacer(runCreator) {
     if(runCreator) {
       console.log("enter creator");
       doorCreator(1, room);
@@ -861,7 +861,7 @@ room1.generator = function(player, createdBefore) {
     mapArrays[room.chests[2].y][room.chests[2].x] = room.chests[2];
   }
   // Don't run chest fillers more than once
-  function room1ItemFiller() {
+  function itemFiller() {
     room.doors[0].locked = true;
     room.doors[0].leadsTo = "room2";
 
@@ -872,9 +872,9 @@ room1.generator = function(player, createdBefore) {
 
   mapCreator(10,10);
   wallMaker();
-  room1ItemPlacer(createdBefore);
+  itemPlacer(createdBefore);
   if(createdBefore){
-    room1ItemFiller();
+    itemFiller();
     player.y = 5;
     player.x = 5;
     mapArrays[5][5].playerHere = true;
@@ -884,6 +884,8 @@ room1.generator = function(player, createdBefore) {
     mapArrays[2][5].playerHere = true;
   }
   mapDisplayer();
+  playerDisplayer(player);
+  surroundingChecker(player);
 }
 
 var room2 = new Room("room2");
@@ -892,50 +894,52 @@ rooms.push(room2);
 room2.generator = function(player, createdBefore) {
   var room = this;
   // Generates the chests for our dev room
-  function room1ItemPlacer(runCreator) {
+  function itemPlacer(runCreator) {
     if(runCreator) {
       console.log("enter creator");
-      doorCreator(1, room);
-      chestCreator(3, room);
+      doorCreator(2, room);
+      chestCreator(2, room);
     }
     room.doors[0].y = 0;
     room.doors[0].x = 5;
+    room.doors[1].y = 9;
+    room.doors[1].x = 5;
     room.chests[0].y = 1;
-    room.chests[0].x = 8;
-    room.chests[1].y = 5;
-    room.chests[1].x = 6;
-    room.chests[2].y = 6;
-    room.chests[2].x = 6;
+    room.chests[0].x = 3;
+    room.chests[1].y = 7;
+    room.chests[1].x = 7;
 
     mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
+    mapArrays[room.doors[1].y][room.doors[1].x] = room.doors[1];
     mapArrays[room.chests[0].y][room.chests[0].x] = room.chests[0];
     mapArrays[room.chests[1].y][room.chests[1].x] = room.chests[1];
-    mapArrays[room.chests[2].y][room.chests[2].x] = room.chests[2];
   }
   // Don't run chest fillers more than once
-  function room1ItemFiller() {
+  function itemFiller() {
     room.doors[0].locked = true;
     room.doors[0].leadsTo = "room2";
+    room.doors[1].leadsTo = "room1";
 
-    room.chests[0].drops.push(mysticBow);
-    room.chests[1].drops.push(woodSword, potion);
-    room.chests[2].drops.push(key);
+    room.chests[0].drops.push(metalSword);
+    room.chests[1].drops.push(warHammer, potion);
   }
 
   mapCreator(10,10);
   wallMaker();
-  room1ItemPlacer(createdBefore);
+  itemPlacer(createdBefore);
   if(createdBefore){
-    room1ItemFiller();
-    player.y = 5;
+    itemFiller();
+    player.y = 8;
     player.x = 5;
-    mapArrays[5][5].playerHere = true;
+    mapArrays[8][5].playerHere = true;
   } else {
-    player.y = 1;
+    player.y = 8;
     player.x = 5;
-    mapArrays[2][5].playerHere = true;
+    mapArrays[8][5].playerHere = true;
   }
   mapDisplayer();
+  playerDisplayer(player);
+  surroundingChecker(player);
 }
 
 // Only in back-end for testing purposes
@@ -949,9 +953,6 @@ $(function() {
   testPlayer.weapons.push(bareHands);
   testPlayer.equippedWeapon = bareHands;
   testPlayer.potionCounter();
-
-  playerDisplayer(testPlayer);
-  surroundingChecker(testPlayer);
 
   // Code to make arrow keys work to move
   $(document).on("keydown", function(event) {
