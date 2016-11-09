@@ -3,7 +3,7 @@ var userCommands = [];
 var playerInCombat = false;
 var currentEnemy = {};
 var rooms = [];
-var atmosphericStrings = ["Something furry scurries by your feet.", "You hear a fluttering sound pass by overhead."];
+var atmosphericStrings = ["Something furry scurries by your feet.", "You feel a slow and steady dripping of water from the ceiling.", "A musty and unpleasant smell wafts in front of you.", "A bat flies past your head and disappears into the darkness.", "In the far distance your hear something shuffle toward you.", "The stone floor here is slick and slippery.", "Surely there’s a door nearby?", "You note a trickle of liquid on your arm, feel it, and taste your blood.", "A creaking and groaning as of rusty hinges starts from a far area of the room, then stops just as quickly.", "A tendril of mist curls around you.", "The ceiling seems to be closing in, but maybe that’s just you.", "The tile you’re on is loose, and it rattles loudly beneath you.", "A sound of stone scraping against stone reverberates for a short time, then seems to muffle itself."];
 
 // Constructor for rooms
 function Room(roomName) {
@@ -647,7 +647,7 @@ function playerDisplayer(player) {
 
 // Function to display random atmospheric strings or none at all.
 function atmosphericDisplayer() {
-  var atmosphericOrNot = Math.floor(Math.random() * 4) + 1;
+  var atmosphericOrNot = Math.floor(Math.random() * 2) + 1;
 
   if(atmosphericOrNot === 1) {
     var whichAtmospheric = Math.floor(Math.random() * atmosphericStrings.length);
