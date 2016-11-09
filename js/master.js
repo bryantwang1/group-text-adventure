@@ -118,12 +118,18 @@ function monsterPlacer(type, room) {
   monster.color = "yellow";
   monster.monsterType = "";
 
-  if(type === "golem")
-  monster.description = "A golem, much larger than any you've previously seen.";
-  monster.symbol = "W";
-  monster.monsterType = "special golem";
+  if(type === "golem") {
+    monster.description = "A golem, much larger than any you've previously seen.";
+    monster.symbol = "Ώ";
+    monster.monsterType = "special golem";
+  } else if(type === "random") {
+    var randomMonster = getMonster();
+    monster.description = "A monster of indeterminate type.";
+    monster.monsterType = "random";
+    monster.symbol = "?";
+  }
 
-  room.monsters.push(lava);
+  room.monsters.push(monster);
 }
 // Function to apply the adjusted spawn chance to every tile
 function spawnAdjuster(percentage) {
@@ -427,7 +433,7 @@ function combatStarter(monster) {
   commandDisplayer();
 }
 // Function for the command "fight" which will initiate a fight with a monster on an adjacent tile. If there are multiple monsters for some reason it will initiate a fight with the first monster found.
-function fight() {
+function fighter() {
   var y = player.y - 1;
 	var x = player.x - 1;
 
@@ -436,8 +442,12 @@ function fight() {
       if(idx === player.y && idx2 === player.x) {
       } else {
         var area = mapArrays[idx][idx2];
-        if(area.monsterHere) {
-          currentEnemy = area.occupiedBy;
+        if(area.terrainType === "monster") {
+          if(area.monsterType === "special golem") {
+            currentEnemy = specialGolem;
+          } else if(area.monsterType === "random") {
+            currentEnemy = getMonster();
+          }
           combatStarter(currentEnemy);
           break;
         }
@@ -450,7 +460,6 @@ function monsterEncounter(player) {
   var playerTile = mapArrays[player.y][player.x];
   playerTile.monsterHere = true;
   currentEnemy = getMonster();
-  $("#room-description").hide();
   combatStarter(currentEnemy);
 }
 // Hard coded to use testPlayer y and x for now
