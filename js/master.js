@@ -263,6 +263,9 @@ function roomMover(player, doorLocation, firstTime) {
   } else {
     rooms[whichRoomIndex].generator(player, false);
   }
+
+  $("#combat-display").empty();
+  $("#combat-display").text("You enter another room.");
 }
 // Function similar to surroundingChecker, to run when user inputs a search command.
 function searcher(player) {
@@ -924,7 +927,7 @@ room2.generator = function(player, createdBefore) {
     room.chests[1].drops.push(warHammer, potion);
   }
 
-  mapCreator(10,10);
+  mapCreator(10,9);
   wallMaker();
   itemPlacer(createdBefore);
   if(createdBefore){
@@ -1040,7 +1043,7 @@ $(function() {
               for(var idx = 0; idx < testPlayer.weapons.length; idx++) {
                 weaponNames.push(testPlayer.weapons[idx].name);
               }
-              $("#combat-display").text("What would you like to equip? Type its name the command space. Available weapons: " + "| " + weaponNames.join(" | ") + " |");
+              $("#combat-display").text("What would you like to equip? Type its name in the command space and hit enter. Available weapons: " + "| " + weaponNames.join(" | ") + " |");
               equipTyped = true;
             } else if(userInput === "look") {
               looker(testPlayer);
