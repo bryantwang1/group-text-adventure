@@ -772,8 +772,8 @@ this.image = "images/###.jpg";
 // This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide false.
 function room1Generator(room, player, createdBefore) {
   // Generates the chests for our dev room
-  function room1ChestPlacer(room) {
-    chestCreator(3, room);
+  function room1ChestPlacer(room2) {
+    chestCreator(3, room2);
     room.chests[0].y = 1;
     room.chests[0].x = 8;
     room.chests[1].y = 5;
@@ -786,12 +786,12 @@ function room1Generator(room, player, createdBefore) {
     mapArrays[room.chests[2].y][room.chests[2].x] = room.chests[2];
   }
   // Don't run chest fillers more than once
-  function room1ChestFiller(room) {
+  function room1ChestFiller(room2) {
     room.chests[0].drops.push(mysticBow);
     room.chests[1].drops.push(woodSword, potion);
     room.chests[2].drops.push(key);
   }
-  
+
   var created = createdBefore;
   mapCreator(10,10);
   wallMaker();
