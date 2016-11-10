@@ -492,65 +492,81 @@ function roomMover(player, doorLocation, firstTime) {
 // Function similar to surroundingChecker, to run when user inputs a search command.
 function searcher(player) {
   // Make this item display later
-  $("#combat-display").empty();
-  $("#chest-image").fadeOut("fast");
-  $("#search-image").delay(200).fadeIn("fast");
-  var y = player.y - 1;
-	var x = player.x - 1;
+  searcherBreaker: {
+    $("#combat-display").empty();
+    var y = player.y - 1;
+    var x = player.x - 1;
 
-  for(var idx = y; idx < y+3; idx++) {
-  	for(var idx2 = x; idx2 < x+3; idx2++) {
-      if(idx === player.y && idx2 === player.x) {
-      } else {
-        var area = mapArrays[idx][idx2];
-        if(area.searchable) {
-          var displayText = "You searched a " + area.terrainType + ", you found";
-          if(area.drops.length > 0){
-            for(var idx3 = 0; idx3 < area.drops.length; idx3++) {
-              if(area.drops.length > 0) {
-                if(area.drops[0].itemType === "weapon") {
-                  player.weapons.push(area.drops[0]);
-                  $("#weapon-descriptions").text(area.drops[0].description);
-                  displayText += " \"" + area.drops[0].name + "\"";
-                  area.drops.shift();
-                  idx3--;
-                } else if(area.drops[0].itemType === "item") {
-                  if(area.drops[0].name === "torch" || area.drops[0].name === "unlitTorch") {
-                    $("#torch").fadeIn("slow");
-                  }
-                  if(area.drops[0].name === "potion") {
-                    var potionAmount = Math.floor((Math.random() * 5) + 1);
-                    for(var idx4 = 0; idx4 < potionAmount; idx4++) {
-                      player.items.push(potion);
+    for(var idx = y; idx < y+3; idx++) {
+      for(var idx2 = x; idx2 < x+3; idx2++) {
+        if(idx === player.y && idx2 === player.x) {
+        } else {
+          var area = mapArrays[idx][idx2];
+          if(area.searchable) {
+            if(area.trapped) {
+              $("#chest-image").hide();
+              $("#search-image").hide();
+              currentEnemy = dragon;
+              combatStarter(currentEnemy);
+              userCommands = ["attack", "potion", "equip"];
+              commandDisplayer();
+              placedMonsterCombat = true;
+              currentEnemyY = 2;
+              currentEnemyX = 4;
+              break searcherBreaker;
+            } else {
+              var displayText = "You searched a " + area.terrainType + ", you found";
+              if(area.drops.length > 0){
+                for(var idx3 = 0; idx3 < area.drops.length; idx3++) {
+                  if(area.drops.length > 0) {
+                    if(area.drops[0].itemType === "weapon") {
+                      player.weapons.push(area.drops[0]);
+                      $("#weapon-descriptions").text(area.drops[0].description);
+                      displayText += " \"" + area.drops[0].name + "\"";
+                      area.drops.shift();
+                      idx3--;
+                    } else if(area.drops[0].itemType === "item") {
+                      if(area.drops[0].name === "torch" || area.drops[0].name === "unlitTorch") {
+                        $("#torch").fadeIn("slow");
+                      }
+                      if(area.drops[0].name === "potion") {
+                        var potionAmount = Math.floor((Math.random() * 5) + 1);
+                        for(var idx4 = 0; idx4 < potionAmount; idx4++) {
+                          player.items.push(potion);
+                        }
+                        area.drops.shift();
+                        idx3--;
+                        player.potionCounter();
+                        displayText += " \"" + "potion" + "(" + potionAmount + ")" + "\"";
+                      } else {
+                        player.items.push(area.drops[0]);
+                        displayText += " \"" + area.drops[0].name + "\"";
+                        area.drops.shift();
+                        idx3--;
+                      }
                     }
-                    area.drops.shift();
-                    idx3--;
-                    player.potionCounter();
-                    displayText += " \"" + "potion" + "(" + potionAmount + ")" + "\"";
-                  } else {
-                    player.items.push(area.drops[0]);
-                    displayText += " \"" + area.drops[0].name + "\"";
-                    area.drops.shift();
-                    idx3--;
                   }
                 }
+                displayText += ". They have been added to your inventory.";
+                player.reviveCounter();
+                player.keyCounter();
+                player.weaponDisplayer();
+                // Make this item display later
+                $("#combat-display").append("<p>" + displayText + "</p>");
+              } else {
+                $("#combat-display").text("The surrounding containers are empty.");
               }
             }
-            displayText += ". They have been added to your inventory.";
-            player.reviveCounter();
-            player.keyCounter();
-            player.weaponDisplayer();
-            // Make this item display later
-            $("#combat-display").append("<p>" + displayText + "</p>");
-          } else {
-            $("#combat-display").text("The surrounding containers are empty.");
           }
         }
       }
     }
+    $("#chest-image").fadeOut("fast");
+    $("#search-image").delay(200).fadeIn("fast");
+    $("#search-image").delay(200).fadeOut("fast");
+    $("#chest-image").delay(600).fadeIn("fast");
+
   }
-  $("#search-image").delay(200).fadeOut("fast");
-  $("#chest-image").delay(600).fadeIn("fast");
 }
 // Function to run for when a player starts combat
 function combatStarter(monster) {
@@ -1689,6 +1705,8 @@ room5.generator = function(player, createdBefore, whereFrom) {
     room.chests[0].x = 5;
     room.monsters[0].y = 2;
     room.monsters[0].x = 4;
+
+    room.chests[0].trapped = true;
 
     var lavaCounter = 0;
     for(var yIdx = 1; yIdx < 9; yIdx++) {
