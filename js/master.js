@@ -129,6 +129,21 @@ function spikeCreator(amount, room) {
     room.spikes.push(spike);
   }
 }
+// Function similar to chestCreator but for firepits
+function firepitCreator(amount, room) {
+  for(var idx = 0; idx < amount; idx++) {
+    var firepit = new Location(-1, -1);
+    firepit.canMove = false;
+    firepit.description = "A shallow depression in the ground, filled with ashes. A few embers still glow brightly in the center.";
+    firepit.terrainType = "firepit";
+    firepit.symbol = "#";
+    firepit.color = "red";
+    firepit.searchable = false;
+    firepit.drops = [];
+
+    room.firepits.push(spike);
+  }
+}
 // Function similar to chestCreator but for placed monsters
 function placedMonsterCreator(type, room) {
   var monster = new Location(-1, -1);
