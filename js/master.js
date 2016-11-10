@@ -345,44 +345,47 @@ function looker(player) {
 function objectUser(player) {
   var y = player.y - 1;
   var x = player.x - 1;
+  var whichTorch = player.torchChecker();
 
-  for(var idx = y; idx < y+3; idx++) {
-    for(var idx2 = x; idx2 < x+3; idx2++) {
-      if(idx === player.y && idx2 === player.x) {
-      } else {
-        var area = mapArrays[idx][idx2];
-        if(area.terrainType === "firepit") {
-          if(player.torchChecker() === "none") {
-            $("#combat-display").text("You reach a hand toward the center of the firepit... Ouch! The faint embers were hotter than they looked. You pull your hand back toward your chest quickly.");
-          } else if(player.torchChecker() === "unlit") {
-            for(var torchIdx = 0; torchIdx < player.items.length; torchIdx++) {
-              if(player.items[torchIdx].name === "unlitTorch") {
-                player.items[torchIdx] = torch;
-              }
-            }
-          } else if(player.torchChecker() === "lit") {
-            $("#combat-display").text("You thrust your lit torch at the firepit, but nothing happens.");
-          } else {
-            $("#combat-display").text("You shouldn't be seeing this message.");
-          }
-        } else if(area.terrainType === "objectSwitch") {
-          if(player.torchChecker() === "none") {
-            $("#combat-display").text("You nudge the stone pillar, climb into the bowl on top, push it with all your might. Nothing happens. You sigh and brush the ashes off your clothing.");
-          } else if(player.torchChecker() === "unlit") {
-            $("#combat-display").text("You prod the stone pillar with your unlit torch, nothing happens. It feels like you're onto something, though.");
-          } else if(player.torchChecker() === "lit") {
-            var switchRoom;
-            if(area.inside === "room3") {
-              switchRoom = room3;
-            } else if(area.inside === "room4") {
-              switchRoom = room4;
-            }
-            roomManipulator(player, switchRoom);
-          } else {
-            $("#combat-display").text("You shouldn't be seeing this message, bro.");
-          }
+  objectLoopBreaker: {
+    for(var idx = y; idx < y+3; idx++) {
+      for(var idx2 = x; idx2 < x+3; idx2++) {
+        if(idx === player.y && idx2 === player.x) {
         } else {
-          $("#combat-display").text("You can't use this object right now.");
+          var area = mapArrays[idx][idx2];
+          if(area.terrainType === "firepit") {
+            if(whichTorch === "none") {
+              $("#combat-display").text("You reach a hand toward the center of the firepit... Ouch! The faint embers were hotter than they looked. You pull your hand back toward your chest quickly.");
+            } else if(whichTorch === "unlit") {
+              for(var torchIdx = 0; torchIdx < player.items.length; torchIdx++) {
+                if(player.items[torchIdx].name === "unlitTorch") {
+                  player.items[torchIdx] = torch;
+                }
+              }
+              $("#combat-display").text("You touch your unlit torch to the embers...your previously unlit torch springs to life with a whoosh.");
+            } else if(whichTorch === "lit") {
+              $("#combat-display").text("You thrust your lit torch at the firepit, but nothing happens.");
+            } else {
+              $("#combat-display").text("You shouldn't be seeing this message.");
+            }
+          } else if(area.terrainType === "objectSwitch") {
+            if(whichTorch === "none") {
+              $("#combat-display").text("You nudge the stone pillar, climb into the bowl on top, push it with all your might. Nothing happens. You sigh and brush the ashes off your clothing.");
+            } else if(whichTorch === "unlit") {
+              $("#combat-display").text("You prod the stone pillar with your unlit torch, nothing happens. It feels like you're onto something, though.");
+            } else if(whichTorch === "lit") {
+              $("#combat-display").text("You touch your torch's flame to the stone bowl atop the pillar. A groaning sound echoes through the room as somewhere some hidden mechanism activates.");
+              var switchRoom;
+              if(area.inside === "room3") {
+                switchRoom = "room3";
+              } else if(area.inside === "room4") {
+                switchRoom = "room4";
+              }
+              roomManipulator(player, switchRoom);
+            } else {
+              $("#combat-display").text("You shouldn't be seeing this message, bro.");
+            }
+          }
         }
       }
     }
@@ -1200,10 +1203,10 @@ var torch = new Item("torch", 0, 0, false);
 torch.description = "A lit torch";
 
 // ROOM GENERATION BELOW THIS LINE
-function roomManipulator(player, room) {
+function roomManipulator(player, roomName) {
   var savedPlayerY = player.y;
   var savedPlayerX = player.x;
-  if(room.name === "room3") {
+  if(roomName === "room3") {
     room.switched = true;
     room.generator(player, false);
     mapArrays[player.y][player.x].playerHere = false;
@@ -1211,7 +1214,7 @@ function roomManipulator(player, room) {
     player.x = savedPlayerX;
     playerDisplayer(player);
     surroundingChecker(player);
-  } else if(room.name === "room4") {
+  } else if(roomName === "room4") {
     room.switched = true;
     room.generator(player, false);
     mapArrays[player.y][player.x].playerHere = false;
@@ -1408,6 +1411,7 @@ room3.generator = function(player, createdBefore, whereFrom) {
       chestCreator(2, room);
       placedMonsterCreator("golem", room);
       waterCreator(8, room);
+      objectSwitchCreator(1, room);
     }
     room.doors[0].y = 0;
     room.doors[0].x = 1;
@@ -1435,6 +1439,8 @@ room3.generator = function(player, createdBefore, whereFrom) {
     room.waters[6].x = 7;
     room.waters[7].y = 3;
     room.waters[7].x = 8;
+    room.switches[0].y = 6;
+    room.switches[0].x = 3;
 
     mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
     mapArrays[room.doors[1].y][room.doors[1].x] = room.doors[1];
@@ -1447,6 +1453,7 @@ room3.generator = function(player, createdBefore, whereFrom) {
     mapArrays[room.waters[3].y][room.waters[3].x] = room.waters[3];
     mapArrays[room.waters[5].y][room.waters[5].x] = room.waters[5];
     mapArrays[room.waters[6].y][room.waters[6].x] = room.waters[6];
+    mapArrays[room.switches[0].y][room.switches[0].x] = room.switches[0];
     if(room.switched === false) {
       mapArrays[room.waters[4].y][room.waters[4].x] = room.waters[4];
       mapArrays[room.waters[7].y][room.waters[7].x] = room.waters[7];
