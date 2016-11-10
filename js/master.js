@@ -324,6 +324,10 @@ function looker(player) {
 
   $("#combat-display").text(detailString);
 }
+// function similar to surroundingChecker, to run when user inputs a use command
+function objectUser(player) {
+  
+}
 // Function similar to surroundingChecker, to run when user inputs an open door command
 function doorOpener(player) {
   $("#combat-display").empty();
@@ -1721,6 +1725,10 @@ $(function() {
               doorOpener(testPlayer);
             } else if(userInput === "fight") {
               fighter(testPlayer);
+            } else if(userInput === "use") {
+              if(testPlayer.torchChecker() === "none") {
+                $("#combat-display").text("You reach your hand out toward the embers... Ouch! The firepit is hotter than you expected.");
+              }
             } else {
               $("#combat-display").text("You can't do that.");
             }
