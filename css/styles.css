@@ -35,6 +35,7 @@ p{
 }
 #room-description{
   margin-top: -10px;
+  display: none;
 }
 #room-description p {
   width: 240px;
@@ -207,13 +208,20 @@ margin: 20px 0px -20px -10px;
   box-shadow: 5px 5px 15px #222;
   background-image: url("../img/hero-image.jpg");
   border-radius: 15px;
+  display: none;
 }
-
+#hero-health {
+  display: none;
+}
 #hero-health-number {
   text-align: center;
+  display: none;
 }
 
 /* ----   Weapons   ----*/
+#weapons-label {
+  display: none;
+}
 #weapons {
 width: 240px;
 height:250px;
@@ -221,6 +229,7 @@ background-color: #111;
 border-radius: 15px;
 box-shadow: 5px 5px 15px #222;
 padding: 10px 8px 6px 8px ;
+display: none;
 }
 #weapons p {
   font-size: 1em;
@@ -249,6 +258,9 @@ padding: 10px 8px 6px 8px ;
   display:none;
 }
 /* ----   Items   ----*/
+#items-label {
+  display: none;
+}
 #items {
   width: 240px;
   height: 375px;
@@ -256,6 +268,7 @@ padding: 10px 8px 6px 8px ;
   border-radius: 15px;
   box-shadow: 5px 5px 15px #222;
   padding: 10px 8px 6px 8px ;
+  display: none;
 }
 #items p {
   font-size: 1em;
@@ -367,6 +380,7 @@ margin: 20px 0px 0px 0px;
 border-radius: 15px;
 padding: 40px 20px;
 padding-left: 50px;
+display: none;
 }
 #map p {
   letter-spacing: 40px;

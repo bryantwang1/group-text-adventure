@@ -645,15 +645,6 @@ function combatEnder() {
   $("#room-description").show();
   surroundingChecker(testPlayer);
 }
-// Hard coded to use testPlayer y and x for now
-function gameEnder() {
-  $("#room-description").hide();
-  $("#map").fadeOut("slow");
-  $("#victory-image").delay(600).fadeIn("slow");
-  userCommands = ["continue", "restart"];
-  commandDisplayer();
-  $("#combat-display").text("Congratulations, you finished the game! Would you like to continue playing with this character or restart the game?");
-}
 // Function for the flee command
 function playerFlee(player) {
   var fleeChance = Math.floor((Math.random() * 10) + 1);
@@ -1293,6 +1284,28 @@ function roomManipulator(player, roomName) {
     surroundingChecker(player);
   }
 }
+// Hard coded to use testPlayer y and x for now
+function gameEnder() {
+  $("#room-description").hide();
+  $("#map").fadeOut("slow");
+  $("#victory-image").delay(600).fadeIn("slow");
+  userCommands = ["continue", "restart"];
+  commandDisplayer();
+  $("#combat-display").text("Congratulations, you finished the game! Would you like to continue playing with this character or restart the game?");
+}
+
+function gameStarter(player) {
+  $("#room-description").fadeIn("slow");
+  $("#map").fadeIn("slow");
+  $("#hero-image").fadeIn("slow");
+  $("#hero-health-number").fadeIn("slow");
+  $("#hero-health").fadeIn("slow");
+  $("#weapons-label").fadeIn("slow");
+  $("#weapons").fadeIn("slow");
+  $("#items-label").fadeIn("slow");
+  $("#items").fadeIn("slow");
+  surroundingChecker(player);
+}
 
 var room1 = new Room("room1");
 room1.displayName = "Entry Hall";
@@ -1819,6 +1832,8 @@ $(function() {
   testPlayer.potionCounter();
   testPlayer.reviveCounter();
   testPlayer.keyCounter();
+  userCommands = ["start"]
+  commandDisplayer();
 
   // Code to make arrow keys work to move
   $(document).on("keydown", function(event) {
@@ -1939,7 +1954,9 @@ $(function() {
               surroundingChecker(testPlayer);
             } else if(userInput === "restart") {
               window.location.reload();
-            } else {
+            } else if(userInput === "start") {
+              gameStarter(testPlayer);
+            }else {
               $("#combat-display").text("You can't do that.");
             }
           } else {
