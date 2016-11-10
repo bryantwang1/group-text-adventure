@@ -21,6 +21,7 @@ function Room(roomName) {
   this.lavas = [];
   this.spikes = [];
   this.firepits = [];
+  this.switches = [];
 }
 
 Room.prototype.displayer = function() {
@@ -145,6 +146,22 @@ function firepitCreator(amount, room) {
     room.firepits.push(firepit);
   }
 }
+// function similar to chestCreator but for switch objects
+function objectSwitchCreator(amount, room) {
+  for(var idx = 0; idx < amount; idx++) {
+    var objectSwitch = new Location(-1, -1);
+    objectSwitch.canMove = false;
+    objectSwitch.description = "A stone pillar about chest-high, topped with a stone bowl that shows signs of intense heat";
+    objectSwitch.terrainType = "objectSwitch";
+    objectSwitch.symbol = "/";
+    objectSwitch.color = "red";
+    objectSwitch.searchable = false;
+    objectSwitch.drops = [];
+    objectSwitch.inside = "";
+
+    room.switches.push(objectSwitch);
+  }
+}
 // Function similar to chestCreator but for placed monsters
 function placedMonsterCreator(type, room) {
   var monster = new Location(-1, -1);
@@ -266,6 +283,8 @@ function surroundingChecker(player) {
   var y = player.y - 1;
 	var x = player.x - 1;
   userCommands = ["equip", "potion", "look"];
+  var chestFound = false;
+  var doorFound = false;
 
   for(var idx = y; idx < y+3; idx++) {
   	for(var idx2 = x; idx2 < x+3; idx2++) {
@@ -274,6 +293,7 @@ function surroundingChecker(player) {
       } else {
       	var area = mapArrays[idx][idx2];
         if(area.searchable) {
+          chestFound = true;
           if(userCommands.includes("search")) {
           } else {
           userCommands.push("search");
@@ -286,12 +306,13 @@ function surroundingChecker(player) {
           }
         }
         if(area.terrainType === "door") {
+          doorFound = true;
           if(userCommands.includes("open door")) {
           } else {
           userCommands.push("open door");
           }
         }
-        if(area.terrainType === "firepit") {
+        if(area.terrainType === "firepit" || area.terrainType === "objectSwitch") {
           if(userCommands.includes("use")) {
           } else {
           userCommands.push("use");
@@ -300,6 +321,16 @@ function surroundingChecker(player) {
         // Add more later
     	}
     }
+  }
+  if(chestFound) {
+    $("#door-image").hide();
+    $("#chest-image").fadeIn("fast");
+  } else if(doorFound) {
+    $("#chest-image").hide();
+    $("#door-image").fadeIn("fast");
+  } else {
+    $("#door-image").fadeOut("fast");
+    $("#chest-image").fadeOut("fast");
   }
   commandDisplayer();
 }
@@ -328,30 +359,48 @@ function looker(player) {
 function objectUser(player) {
   var y = player.y - 1;
   var x = player.x - 1;
+  var whichTorch = player.torchChecker();
 
-  for(var idx = y; idx < y+3; idx++) {
-    for(var idx2 = x; idx2 < x+3; idx2++) {
-      if(idx === player.y && idx2 === player.x) {
-      } else {
-        var area = mapArrays[idx][idx2];
-        if(area.terrainType === firepit) {
-          if(player.torchChecker() === "none") {
-            $("#combat-display").text("You reach a hand toward the center of the firepit... Ouch! The faint embers were hotter than they looked. You pull your hand back toward your chest quickly.");
-          } else if (player.torchChecker() === "unlit") {
-            for(var torchIdx = 0; torchIdx < player.items.length; torchIdx++) {
-              if(player.items[torchIdx].name === "unlitTorch") {
-                player.items[torchIdx] = torch;
-              }
-            }
-          } else if (player.torchChecker() === "lit") {
-            $("#combat-display").text("You thrust your lit torch at the firepit, but nothing happens.");
-          } else {
-            $("#combat-display").text("You shouldn't be seeing this message.");
-          }
-        } else if (area.terrainType === objectSwitch) {
-
+  objectLoopBreaker: {
+    for(var idx = y; idx < y+3; idx++) {
+      for(var idx2 = x; idx2 < x+3; idx2++) {
+        if(idx === player.y && idx2 === player.x) {
         } else {
-          $("#combat-display").text("You can't use this object right now.");
+          var area = mapArrays[idx][idx2];
+          if(area.terrainType === "firepit") {
+            if(whichTorch === "none") {
+              $("#combat-display").text("You reach a hand toward the center of the firepit... Ouch! The faint embers were hotter than they looked. You pull your hand back toward your chest quickly.");
+            } else if(whichTorch === "unlit") {
+              for(var torchIdx = 0; torchIdx < player.items.length; torchIdx++) {
+                if(player.items[torchIdx].name === "unlitTorch") {
+                  player.items[torchIdx] = torch;
+                }
+              }
+              $("#combat-display").text("You touch your unlit torch to the embers...your previously unlit torch springs to life with a whoosh.");
+            } else if(whichTorch === "lit") {
+              $("#combat-display").text("You thrust your lit torch at the firepit, but nothing happens.");
+            } else {
+              $("#combat-display").text("You shouldn't be seeing this message.");
+            }
+          } else if(area.terrainType === "objectSwitch") {
+            if(whichTorch === "none") {
+              $("#combat-display").text("You nudge the stone pillar, climb into the bowl on top, push it with all your might. Nothing happens. You sigh and brush the ashes off your clothing.");
+            } else if(whichTorch === "unlit") {
+              $("#combat-display").text("You prod the stone pillar with your unlit torch, nothing happens. It feels like you're onto something, though.");
+            } else if(whichTorch === "lit") {
+              $("#combat-display").text("You touch your torch's flame to the stone bowl atop the pillar. A groaning sound echoes through the room as somewhere some hidden mechanism activates.");
+              var switchRoom = "";
+              if(area.inside === "room3") {
+                switchRoom = "room3";
+              } else if(area.inside === "room4") {
+                switchRoom = "room4";
+              }
+              console.log("about to run room manipulator: " + switchRoom);
+              roomManipulator(player, switchRoom);
+            } else {
+              $("#combat-display").text("You shouldn't be seeing this message, bro.");
+            }
+          }
         }
       }
     }
@@ -443,55 +492,81 @@ function roomMover(player, doorLocation, firstTime) {
 // Function similar to surroundingChecker, to run when user inputs a search command.
 function searcher(player) {
   // Make this item display later
-  $("#combat-display").empty();
-  var y = player.y - 1;
-	var x = player.x - 1;
+  searcherBreaker: {
+    $("#combat-display").empty();
+    var y = player.y - 1;
+    var x = player.x - 1;
 
-  for(var idx = y; idx < y+3; idx++) {
-  	for(var idx2 = x; idx2 < x+3; idx2++) {
-      if(idx === player.y && idx2 === player.x) {
-      } else {
-        var area = mapArrays[idx][idx2];
-        if(area.searchable) {
-          var displayText = "You searched a " + area.terrainType + ", you found";
-          var howLong = area.drops.length;
-          if(howLong > 0){
-            for(var idx3 = 0; idx3 < howLong; idx3++) {
-              if(area.drops.length > 0) {
-                if(area.drops[0].itemType === "weapon") {
-                  player.weapons.push(area.drops[0]);
-                  $("#weapon-descriptions").text(area.drops[0].description);
-                  displayText += " \"" + area.drops[0].name + "\"";
-                  area.drops.shift();
-                } else if(area.drops[0].itemType === "item") {
-                  if(area.drops[0].name === "potion") {
-                    var potionAmount = Math.floor((Math.random() * 5) + 1);
-                    for(var idx4 = 0; idx4 < potionAmount; idx4++) {
-                      player.items.push(potion);
+    for(var idx = y; idx < y+3; idx++) {
+      for(var idx2 = x; idx2 < x+3; idx2++) {
+        if(idx === player.y && idx2 === player.x) {
+        } else {
+          var area = mapArrays[idx][idx2];
+          if(area.searchable) {
+            if(area.trapped) {
+              area.trapped = false;
+              $("#chest-image").hide();
+              $("#search-image").hide();
+              currentEnemy = dragon;
+              combatStarter(currentEnemy);
+              userCommands = ["attack", "potion", "equip"];
+              commandDisplayer();
+              placedMonsterCombat = true;
+              currentEnemyY = 2;
+              currentEnemyX = 4;
+              break searcherBreaker;
+            } else {
+              var displayText = "You searched a " + area.terrainType + ", you found";
+              if(area.drops.length > 0){
+                for(var idx3 = 0; idx3 < area.drops.length; idx3++) {
+                  if(area.drops.length > 0) {
+                    if(area.drops[0].itemType === "weapon") {
+                      player.weapons.push(area.drops[0]);
+                      $("#weapon-descriptions").text(area.drops[0].description);
+                      displayText += " \"" + area.drops[0].name + "\"";
                       area.drops.shift();
+                      idx3--;
+                    } else if(area.drops[0].itemType === "item") {
+                      if(area.drops[0].name === "torch" || area.drops[0].name === "unlitTorch") {
+                        $("#torch").fadeIn("slow");
+                      }
+                      if(area.drops[0].name === "potion") {
+                        var potionAmount = Math.floor((Math.random() * 5) + 1);
+                        for(var idx4 = 0; idx4 < potionAmount; idx4++) {
+                          player.items.push(potion);
+                        }
+                        area.drops.shift();
+                        idx3--;
+                        player.potionCounter();
+                        displayText += " \"" + "potion" + "(" + potionAmount + ")" + "\"";
+                      } else {
+                        player.items.push(area.drops[0]);
+                        displayText += " \"" + area.drops[0].name + "\"";
+                        area.drops.shift();
+                        idx3--;
+                      }
                     }
-                    player.potionCounter();
-                    displayText += " \"" + "potion" + "(" + potionAmount + ")" + "\"";
-                  } else {
-                    player.items.push(area.drops[0]);
-                    displayText += " \"" + area.drops[0].name + "\"";
-                    area.drops.shift();
                   }
                 }
+                displayText += ". They have been added to your inventory.";
+                player.reviveCounter();
+                player.keyCounter();
+                player.weaponDisplayer();
+                // Make this item display later
+                $("#combat-display").append("<p>" + displayText + "</p>");
+              } else {
+                $("#combat-display").text("The surrounding containers are empty.");
               }
             }
-            displayText += ". They have been added to your inventory.";
-            player.reviveCounter();
-            player.keyCounter();
-            player.weaponDisplayer();
-            // Make this item display later
-            $("#combat-display").append("<p>" + displayText + "</p>");
-          } else {
-            $("#combat-display").text("The surrounding containers are empty.");
           }
         }
       }
     }
+    $("#chest-image").fadeOut("fast");
+    $("#search-image").delay(200).fadeIn("fast");
+    $("#search-image").delay(200).fadeOut("fast");
+    $("#chest-image").delay(600).fadeIn("fast");
+
   }
 }
 // Function to run for when a player starts combat
@@ -503,6 +578,9 @@ function combatStarter(monster) {
   $("#monster-description").text(monster.description);
   $("#monster-name").text(monsterName);
   $("#room-description").hide();
+  $("#search-image").hide();
+  $("#chest-image").hide();
+  $("#door-image").hide();
   $("#monster-health").show();
   $("#monster-health-number").show();
   $("#" + monster.name + "-image").show();
@@ -556,7 +634,7 @@ function combatEnder() {
   var playerTile = mapArrays[testPlayer.y][testPlayer.x];
   playerTile.monsterHere = false;
   currentEnemy.statReset();
-  $("#" + currentEnemy.name + "-image").fadeOut("slow");
+  $("#" + currentEnemy.name + "-image").hide();;
   currentEnemy = {};
   playerInCombat = false;
   $("#monster-description").text("");
@@ -564,8 +642,17 @@ function combatEnder() {
   $("#monster-sounds").text("");
   $("#monster-health-number").hide();
   $("#monster-health").hide();
-  $("#room-description").delay(800).fadeIn("slow");
+  $("#room-description").show();
   surroundingChecker(testPlayer);
+}
+// Hard coded to use testPlayer y and x for now
+function gameEnder() {
+  $
+  $("#room-description").hide();
+  $("#map").fadeOut("slow");
+  userCommands = ["continue", "restart"];
+  commandDisplayer();
+  $("#combat-display").text("Congratulations, you finished the game! Would you like to continue playing with this character or restart the game?");
 }
 // Function for the flee command
 function playerFlee(player) {
@@ -653,6 +740,8 @@ Player.prototype.reviver = function() {
       if(currentEnemy !== dragon && currentEnemy !== superGolem) {
         combatEnder();
       }
+      userCommands = ["attack", "flee", "potion", "equip"];
+      commandDisplayer();
       $("#combat-display").text("Before you breathe no more you manage to empty your revival potion into your throat. As the darkness of death lifts, you are comforted by the knowledge that death’s door will not shut on you…this time. ");
       $("#death-message").fadeOut("slow");
       $("#map").delay(600).fadeIn("slow");
@@ -752,17 +841,16 @@ Player.prototype.equipWeapon = function(string) {
 }
 
 Player.prototype.torchChecker = function() {
+  var torchType = "none";
   for(var idx = 0; idx < this.items.length; idx++) {
-    if(this.items[idx].name === "torch") {
-      return "lit";
-      break;
+    if(this.items[idx].name !== "torch" && this.items[idx].name !== "unlitTorch") {
+    } else if(this.items[idx].name === "torch") {
+      torchType = "lit";
     } else if(this.items[idx].name === "unlitTorch") {
-      return "unlit";
-      break;
-    } else {
-      return "none";
+      torchType = "unlit";
     }
   }
+  return torchType;
 }
 
 Player.prototype.potionCounter = function() {
@@ -963,6 +1051,7 @@ Monster.prototype.statReset = function() {
 
 // Prototype method for monsters to take damage. Changes alive property to false if their currentHealth falls to 0 or below. Hard coded testPlayer in for potions.
 Monster.prototype.takeDamage = function(damageAmount) {
+  var dragonSaver = currentEnemy;
 	this.currentHealth -= damageAmount;
   this.healthBar();
   $("#combat-display").append("<p>You attack with " + damageAmount + " damage, the monster's health is " + this.currentHealth + ".</p>");
@@ -990,6 +1079,9 @@ Monster.prototype.takeDamage = function(damageAmount) {
     } else {
       $("#combat-display").text("The monster is dead!");
     }
+    if(dragonSaver.name === "dragon") {
+      gameEnder();
+    }
   }
 }
 
@@ -1004,8 +1096,12 @@ Monster.prototype.restoreHealth = function(healthAmount) {
 // Example of a function for a chance to hit a monster instead of a sure hit.
 function attack(damage, target) {
 	// Generates and stores a random number from 1 to 10.
+  $("#room-description").hide();
+  $("#search-image").hide();
+  $("#chest-image").hide();
+  $("#door-image").hide();
+  // hide room description on attack in case it bugs out and is showing
 	var hitChance = Math.floor(Math.random() * 10) + 1;
-  console.log("The hit chance was: " + hitChance);
   var defense = target.defense;
 
   if(hitChance <= defense) {
@@ -1132,7 +1228,7 @@ warHammer.description = "War hammer description: A well-weighted and scratched w
 this.image = "images/###.jpg";
 
 var mysticBow = new Weapon("mystic bow", 26, 28, 40);
-warHammer.description = "This mystic bow seems to be strung with something valuable as gold but strong as iron. A long range weapon that delivers blows with precision. Slightly less damage potential than the metal sword but much more consistent. A well aimed shot can ultimately be more effective than the slash from a sword.";
+mysticBow.description = "This mystic bow seems to be strung with something valuable as gold but strong as iron. A long range weapon that delivers blows with precision. Slightly less damage potential than the metal sword but much more consistent. A well aimed shot can ultimately be more effective than the slash from a sword.";
 this.image = "images/###.jpg";
 
 // Constructor for items
@@ -1170,10 +1266,34 @@ var torch = new Item("torch", 0, 0, false);
 torch.description = "A lit torch";
 
 // ROOM GENERATION BELOW THIS LINE
+function roomManipulator(player, roomName) {
+  console.log("running room manip");
+  var savedPlayerY = player.y;
+  var savedPlayerX = player.x;
+  if(roomName === "room3") {
+    room3.switched = true;
+    room3.generator(player, false);
+    mapArrays[player.y][player.x].playerHere = false;
+    player.y = savedPlayerY;
+    player.x = savedPlayerX;
+    mapDisplayer();
+    playerDisplayer(player);
+    surroundingChecker(player);
+  } else if(roomName === "room4") {
+    room4.switched = true;
+    room4.generator(player, false);
+    mapArrays[player.y][player.x].playerHere = false;
+    player.y = savedPlayerY;
+    player.x = savedPlayerX;
+    mapDisplayer();
+    playerDisplayer(player);
+    surroundingChecker(player);
+  }
+}
 
 var room1 = new Room("room1");
-room1.displayName = "It begins...";
-room1.description = "Filler description for room 1";
+room1.displayName = "Entry Hall";
+room1.description = "You're standing in a large, dark room. The stone floor and walls vanish into the gloom. Next to you rest a few old chests, and unless you’re mistaken something behind you is radiating warmth. You can barely make out something else in the distance. Did it just move?";
 rooms.push(room1);
 // This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide true.
 room1.generator = function(player, createdBefore, whereFrom) {
@@ -1256,8 +1376,8 @@ room1.generator = function(player, createdBefore, whereFrom) {
 }
 
 var room2 = new Room("room2");
-room2.displayName = "It continues...";
-room2.description = "Filler description for room 2";
+room2.displayName = "The Room of Despair";
+room2.description = "The door slams behind you and you find yourself in another space. Somewhere off to your right something makes a noise, and then all is silent again. The walls are closer in than before, and there’s no obvious exit. Hopefully there's another door around here somewhere, but will it require another key?";
 rooms.push(room2);
 room2.generator = function(player, createdBefore, whereFrom) {
   $("#audio").empty();
@@ -1268,6 +1388,7 @@ room2.generator = function(player, createdBefore, whereFrom) {
       doorCreator(2, room);
       chestCreator(4, room);
       firepitCreator(1, room);
+      spikeCreator(4, room);
     }
     room.doors[0].y = 0;
     room.doors[0].x = 5;
@@ -1283,6 +1404,14 @@ room2.generator = function(player, createdBefore, whereFrom) {
     room.chests[3].x = 8;
     room.firepits[0].y = 1;
     room.firepits[0].x = 8;
+    room.spikes[0].y = 7;
+    room.spikes[0].x = 1;
+    room.spikes[1].y = 7;
+    room.spikes[1].x = 2;
+    room.spikes[2].y = 7;
+    room.spikes[2].x = 7;
+    room.spikes[3].y = 8;
+    room.spikes[3].x = 7;
 
     mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
     mapArrays[room.doors[1].y][room.doors[1].x] = room.doors[1];
@@ -1291,6 +1420,10 @@ room2.generator = function(player, createdBefore, whereFrom) {
     mapArrays[room.chests[2].y][room.chests[2].x] = room.chests[2];
     mapArrays[room.chests[3].y][room.chests[3].x] = room.chests[3];
     mapArrays[room.firepits[0].y][room.firepits[0].x] = room.firepits[0];
+    mapArrays[room.spikes[0].y][room.spikes[0].x] = room.spikes[0];
+    mapArrays[room.spikes[1].y][room.spikes[1].x] = room.spikes[1];
+    mapArrays[room.spikes[2].y][room.spikes[2].x] = room.spikes[2];
+    mapArrays[room.spikes[3].y][room.spikes[3].x] = room.spikes[3];
 
     miniWallMaker(2, 4);
     miniWallMaker(2, 5);
@@ -1312,7 +1445,7 @@ room2.generator = function(player, createdBefore, whereFrom) {
     room.doors[1].fromWhere = "room2";
 
     room.chests[0].drops.push(potion);
-    room.chests[1].drops.push();
+    room.chests[1].drops.push(metalSword);
     room.chests[2].drops.push(key);
     room.chests[3].drops.push();
   }
@@ -1343,8 +1476,9 @@ room2.generator = function(player, createdBefore, whereFrom) {
 }
 
 var room3 = new Room("room3");
-room3.displayName = "Room 3";
-room3.description = "Filler description for room 3";
+room3.displayName = "The Slightly Puzzling Room";
+room3.description = "You hear water, and it’s not just a trickle. Your normal poor visibility is worse than usual, as a mist seems to cling to everything. You hear some sort of mechanical grinding for a few seconds, but then it shudders to a halt. A new menace? Or a help?";
+room3.switched = false;
 rooms.push(room3);
 room3.generator = function(player, createdBefore, whereFrom) {
   $("#audio").empty();
@@ -1356,6 +1490,7 @@ room3.generator = function(player, createdBefore, whereFrom) {
       chestCreator(2, room);
       placedMonsterCreator("golem", room);
       waterCreator(8, room);
+      objectSwitchCreator(1, room);
     }
     room.doors[0].y = 0;
     room.doors[0].x = 1;
@@ -1383,6 +1518,8 @@ room3.generator = function(player, createdBefore, whereFrom) {
     room.waters[6].x = 7;
     room.waters[7].y = 3;
     room.waters[7].x = 8;
+    room.switches[0].y = 6;
+    room.switches[0].x = 3;
 
     mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
     mapArrays[room.doors[1].y][room.doors[1].x] = room.doors[1];
@@ -1393,10 +1530,13 @@ room3.generator = function(player, createdBefore, whereFrom) {
     mapArrays[room.waters[1].y][room.waters[1].x] = room.waters[1];
     mapArrays[room.waters[2].y][room.waters[2].x] = room.waters[2];
     mapArrays[room.waters[3].y][room.waters[3].x] = room.waters[3];
-    mapArrays[room.waters[4].y][room.waters[4].x] = room.waters[4];
     mapArrays[room.waters[5].y][room.waters[5].x] = room.waters[5];
     mapArrays[room.waters[6].y][room.waters[6].x] = room.waters[6];
-    mapArrays[room.waters[7].y][room.waters[7].x] = room.waters[7];
+    mapArrays[room.switches[0].y][room.switches[0].x] = room.switches[0];
+    if(room.switched === false) {
+      mapArrays[room.waters[4].y][room.waters[4].x] = room.waters[4];
+      mapArrays[room.waters[7].y][room.waters[7].x] = room.waters[7];
+    }
 
     miniWallMaker(5,2);
     miniWallMaker(5,3);
@@ -1413,8 +1553,10 @@ room3.generator = function(player, createdBefore, whereFrom) {
     room.doors[1].leadsTo = "room2";
     room.doors[1].fromWhere = "room3";
 
-    room.chests[0].drops.push(potion, unlitTorch, key);
     room.chests[0].drops.push(mysticBow, revive);
+    room.chests[1].drops.push(potion, unlitTorch, warHammer, key);
+
+    room.switches[0].inside = "room3";
   }
 
   mapCreator(10,10);
@@ -1443,8 +1585,9 @@ room3.generator = function(player, createdBefore, whereFrom) {
 }
 
 var room4 = new Room("room4");
-room4.displayName = "Room 4";
-room4.description = "Filler description for room 4";
+room4.displayName = "The Maze Room";
+room4.description = "A maze of columns, spike traps, and walls lies before you. You hear some sort of rustling in a far hallway, and you almost think you hear a great rumbling sigh somewhere. Surely that couldn’t involve you. Surely.";
+room4.switched = false;
 rooms.push(room4);
 room4.generator = function(player, createdBefore, whereFrom) {
   $("#audio").empty();
@@ -1455,6 +1598,7 @@ room4.generator = function(player, createdBefore, whereFrom) {
       doorCreator(2, room);
       chestCreator(2, room);
       spikeCreator(6, room);
+      objectSwitchCreator(1, room);
     }
     room.doors[0].y = 0;
     room.doors[0].x = 1;
@@ -1476,6 +1620,8 @@ room4.generator = function(player, createdBefore, whereFrom) {
     room.spikes[4].x = 4;
     room.spikes[5].y = 7;
     room.spikes[5].x = 6;
+    room.switches[0].y = 7;
+    room.switches[0].x = 8;
     //switch at y=7,x=8
     //removable wall at y=7,x=1
 
@@ -1489,6 +1635,7 @@ room4.generator = function(player, createdBefore, whereFrom) {
     mapArrays[room.spikes[3].y][room.spikes[3].x] = room.spikes[3];
     mapArrays[room.spikes[4].y][room.spikes[4].x] = room.spikes[4];
     mapArrays[room.spikes[5].y][room.spikes[5].x] = room.spikes[5];
+    mapArrays[room.switches[0].y][room.switches[0].x] = room.switches[0]
 
     miniWallMaker(2,2);
     miniWallMaker(2,3);
@@ -1509,6 +1656,10 @@ room4.generator = function(player, createdBefore, whereFrom) {
     miniWallMaker(7,3);
     miniWallMaker(7,5);
     miniWallMaker(7,7);
+
+    if(room.switched === false) {
+      miniWallMaker(7,1);
+    }
   }
   function itemFiller() {
     room.doors[0].locked = true;
@@ -1517,8 +1668,10 @@ room4.generator = function(player, createdBefore, whereFrom) {
     room.doors[0].fromWhere = "room4";
     room.doors[1].leadsTo = "room3";
     room.doors[1].fromWhere = "room4";
+    room.switches[0].inside = "room4";
 
-    room.chests[0].drops.push(potion);
+    room.chests[0].drops.push(potion, potion, revive);
+    room.chests[1].drops.push(revive, key);
   }
 
   mapCreator(10,10);
@@ -1547,8 +1700,8 @@ room4.generator = function(player, createdBefore, whereFrom) {
 }
 
 var room5 = new Room("room5");
-room5.displayName = "Room 5";
-room5.description = "Filler description for room 5";
+room5.displayName = "The Treasure Room";
+room5.description = "As you pass through the door, a warm, red glow envelopes you. Soon you realize why: The entire room is filled with a bed of lava. A narrow stone bridge arches above the lava to a wider platform, at the center of which slumbers a huge scaly beast, its tail curling protectively around a large chest beside it."
 rooms.push(room5);
 room5.generator = function(player, createdBefore, whereFrom) {
   $("#audio").empty();
@@ -1566,6 +1719,8 @@ room5.generator = function(player, createdBefore, whereFrom) {
     room.chests[0].x = 5;
     room.monsters[0].y = 2;
     room.monsters[0].x = 4;
+
+    room.chests[0].trapped = true;
 
     var lavaCounter = 0;
     for(var yIdx = 1; yIdx < 9; yIdx++) {
@@ -1754,9 +1909,7 @@ $(function() {
             } else if(userInput === "fight") {
               fighter(testPlayer);
             } else if(userInput === "use") {
-              if(testPlayer.torchChecker() === "none") {
-                $("#combat-display").text("You reach your hand out toward the embers... Ouch! The firepit is hotter than you expected.");
-              }
+              objectUser(testPlayer);
             } else {
               $("#combat-display").text("You can't do that.");
             }
