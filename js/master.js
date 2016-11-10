@@ -142,7 +142,7 @@ function firepitCreator(amount, room) {
     firepit.searchable = false;
     firepit.drops = [];
 
-    room.firepits.push(spike);
+    room.firepits.push(firepit);
   }
 }
 // Function similar to chestCreator but for placed monsters
