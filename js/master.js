@@ -647,6 +647,7 @@ function combatEnder() {
 }
 // Hard coded to use testPlayer y and x for now
 function gameEnder() {
+  $
   $("#room-description").hide();
   $("#map").fadeOut("slow");
   userCommands = ["continue", "restart"];
@@ -1050,6 +1051,7 @@ Monster.prototype.statReset = function() {
 
 // Prototype method for monsters to take damage. Changes alive property to false if their currentHealth falls to 0 or below. Hard coded testPlayer in for potions.
 Monster.prototype.takeDamage = function(damageAmount) {
+  var dragonSaver = currentEnemy;
 	this.currentHealth -= damageAmount;
   this.healthBar();
   $("#combat-display").append("<p>You attack with " + damageAmount + " damage, the monster's health is " + this.currentHealth + ".</p>");
@@ -1076,6 +1078,9 @@ Monster.prototype.takeDamage = function(damageAmount) {
       $("#combat-display").text("The monster is dead! You find a potion on its mangled corpse.");
     } else {
       $("#combat-display").text("The monster is dead!");
+    }
+    if(dragonSaver.name === "dragon") {
+      gameEnder();
     }
   }
 }
