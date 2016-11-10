@@ -1280,8 +1280,9 @@ room3.generator = function(player, createdBefore, whereFrom) {
   function itemPlacer(runCreator) {
     if(runCreator) {
       doorCreator(2, room);
-      chestCreator(1, room);
+      chestCreator(2, room);
       placedMonsterCreator("golem", room);
+      waterCreator(8, room);
     }
     room.doors[0].y = 0;
     room.doors[0].x = 1;
@@ -1289,13 +1290,47 @@ room3.generator = function(player, createdBefore, whereFrom) {
     room.doors[1].x = 8;
     room.chests[0].y = 1;
     room.chests[0].x = 8;
+    room.chests[1].y = 8;
+    room.chests[1].x = 1;
     room.monsters[0].y = 5;
     room.monsters[0].x = 1;
+    room.waters[0].y = 1;
+    room.waters[0].x = 6;
+    room.waters[1].y = 1;
+    room.waters[1].x = 7;
+    room.waters[2].y = 2;
+    room.waters[2].x = 6;
+    room.waters[3].y = 2;
+    room.waters[3].x = 7;
+    room.waters[4].y = 2;
+    room.waters[4].x = 8;
+    room.waters[5].y = 3;
+    room.waters[5].x = 6;
+    room.waters[6].y = 3;
+    room.waters[6].x = 7;
+    room.waters[7].y = 3;
+    room.waters[7].x = 8;
 
     mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
     mapArrays[room.doors[1].y][room.doors[1].x] = room.doors[1];
     mapArrays[room.chests[0].y][room.chests[0].x] = room.chests[0];
+    mapArrays[room.chests[1].y][room.chests[1].x] = room.chests[1];
     mapArrays[room.monsters[0].y][room.monsters[0].x] = room.monsters[0];
+    mapArrays[room.waters[0].y][room.waters[0].x] = room.waters[0];
+    mapArrays[room.waters[1].y][room.waters[1].x] = room.waters[1];
+    mapArrays[room.waters[2].y][room.waters[2].x] = room.waters[2];
+    mapArrays[room.waters[3].y][room.waters[3].x] = room.waters[3];
+    mapArrays[room.waters[4].y][room.waters[4].x] = room.waters[4];
+    mapArrays[room.waters[5].y][room.waters[5].x] = room.waters[5];
+    mapArrays[room.waters[6].y][room.waters[6].x] = room.waters[6];
+    mapArrays[room.waters[7].y][room.waters[7].x] = room.waters[7];
+
+    miniWallMaker(5,2);
+    miniWallMaker(5,3);
+    miniWallMaker(5,4);
+    miniWallMaker(6,4);
+    miniWallMaker(7,4);
+    miniWallMaker(8,4);
   }
   function itemFiller() {
     room.doors[0].locked = true;
@@ -1305,7 +1340,8 @@ room3.generator = function(player, createdBefore, whereFrom) {
     room.doors[1].leadsTo = "room2";
     room.doors[1].fromWhere = "room3";
 
-    room.chests[0].drops.push(potion);
+    room.chests[0].drops.push(potion, torch, key);
+    room.chests[0].drops.push(mysticBow, revive);
   }
 
   mapCreator(10,10);
