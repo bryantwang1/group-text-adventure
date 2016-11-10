@@ -1193,11 +1193,25 @@ var torch = new Item("torch", 0, 0, false);
 torch.description = "A lit torch";
 
 // ROOM GENERATION BELOW THIS LINE
-function roomManipulator(room) {
+function roomManipulator(player, room) {
+  var savedPlayerY = player.y;
+  var savedPlayerX = player.x;
   if(room.name === "room3") {
     room.switched = true;
+    room.generator(player, false);
+    mapArrays[player.y][player.x].playerHere = false;
+    player.y = savedPlayerY;
+    player.x = savedPlayerX;
+    playerDisplayer(player);
+    surroundingChecker(player);
   } else if(room.name === "room4") {
     room.switched = true;
+    room.generator(player, false);
+    mapArrays[player.y][player.x].playerHere = false;
+    player.y = savedPlayerY;
+    player.x = savedPlayerX;
+    playerDisplayer(player);
+    surroundingChecker(player);
   }
 }
 
@@ -1424,10 +1438,12 @@ room3.generator = function(player, createdBefore, whereFrom) {
     mapArrays[room.waters[1].y][room.waters[1].x] = room.waters[1];
     mapArrays[room.waters[2].y][room.waters[2].x] = room.waters[2];
     mapArrays[room.waters[3].y][room.waters[3].x] = room.waters[3];
-    mapArrays[room.waters[4].y][room.waters[4].x] = room.waters[4];
     mapArrays[room.waters[5].y][room.waters[5].x] = room.waters[5];
     mapArrays[room.waters[6].y][room.waters[6].x] = room.waters[6];
-    mapArrays[room.waters[7].y][room.waters[7].x] = room.waters[7];
+    if(room.switched === false) {
+      mapArrays[room.waters[4].y][room.waters[4].x] = room.waters[4];
+      mapArrays[room.waters[7].y][room.waters[7].x] = room.waters[7];
+    }
 
     miniWallMaker(5,2);
     miniWallMaker(5,3);
