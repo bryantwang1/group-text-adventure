@@ -1332,7 +1332,7 @@ function gameStarter(player) {
 
 var room1 = new Room("room1");
 room1.displayName = "Entry Hall";
-room1.description = "You're standing in a large, dark room. The stone floor and walls vanish into the gloom. Next to you rest a few old chests, and unless you’re mistaken something behind you is radiating warmth. You can barely make out something else in the distance. Did it just move?";
+room1.description = "You're standing in a large, dark room. The stone floor and walls vanish into the gloom. Next to you rests an old chest, and unless you’re mistaken something behind you is radiating warmth. You can barely make out something else in the distance. Did it just move?";
 rooms.push(room1);
 // This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide true.
 room1.generator = function(player, createdBefore, whereFrom) {
@@ -1378,9 +1378,9 @@ room1.generator = function(player, createdBefore, whereFrom) {
     room.monsters[0].y = 1;
     room.monsters[0].x = 5;
     room.spikes[0].y = 2;
-    room.spikes[0].x = 5;
+    room.spikes[0].x = 4;
     room.spikes[1].y = 2;
-    room.spikes[1].x = 4;
+    room.spikes[1].x = 6;
 
     mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
     mapArrays[room.chests[0].y][room.chests[0].x] = room.chests[0];
@@ -1398,6 +1398,9 @@ room1.generator = function(player, createdBefore, whereFrom) {
     mapArrays[room.monsters[0].y][room.monsters[0].x] = room.monsters[0];
     mapArrays[room.spikes[0].y][room.spikes[0].x] = room.spikes[0];
     mapArrays[room.spikes[1].y][room.spikes[1].x] = room.spikes[1];
+
+    miniWallMaker(1,4);
+    miniWallMaker(1,6);
   }
   // Don't run item fillers after the first time
   function itemFiller() {
