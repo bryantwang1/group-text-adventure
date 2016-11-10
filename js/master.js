@@ -1296,7 +1296,8 @@ function gameEnder() {
 
 function gameStarter(player) {
   $("#starting-image").fadeOut("slow");
-  $("#room-description").delay(600).fadeIn("slow");
+  $("#room-description").delay(750).fadeIn("slow");
+  $("#help").delay(950).fadeIn(950);
   $("#map").delay(600).fadeIn("slow");
   $("#hero-image").delay(600).fadeIn("slow");
   $("#hero-health-number").delay(750).fadeIn("slow");

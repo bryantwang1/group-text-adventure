@@ -353,6 +353,7 @@ color: #C2C2C2;
 padding: 20px;
 font-size: 1.2em;
 border: solid 4px #0f345a;
+display: none;
 }
  #help p {
    color: #C2C2C2;
