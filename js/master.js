@@ -489,15 +489,15 @@ function searcher(player) {
         var area = mapArrays[idx][idx2];
         if(area.searchable) {
           var displayText = "You searched a " + area.terrainType + ", you found";
-          var howLong = area.drops.length;
-          if(howLong > 0){
-            for(var idx3 = 0; idx3 < howLong; idx3++) {
+          if(area.drops.length > 0){
+            for(var idx3 = 0; idx3 < area.drops.length; idx3++) {
               if(area.drops.length > 0) {
                 if(area.drops[0].itemType === "weapon") {
                   player.weapons.push(area.drops[0]);
                   $("#weapon-descriptions").text(area.drops[0].description);
                   displayText += " \"" + area.drops[0].name + "\"";
                   area.drops.shift();
+                  idx3--;
                 } else if(area.drops[0].itemType === "item") {
                   if(area.drops[0].name === "torch" || area.drops[0].name === "unlitTorch") {
                     $("#torch").fadeIn("slow");
@@ -506,14 +506,16 @@ function searcher(player) {
                     var potionAmount = Math.floor((Math.random() * 5) + 1);
                     for(var idx4 = 0; idx4 < potionAmount; idx4++) {
                       player.items.push(potion);
-                      area.drops.shift();
                     }
+                    area.drops.shift();
+                    idx3--;
                     player.potionCounter();
                     displayText += " \"" + "potion" + "(" + potionAmount + ")" + "\"";
                   } else {
                     player.items.push(area.drops[0]);
                     displayText += " \"" + area.drops[0].name + "\"";
                     area.drops.shift();
+                    idx3--;
                   }
                 }
               }
@@ -1172,7 +1174,7 @@ warHammer.description = "War hammer description: A well-weighted and scratched w
 this.image = "images/###.jpg";
 
 var mysticBow = new Weapon("mystic bow", 26, 28, 40);
-warHammer.description = "This mystic bow seems to be strung with something valuable as gold but strong as iron. A long range weapon that delivers blows with precision. Slightly less damage potential than the metal sword but much more consistent. A well aimed shot can ultimately be more effective than the slash from a sword.";
+mysticBow.description = "This mystic bow seems to be strung with something valuable as gold but strong as iron. A long range weapon that delivers blows with precision. Slightly less damage potential than the metal sword but much more consistent. A well aimed shot can ultimately be more effective than the slash from a sword.";
 this.image = "images/###.jpg";
 
 // Constructor for items
