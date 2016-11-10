@@ -1413,7 +1413,7 @@ room3.generator = function(player, createdBefore, whereFrom) {
     room.doors[1].leadsTo = "room2";
     room.doors[1].fromWhere = "room3";
 
-    room.chests[0].drops.push(potion, torch, key);
+    room.chests[0].drops.push(potion, unlitTorch, key);
     room.chests[0].drops.push(mysticBow, revive);
   }
 
