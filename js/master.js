@@ -499,6 +499,9 @@ function searcher(player) {
                   displayText += " \"" + area.drops[0].name + "\"";
                   area.drops.shift();
                 } else if(area.drops[0].itemType === "item") {
+                  if(area.drops[0].name === "torch" || area.drops[0].name === "unlitTorch") {
+                    $("#torch").fadeIn("slow");
+                  }
                   if(area.drops[0].name === "potion") {
                     var potionAmount = Math.floor((Math.random() * 5) + 1);
                     for(var idx4 = 0; idx4 < potionAmount; idx4++) {
