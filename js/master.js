@@ -291,6 +291,12 @@ function surroundingChecker(player) {
           userCommands.push("open door");
           }
         }
+        if(area.terrainType === "firepit") {
+          if(userCommands.includes("use")) {
+          } else {
+          userCommands.push("use");
+          }
+        }
         // Add more later
     	}
     }
