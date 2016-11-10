@@ -20,6 +20,7 @@ function Room(roomName) {
   this.waters = [];
   this.lavas = [];
   this.spikes = [];
+  this.firepits = [];
 }
 
 Room.prototype.displayer = function() {
@@ -127,6 +128,21 @@ function spikeCreator(amount, room) {
     spike.drops = [];
 
     room.spikes.push(spike);
+  }
+}
+// Function similar to chestCreator but for firepits
+function firepitCreator(amount, room) {
+  for(var idx = 0; idx < amount; idx++) {
+    var firepit = new Location(-1, -1);
+    firepit.canMove = false;
+    firepit.description = "A shallow depression in the ground, filled with ashes. A few embers still glow brightly in the center.";
+    firepit.terrainType = "firepit";
+    firepit.symbol = "¥";
+    firepit.color = "red";
+    firepit.searchable = false;
+    firepit.drops = [];
+
+    room.firepits.push(firepit);
   }
 }
 // Function similar to chestCreator but for placed monsters
@@ -275,6 +291,12 @@ function surroundingChecker(player) {
           userCommands.push("open door");
           }
         }
+        if(area.terrainType === "firepit") {
+          if(userCommands.includes("use")) {
+          } else {
+          userCommands.push("use");
+          }
+        }
         // Add more later
     	}
     }
@@ -301,6 +323,39 @@ function looker(player) {
   var detailString = "Northwest: " + descriptions[0] + "; North: " + descriptions[1] + "; Northeast: " + descriptions[2] + "; West: " + descriptions[3] + "; East: " + descriptions[4] + "; Southwest: " + descriptions[5] + "; South: " + descriptions[6] + "; Southeast: " + descriptions[7] + ".";
 
   $("#combat-display").text(detailString);
+}
+// function similar to surroundingChecker, to run when user inputs a use command
+function objectUser(player) {
+  var y = player.y - 1;
+  var x = player.x - 1;
+
+  for(var idx = y; idx < y+3; idx++) {
+    for(var idx2 = x; idx2 < x+3; idx2++) {
+      if(idx === player.y && idx2 === player.x) {
+      } else {
+        var area = mapArrays[idx][idx2];
+        if(area.terrainType === firepit) {
+          if(player.torchChecker() === "none") {
+            $("#combat-display").text("You reach a hand toward the center of the firepit... Ouch! The faint embers were hotter than they looked. You pull your hand back toward your chest quickly.");
+          } else if (player.torchChecker() === "unlit") {
+            for(var torchIdx = 0; torchIdx < player.items.length; torchIdx++) {
+              if(player.items[torchIdx].name === "unlitTorch") {
+                player.items[torchIdx] = torch;
+              }
+            }
+          } else if (player.torchChecker() === "lit") {
+            $("#combat-display").text("You thrust your lit torch at the firepit, but nothing happens.");
+          } else {
+            $("#combat-display").text("You shouldn't be seeing this message.");
+          }
+        } else if (area.terrainType === objectSwitch) {
+
+        } else {
+          $("#combat-display").text("You can't use this object right now.");
+        }
+      }
+    }
+  }
 }
 // Function similar to surroundingChecker, to run when user inputs an open door command
 function doorOpener(player) {
@@ -693,6 +748,20 @@ Player.prototype.equipWeapon = function(string) {
   }
   if(haveWeapon === false) {
     $("#combat-display").text("You don't have this weapon!");
+  }
+}
+
+Player.prototype.torchChecker = function() {
+  for(var idx = 0; idx < this.items.length; idx++) {
+    if(this.items[idx].name === "torch") {
+      return "lit";
+      break;
+    } else if(this.items[idx].name === "unlitTorch") {
+      return "unlit";
+      break;
+    } else {
+      return "none";
+    }
   }
 }
 
@@ -1094,7 +1163,7 @@ this.image = "images/###.jpg";
 var revive = new Item("revive", 0, 0, false);
 revive.description = "Brings you back from the dead";
 
-var unlitTorch = new Item("torch", 0, 0, false);
+var unlitTorch = new Item("unlitTorch", 0, 0, false);
 unlitTorch.description = "An unlit torch";
 
 var torch = new Item("torch", 0, 0, false);
@@ -1198,6 +1267,7 @@ room2.generator = function(player, createdBefore, whereFrom) {
     if(runCreator) {
       doorCreator(2, room);
       chestCreator(4, room);
+      firepitCreator(1, room);
     }
     room.doors[0].y = 0;
     room.doors[0].x = 5;
@@ -1211,6 +1281,8 @@ room2.generator = function(player, createdBefore, whereFrom) {
     room.chests[2].x = 1;
     room.chests[3].y = 7;
     room.chests[3].x = 8;
+    room.firepits[0].y = 1;
+    room.firepits[0].x = 8;
 
     mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
     mapArrays[room.doors[1].y][room.doors[1].x] = room.doors[1];
@@ -1218,6 +1290,7 @@ room2.generator = function(player, createdBefore, whereFrom) {
     mapArrays[room.chests[1].y][room.chests[1].x] = room.chests[1];
     mapArrays[room.chests[2].y][room.chests[2].x] = room.chests[2];
     mapArrays[room.chests[3].y][room.chests[3].x] = room.chests[3];
+    mapArrays[room.firepits[0].y][room.firepits[0].x] = room.firepits[0];
 
     miniWallMaker(2, 4);
     miniWallMaker(2, 5);
@@ -1340,7 +1413,7 @@ room3.generator = function(player, createdBefore, whereFrom) {
     room.doors[1].leadsTo = "room2";
     room.doors[1].fromWhere = "room3";
 
-    room.chests[0].drops.push(potion, torch, key);
+    room.chests[0].drops.push(potion, unlitTorch, key);
     room.chests[0].drops.push(mysticBow, revive);
   }
 
@@ -1680,6 +1753,10 @@ $(function() {
               doorOpener(testPlayer);
             } else if(userInput === "fight") {
               fighter(testPlayer);
+            } else if(userInput === "use") {
+              if(testPlayer.torchChecker() === "none") {
+                $("#combat-display").text("You reach your hand out toward the embers... Ouch! The firepit is hotter than you expected.");
+              }
             } else {
               $("#combat-display").text("You can't do that.");
             }
