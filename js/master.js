@@ -688,6 +688,8 @@ Player.prototype.reviver = function() {
       if(currentEnemy !== dragon && currentEnemy !== superGolem) {
         combatEnder();
       }
+      userCommands = ["attack", "flee", "potion", "equip"];
+      commandDisplayer();
       $("#combat-display").text("Before you breathe no more you manage to empty your revival potion into your throat. As the darkness of death lifts, you are comforted by the knowledge that death’s door will not shut on you…this time. ");
       $("#death-message").fadeOut("slow");
       $("#map").delay(600).fadeIn("slow");
@@ -1215,6 +1217,7 @@ function roomManipulator(player, roomName) {
     mapArrays[player.y][player.x].playerHere = false;
     player.y = savedPlayerY;
     player.x = savedPlayerX;
+    mapDisplayer();
     playerDisplayer(player);
     surroundingChecker(player);
   } else if(roomName === "room4") {
@@ -1223,6 +1226,7 @@ function roomManipulator(player, roomName) {
     mapArrays[player.y][player.x].playerHere = false;
     player.y = savedPlayerY;
     player.x = savedPlayerX;
+    mapDisplayer();
     playerDisplayer(player);
     surroundingChecker(player);
   }
@@ -1490,8 +1494,8 @@ room3.generator = function(player, createdBefore, whereFrom) {
     room.doors[1].leadsTo = "room2";
     room.doors[1].fromWhere = "room3";
 
-    room.chests[0].drops.push(potion, unlitTorch, key);
     room.chests[0].drops.push(mysticBow, revive);
+    room.chests[1].drops.push(potion, unlitTorch, warHammer, key);
 
     room.switches[0].inside = "room3";
   }
