@@ -6,6 +6,7 @@ var currentEnemy = {};
 var currentEnemyY = 0;
 var currentEnemyX = 0;
 var placedMonsterCombat = false;
+var playerStart = true;
 var rooms = [];
 var atmosphericStrings = ["Something furry scurries by your feet.", "You feel a slow and steady dripping of water from the ceiling.", "A musty and unpleasant smell wafts in front of you.", "A bat flies past your head and disappears into the darkness.", "In the far distance your hear something shuffle toward you.", "The stone floor here is slick and slippery.", "Surely there’s a door nearby?", "You note a trickle of liquid on your arm, feel it, and taste your blood.", "A creaking and groaning as of rusty hinges starts from a far area of the room, then stops just as quickly.", "A tendril of mist curls around you.", "The ceiling seems to be closing in, but maybe that’s just you.", "The tile you’re on is loose, and it rattles loudly beneath you.", "A sound of stone scraping against stone reverberates for a short time, then seems to muffle itself."];
 
@@ -323,14 +324,14 @@ function surroundingChecker(player) {
     }
   }
   if(chestFound) {
-    $("#door-image").hide();
-    $("#chest-image").fadeIn("fast");
+    $("#door-image").fadeOut(300);
+    $("#chest-image").delay(300).fadeIn("slow");
   } else if(doorFound) {
-    $("#chest-image").hide();
-    $("#door-image").fadeIn("fast");
+    $("#chest-image").fadeOut(300);
+    $("#door-image").delay(300).fadeIn("slow");
   } else {
-    $("#door-image").fadeOut("fast");
-    $("#chest-image").fadeOut("fast");
+    $("#door-image").fadeOut("slow");
+    $("#chest-image").fadeOut("slow");
   }
   commandDisplayer();
 }
@@ -577,12 +578,15 @@ function combatStarter(monster) {
   $("#combat-display").text("You have entered combat with a " + monster.name + ".");
   $("#monster-description").text(monster.description);
   $("#monster-name").text(monsterName);
-  $("#room-description").hide();
-  $("#search-image").hide();
-  $("#chest-image").hide();
-  $("#door-image").hide();
+  $("#room-hider").hide();
+  $("#searcher-images").hide();
   $("#monster-health").show();
   $("#monster-health-number").show();
+  if(monster.name === "dragon") {
+    $("#map").empty();
+    $("#map").append("<div id=\"dragon-onMap-image\"><img src=\"img/dragon-onMap.jpg\"></div>")
+    $("#dragon-onMap-image").fadeIn(1000);
+  }
   $("#" + monster.name + "-image").show();
   monster.saySomething();
   monster.healthBar();
@@ -634,7 +638,7 @@ function combatEnder() {
   var playerTile = mapArrays[testPlayer.y][testPlayer.x];
   playerTile.monsterHere = false;
   currentEnemy.statReset();
-  $("#" + currentEnemy.name + "-image").hide();;
+  $("#" + currentEnemy.name + "-image").fadeOut("slow");;
   currentEnemy = {};
   playerInCombat = false;
   $("#monster-description").text("");
@@ -642,17 +646,10 @@ function combatEnder() {
   $("#monster-sounds").text("");
   $("#monster-health-number").hide();
   $("#monster-health").hide();
-  $("#room-description").show();
+  $("#room-hider").delay(600).fadeIn(100);
+  $("#room-description").delay(600).fadeIn("slow")
+  $("#searcher-images").delay(600).fadeIn("slow");
   surroundingChecker(testPlayer);
-}
-// Hard coded to use testPlayer y and x for now
-function gameEnder() {
-  $
-  $("#room-description").hide();
-  $("#map").fadeOut("slow");
-  userCommands = ["continue", "restart"];
-  commandDisplayer();
-  $("#combat-display").text("Congratulations, you finished the game! Would you like to continue playing with this character or restart the game?");
 }
 // Function for the flee command
 function playerFlee(player) {
@@ -691,6 +688,7 @@ function Player(userName) {
 	this.name = userName;
   this.maxHealth = 500;
   this.currentHealth = 500;
+  this.previousHealth = 500;
   this.minDamage = 10;
   this.maxDamage = 10;
   // We need to update these coordinates everytime the player enters a room or moves.
@@ -706,10 +704,15 @@ function Player(userName) {
 }
 
 Player.prototype.healthBar = function() {
-	var percentage = Math.floor((this.currentHealth / this.maxHealth) * 100);
+  console.log(this.previousHealth);
+  var oldHP = this.previousHealth/this.maxHealth;
+  var oldHP2 = Math.floor(oldHP * 240);
+	var percentage = (this.currentHealth / this.maxHealth);
+  var percentage2 = Math.floor(percentage * 240);
   $("div#hero-health").empty();
   $("div#hero-health").append("<div id=\"player-health-bar-outer\"><div id=\"player-health-bar-inner\"></div></div>");
-  $("#player-health-bar-inner").css("width", percentage + "%");
+  $("#player-health-bar-inner").css("width", oldHP2 + "px");
+  $("#player-health-bar-inner").animate({width: percentage2 + "px"}, 600);
 
   $("#hero-health-display").text(this.currentHealth + "/" + this.maxHealth);
 }
@@ -756,6 +759,7 @@ Player.prototype.reviver = function() {
 }
 
 Player.prototype.takeDamage = function(damageAmount) {
+  this.previousHealth = this.currentHealth;
 	this.currentHealth -= damageAmount;
   this.healthBar();
   $("#combat-display").append("<p>You're attacked with " + damageAmount + " damage, your health is " + this.currentHealth + ".</p>");
@@ -775,6 +779,7 @@ Player.prototype.takeDamage = function(damageAmount) {
 }
 
 Player.prototype.restoreHealth = function(healthAmount) {
+  this.previousHealth = this.currentHealth;
   this.currentHealth += healthAmount;
   if(this.currentHealth > this.maxHealth) {
     this.currentHealth = this.maxHealth;
@@ -1012,6 +1017,7 @@ function Monster(name, health, minDamage, maxDamage) {
  this.alive = true;
  this.maxHealth = health;
  this.currentHealth = health;
+ this.previousHealth = health;
  this.minDamage = minDamage;
  this.maxDamage = maxDamage;
  this.defense = 0;
@@ -1033,12 +1039,14 @@ Monster.prototype.saySomething = function() {
   $("#monster-sounds").text(monsterName + " says: " + this.vocalizations[whichSound-1]);
 }
 
-// Prototype method for generating a health bar based on current and max health. Needs to be tested. Should update the health bar everytime it's run as well. Don't forget the accompanying css.
+// Prototype method for generating a health bar based on current and max health. Needs to be tested. Should update the health bar everytime it's run as well. Don't forget the accompanying css. Animated a slightly different way from player healthbar just for experimentation.
 Monster.prototype.healthBar = function() {
+  var oldHP = Math.floor((this.previousHealth/this.maxHealth) * 100);
 	var percentage = Math.floor((this.currentHealth / this.maxHealth) * 100);
   $("div#monster-health").empty();
   $("div#monster-health").append("<div id=\"monster-health-bar-outer\"><div id=\"monster-health-bar-inner\"></div></div>");
-  $("#monster-health-bar-inner").css("width", percentage + "%");
+  $("#monster-health-bar-inner").css("width", oldHP + "%");
+  $("#monster-health-bar-inner").animate({width: percentage + "%"}, 600);
 
   $("#monster-health-display").text(this.currentHealth + "/" + this.maxHealth);
 }
@@ -1052,6 +1060,7 @@ Monster.prototype.statReset = function() {
 // Prototype method for monsters to take damage. Changes alive property to false if their currentHealth falls to 0 or below. Hard coded testPlayer in for potions.
 Monster.prototype.takeDamage = function(damageAmount) {
   var dragonSaver = currentEnemy;
+  this.previousHealth = this.currentHealth;
 	this.currentHealth -= damageAmount;
   this.healthBar();
   $("#combat-display").append("<p>You attack with " + damageAmount + " damage, the monster's health is " + this.currentHealth + ".</p>");
@@ -1068,6 +1077,9 @@ Monster.prototype.takeDamage = function(damageAmount) {
       enemyTile.monsterType = "";
 
       placedMonsterCombat = false;
+      mapDisplayer();
+      // hardcoding testPlayer in for now
+      playerDisplayer(testPlayer);
     }
     combatEnder();
     $("#combat-display").empty();
@@ -1086,6 +1098,7 @@ Monster.prototype.takeDamage = function(damageAmount) {
 }
 
 Monster.prototype.restoreHealth = function(healthAmount) {
+  this.previousHealth = this.currentHealth;
   this.currentHealth += healthAmount;
   if(this.currentHealth > this.maxHealth) {
     this.currentHealth = this.maxHealth;
@@ -1096,10 +1109,8 @@ Monster.prototype.restoreHealth = function(healthAmount) {
 // Example of a function for a chance to hit a monster instead of a sure hit.
 function attack(damage, target) {
 	// Generates and stores a random number from 1 to 10.
-  $("#room-description").hide();
-  $("#search-image").hide();
-  $("#chest-image").hide();
-  $("#door-image").hide();
+  $("#room-hider").hide();
+  $("#searcher-images").hide();
   // hide room description on attack in case it bugs out and is showing
 	var hitChance = Math.floor(Math.random() * 10) + 1;
   var defense = target.defense;
@@ -1290,10 +1301,38 @@ function roomManipulator(player, roomName) {
     surroundingChecker(player);
   }
 }
+// Hard coded to use testPlayer y and x for now
+function gameEnder() {
+  $("#room-description").hide();
+  $("#dragon-onMap-image").fadeOut("slow");
+  $("#map").fadeOut("slow");
+  $("#map").empty();
+  $("#victory-image").delay(600).fadeIn("slow");
+  userCommands = ["continue", "restart"];
+  commandDisplayer();
+  $("#combat-display").text("Congratulations, you finished the game! Would you like to continue playing with this character or restart the game?");
+}
+
+function gameStarter(player) {
+  $("#starting-image").fadeOut("slow");
+  $("#room-description").delay(750).fadeIn("slow");
+  $("#help").delay(950).fadeIn(950);
+  $("#map").delay(600).fadeIn("slow");
+  $("#hero-image").delay(600).fadeIn("slow");
+  $("#hero-health-number").delay(750).fadeIn("slow");
+  $("#hero-health").delay(750).fadeIn("slow");
+  $("#weapons-label").delay(900).fadeIn("slow");
+  $("#weapons").delay(900).fadeIn("slow");
+  $("#items-label").delay(1000).fadeIn("slow");
+  $("#items").delay(1000).fadeIn("slow");
+  surroundingChecker(player);
+  $("#combat-display").text("Move with the arrow keys. The commands you can use at any given time (besides movement) are listed in the black box immediately above this one, labeled as Possible Commands.");
+  playerStart = false;
+}
 
 var room1 = new Room("room1");
 room1.displayName = "Entry Hall";
-room1.description = "You're standing in a large, dark room. The stone floor and walls vanish into the gloom. Next to you rest a few old chests, and unless you’re mistaken something behind you is radiating warmth. You can barely make out something else in the distance. Did it just move?";
+room1.description = "You're standing in a large, dark room. The stone floor and walls vanish into the gloom. Next to you rests an old chest, and unless you’re mistaken something behind you is radiating warmth. You can barely make out something else in the distance. Did it just move?";
 rooms.push(room1);
 // This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide true.
 room1.generator = function(player, createdBefore, whereFrom) {
@@ -1305,31 +1344,43 @@ room1.generator = function(player, createdBefore, whereFrom) {
     if(runCreator) {
       doorCreator(1, room);
       chestCreator(3, room);
-      waterCreator(2, room);
-      lavaCreator(1, room);
+      waterCreator(5, room);
+      lavaCreator(4, room);
       spikeCreator(2, room);
       placedMonsterCreator("random", room);
     }
     room.doors[0].y = 0;
     room.doors[0].x = 5;
-    room.chests[0].y = 1;
+    room.chests[0].y = 3;
     room.chests[0].x = 1;
     room.chests[1].y = 5;
-    room.chests[1].x = 6;
-    room.chests[2].y = 6;
-    room.chests[2].x = 6;
-    room.waters[0].y = 4;
+    room.chests[1].x = 7;
+    room.chests[2].y = 8;
+    room.chests[2].x = 3;
+    room.waters[0].y = 1;
     room.waters[0].x = 1;
-    room.waters[1].y = 4;
-    room.waters[1].x = 2;
+    room.waters[1].y = 2;
+    room.waters[1].x = 1;
+    room.waters[2].y = 2;
+    room.waters[2].x = 2;
+    room.waters[3].y = 4;
+    room.waters[3].x = 1;
+    room.waters[4].y = 4;
+    room.waters[4].x = 2;
     room.lavas[0].y = 7;
     room.lavas[0].x = 5;
-    room.monsters[0].y = 8;
-    room.monsters[0].x = 1;
+    room.lavas[1].y = 7;
+    room.lavas[1].x = 4;
+    room.lavas[2].y = 8;
+    room.lavas[2].x = 5;
+    room.lavas[3].y = 8;
+    room.lavas[3].x = 4;
+    room.monsters[0].y = 1;
+    room.monsters[0].x = 5;
     room.spikes[0].y = 2;
-    room.spikes[0].x = 5;
+    room.spikes[0].x = 4;
     room.spikes[1].y = 2;
-    room.spikes[1].x = 4;
+    room.spikes[1].x = 6;
 
     mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
     mapArrays[room.chests[0].y][room.chests[0].x] = room.chests[0];
@@ -1337,10 +1388,19 @@ room1.generator = function(player, createdBefore, whereFrom) {
     mapArrays[room.chests[2].y][room.chests[2].x] = room.chests[2];
     mapArrays[room.waters[0].y][room.waters[0].x] = room.waters[0];
     mapArrays[room.waters[1].y][room.waters[1].x] = room.waters[1];
+    mapArrays[room.waters[2].y][room.waters[2].x] = room.waters[2];
+    mapArrays[room.waters[3].y][room.waters[3].x] = room.waters[3];
+    mapArrays[room.waters[4].y][room.waters[4].x] = room.waters[4];
     mapArrays[room.lavas[0].y][room.lavas[0].x] = room.lavas[0];
+    mapArrays[room.lavas[1].y][room.lavas[1].x] = room.lavas[1];
+    mapArrays[room.lavas[2].y][room.lavas[2].x] = room.lavas[2];
+    mapArrays[room.lavas[3].y][room.lavas[3].x] = room.lavas[3];
     mapArrays[room.monsters[0].y][room.monsters[0].x] = room.monsters[0];
     mapArrays[room.spikes[0].y][room.spikes[0].x] = room.spikes[0];
     mapArrays[room.spikes[1].y][room.spikes[1].x] = room.spikes[1];
+
+    miniWallMaker(1,4);
+    miniWallMaker(1,6);
   }
   // Don't run item fillers after the first time
   function itemFiller() {
@@ -1349,9 +1409,9 @@ room1.generator = function(player, createdBefore, whereFrom) {
     room.doors[0].firstTime = true;
     room.doors[0].fromWhere = "room1";
 
-    room.chests[0].drops.push(mysticBow);
+    room.chests[0].drops.push(key);
     room.chests[1].drops.push(woodSword, potion);
-    room.chests[2].drops.push(key, revive);
+    room.chests[2].drops.push(revive);
   }
 
   mapCreator(10,10);
@@ -1798,11 +1858,14 @@ $(function() {
   testPlayer.potionCounter();
   testPlayer.reviveCounter();
   testPlayer.keyCounter();
+  userCommands = ["start"]
+  commandDisplayer();
+  $("#combat-display").text("Hi, welcome to our text adventure! Type start in the input box and hit enter to begin.");
 
   // Code to make arrow keys work to move
   $(document).on("keydown", function(event) {
     if(event.which === 37) {
-      if(playerInCombat === false && playerDead === false) {
+      if(playerInCombat === false && playerDead === false && playerStart === false) {
         moveLeft(testPlayer);
       } else {
         if(playerDead) {
@@ -1812,7 +1875,7 @@ $(function() {
         }
       }
     } else if(event.which === 38) {
-      if(playerInCombat === false && playerDead === false) {
+      if(playerInCombat === false && playerDead === false && playerStart === false) {
         moveUp(testPlayer);
       } else {
         if(playerDead) {
@@ -1822,7 +1885,7 @@ $(function() {
         }
       }
     } else if(event.which === 39) {
-      if(playerInCombat === false && playerDead === false) {
+      if(playerInCombat === false && playerDead === false && playerStart === false) {
         moveRight(testPlayer);
       } else {
         if(playerDead) {
@@ -1832,7 +1895,7 @@ $(function() {
         }
       }
     } else if(event.which === 40) {
-      if(playerInCombat === false && playerDead === false) {
+      if(playerInCombat === false && playerDead === false && playerStart === false) {
         moveDown(testPlayer);
       } else {
         if(playerDead) {
@@ -1855,7 +1918,7 @@ $(function() {
           testPlayer.equipWeapon(userInput);
           equipTyped = false;
         } else {
-          if(userCommands.includes(userInput)) {
+          if(userCommands.includes(userInput) || userInput === "dev healz") {
             if(userInput === "attack") {
               $("#combat-display").empty();
               var attackDamage = testPlayer.whatDamage()
@@ -1878,6 +1941,9 @@ $(function() {
               equipTyped = true;
             } else if(userInput === "revive") {
               testPlayer.reviver();
+            } else if(userInput === "dev healz") {
+              testPlayer.restoreHealth(1000);
+              testPlayer.healthBar();
             } else {
               $("#combat-display").text("You can't do that.");
             }
@@ -1890,7 +1956,7 @@ $(function() {
           testPlayer.equipWeapon(userInput);
           equipTyped = false;
         } else {
-          if(userCommands.includes(userInput)) {
+          if(userCommands.includes(userInput) || userInput === "dev healz") {
             if(userInput === "search") {
               searcher(testPlayer);
             } else if(userInput === "potion") {
@@ -1910,6 +1976,21 @@ $(function() {
               fighter(testPlayer);
             } else if(userInput === "use") {
               objectUser(testPlayer);
+            } else if(userInput === "continue") {
+              $("#room-description").show();
+              $("#victory-image").fadeOut("slow");
+              $("#map").delay(600).fadeIn("slow");
+              $("#combat-display").text("");
+              mapDisplayer();
+              playerDisplayer(testPlayer);
+              surroundingChecker(testPlayer);
+            } else if(userInput === "restart") {
+              window.location.reload();
+            } else if(userInput === "start") {
+              gameStarter(testPlayer);
+            } else if(userInput === "dev healz") {
+              testPlayer.restoreHealth(1000);
+              testPlayer.healthBar();
             } else {
               $("#combat-display").text("You can't do that.");
             }

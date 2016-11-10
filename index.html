@@ -20,8 +20,10 @@
 <!--              MONSTER          -->
         <div class="col-md-3">
           <div id="monster">
-            <div id="room-description"><h3><span id="room-name"></span></h3><p><span id="room-info"></span></p>
-            </div><!-- monster end -->
+            <div id="room-hider">
+              <div id="room-description"><h3><span id="room-name"></span></h3><p><span id="room-info"></span></p>
+              </div><!-- monster end -->
+            </div>
             <div id="goblin-image">
             </div><!-- he end -->
             <div id="wizard-image">
@@ -36,11 +38,13 @@
             </div><!-- he end -->
             <div id="skeleton-image">
             </div><!-- he end -->
-            <div id="chest-image">
-            </div><!-- he end -->
-            <div id="search-image">
-            </div>
-            <div id="door-image">
+            <div id="searcher-images">
+              <div id="chest-image">
+              </div><!-- he end -->
+              <div id="search-image">
+              </div>
+              <div id="door-image">
+              </div>
             </div>
             <div id="monster-health-number"><span id="monster-health-display"></span>
             </div><!-- health-number end -->
@@ -61,9 +65,19 @@
             <h4>Dungeon Map</h4>
           </div>
           <div id="map">
+            <div id="dragon-onMap-image">
+              <img src="img/dragon-onMap.jpg">
+            </div>
           </div><!-- map end -->
           <div id="death-message">
-            <h1>Game Over! (Unless you have revives left)<h1>
+            <img src="img/game-over-clear.png">
+            <h1>(Unless you have revives left)<h1>
+          </div>
+          <div id="victory-image">
+            <img src="img/victory-clear.png">
+          </div>
+          <div id="starting-image">
+            <img src="img/logo-clear.png">
           </div>
         </div><!-- col2 end -->
 
@@ -83,7 +97,7 @@
 
 <!--              INVENTORY          -->
 
-          <h3> Weapons</h3>
+          <h3 id="weapons-label"> Weapons</h3>
           <div id="weapons">
             <div id="woodSword" class="pull-left">
               <img src="img/woodSword.png"><br>
@@ -103,7 +117,7 @@
             </div><!-- hammer end -->
           </div><!-- weapons end -->
 
-          <h3> Items</h3>
+          <h3 id="items-label"> Items</h3>
             <div id="items">
               <div id="potion" class="pull-left">
                 <img src="img/potionHealth.png"><br><p>Potion x <span id="player-potions"></span></p>
@@ -160,17 +174,14 @@
           <h4>Help Commands</h4>
           <ul>
             <h5>Movement</h5>
-            <li>Arrow keys for movement</li>
-            <h5>Search</h5>
-            <li>Search</li>
+            <li>Arrow keys for movement, locked during combat and, of course, death.</li>
             <h5>Items</h5>
-            <li>Equip</li>
-            <li>Pick up</li>
-            <li>Use Item</li>
-            <h5>Combat</h5>
-            <li>Attack</li>
-            <li>Run Away</li>
-            <li>Befriend</li>
+            <li><strong>Equip:</strong> after you type equip and hit enter, you will only be able to type a weapon name, nothing else will work.</li>
+            <li><strong>Search:</strong> searches containers around you and puts the items in your inventory.</li>
+            <li><strong>Use:</strong> a command for certain environmental objects.</li>
+            <h5><strong>Combat</h5>
+            <li><strong>Attack:</strong> attempt to hit the monster.</li>
+            <li><strong>Flee:</strong> attempt to run away from the monster.</li>
           </ul>
         </div><!-- help end -->
         </div> <!--col end-->
