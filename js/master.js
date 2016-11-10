@@ -1521,6 +1521,7 @@ room4.generator = function(player, createdBefore, whereFrom) {
       doorCreator(2, room);
       chestCreator(2, room);
       spikeCreator(6, room);
+      objectSwitchCreator(1, room);
     }
     room.doors[0].y = 0;
     room.doors[0].x = 1;
@@ -1542,6 +1543,8 @@ room4.generator = function(player, createdBefore, whereFrom) {
     room.spikes[4].x = 4;
     room.spikes[5].y = 7;
     room.spikes[5].x = 6;
+    room.switches[0].y = 7;
+    room.switches[0].x = 8;
     //switch at y=7,x=8
     //removable wall at y=7,x=1
 
@@ -1555,6 +1558,7 @@ room4.generator = function(player, createdBefore, whereFrom) {
     mapArrays[room.spikes[3].y][room.spikes[3].x] = room.spikes[3];
     mapArrays[room.spikes[4].y][room.spikes[4].x] = room.spikes[4];
     mapArrays[room.spikes[5].y][room.spikes[5].x] = room.spikes[5];
+    mapArrays[room.switches[0].y][room.switches[0].x] = room.switches[0]
 
     miniWallMaker(2,2);
     miniWallMaker(2,3);
@@ -1575,6 +1579,10 @@ room4.generator = function(player, createdBefore, whereFrom) {
     miniWallMaker(7,3);
     miniWallMaker(7,5);
     miniWallMaker(7,7);
+
+    if(room.switched === false) {
+      miniWallMaker(7,1);
+    }
   }
   function itemFiller() {
     room.doors[0].locked = true;
@@ -1583,6 +1591,7 @@ room4.generator = function(player, createdBefore, whereFrom) {
     room.doors[0].fromWhere = "room4";
     room.doors[1].leadsTo = "room3";
     room.doors[1].fromWhere = "room4";
+    room.switches[0].inside = "room4";
 
     room.chests[0].drops.push(potion);
   }
