@@ -1299,12 +1299,12 @@ function gameStarter(player) {
   $("#room-description").delay(600).fadeIn("slow");
   $("#map").delay(600).fadeIn("slow");
   $("#hero-image").delay(600).fadeIn("slow");
-  $("#hero-health-number").delay(600).fadeIn("slow");
-  $("#hero-health").delay(600).fadeIn("slow");
-  $("#weapons-label").delay(600).fadeIn("slow");
-  $("#weapons").delay(600).fadeIn("slow");
-  $("#items-label").delay(600).fadeIn("slow");
-  $("#items").delay(600).fadeIn("slow");
+  $("#hero-health-number").delay(750).fadeIn("slow");
+  $("#hero-health").delay(750).fadeIn("slow");
+  $("#weapons-label").delay(900).fadeIn("slow");
+  $("#weapons").delay(900).fadeIn("slow");
+  $("#items-label").delay(1000).fadeIn("slow");
+  $("#items").delay(1000).fadeIn("slow");
   surroundingChecker(player);
   $("#combat-display").text("Move with the arrow keys. The commands you can use at any given time (besides movement) are listed in the black box directly above this one, labeled as Possible Commands.");
 }
