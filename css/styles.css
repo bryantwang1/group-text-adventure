@@ -38,9 +38,10 @@ p{
   display: none;
 }
 #room-description p {
+  font-size: .9em;
   width: 240px;
   height: 150px;
-  margin: 0px 0px 0px 0px;
+  margin: 0px 0px 5px 0px;
   padding: 3px;
   color: #333;
   letter-spacing: 1px;
@@ -122,6 +123,7 @@ p{
   height: 360px;
   background-color: #555;
   margin-bottom: 10px;
+  margin-top: 5px;
   box-shadow: 5px 5px 15px #222;
   background-image: url("../img/chest.jpg");
   border-radius: 15px;
@@ -141,7 +143,7 @@ p{
   width: 240px;
   height: 360px;
   background-color: #555;
-  margin-bottom: 10px;
+  margin-bottom: -10px;
   box-shadow: 5px 5px 15px #222;
   background-image: url("../img/door.jpg");
   border-radius: 15px;
@@ -414,6 +416,8 @@ display: none;
 #dragon-onMap-image img {
   width: 500px;
   height: auto;
+  margin-left: -20px;
+  margin-top: -20px;
 }
 /*walls icon*/
 .wall {

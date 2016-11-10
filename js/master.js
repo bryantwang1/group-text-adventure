@@ -1154,7 +1154,7 @@ function commandDisplayer() {
 
 // CONTENT BELOW THIS LINE (MONSTERS)
 
-var goblin = new Monster("goblin", 100, 10, 25);
+var goblin = new Monster("goblin", 110, 10, 25);
 goblin.description = "A small minion with quick reflexes and an affinity for gold. It will attack anything shiny.";
 goblin.defense = 3;
 goblin.drops = ["potion"];
@@ -1180,17 +1180,17 @@ spider.vocalizations = ["Squeal!", "Eek!", "Hiss!", "You look delicious!"];
 
 var golem = new Monster("golem", 300, 5, 50);
 golem.description = "A giant rock monster that is brooding and slow blocks your path.";
-golem.defense = 0;
+golem.defense = 1;
 golem.drops = ["puzzle item", "armor", "potion"];
 golem.vocalizations = ["Rock crush you...", "Ugh!", "I slow. Hold still!", "Rock mad!", "Leave me alone...", "Oof!"];
 
-var superGolem = new Monster("mega-golem", 1000, 25, 100);
+var superGolem = new Monster("mega-golem", 660, 25, 50);
 superGolem.description = "A massive rock monster, every time it moves the ground quakes.";
 superGolem.defense = 3;
 superGolem.drops = ["puzzle item", "armor", "potion"];
 superGolem.vocalizations = ["Rock crush you...", "Ugh!", "I slow. Hold still!", "Rock mad!", "Leave me alone...", "Oof!"];
 
-var skeleton = new Monster("skeleton", 120, 15, 40);
+var skeleton = new Monster("skeleton", 120, 20, 40);
 skeleton.description = "A member of the undead legions approaches you with malice in the very marrow of its bones.";
 skeleton.defense = 2;
 skeleton.drops = ["potion"];
@@ -1308,6 +1308,8 @@ function roomManipulator(player, roomName) {
 }
 // Hard coded to use testPlayer y and x for now
 function gameEnder() {
+  $("#audio").empty();
+  $("#audio").append("<audio autoplay loop src=\"music/victory.mp3\" type=\"audio/mpeg\"></audio>");
   $("#room-description").hide();
   $("#dragon-onMap-image").fadeOut("slow");
   $("#map").fadeOut("slow");
@@ -1442,7 +1444,7 @@ room1.generator = function(player, createdBefore, whereFrom) {
 
 var room2 = new Room("room2");
 room2.displayName = "The Room of Despair";
-room2.description = "The door slams behind you and you find yourself in another space. Somewhere off to your right something makes a noise, and then all is silent again. The walls are closer in than before, and there’s no obvious exit. Hopefully there's another door around here somewhere, but will it require another key?";
+room2.description = "You find yourself in a new room. Somewhere off to your right something makes a noise, and then all is silent again. The walls are closer in than before, and there’s no obvious exit. Hopefully there's another door around here somewhere, but will it require another key?";
 rooms.push(room2);
 room2.generator = function(player, createdBefore, whereFrom) {
   $("#audio").empty();
@@ -1823,6 +1825,8 @@ room5.generator = function(player, createdBefore, whereFrom) {
   function itemFiller() {
     room.doors[0].leadsTo = "room4";
     room.doors[0].fromWhere = "room5";
+
+    room.chests[0].drops.push(potion, potion, potion, potion, potion, potion, potion, potion, potion, potion, revive, revive, revive, revive, revive, revive, revive, revive, revive, revive, revive, revive, revive, revive, revive, revive, revive, revive, revive, revive, revive);
   }
 
   mapCreator(10,10);
