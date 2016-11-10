@@ -157,6 +157,7 @@ function objectSwitchCreator(amount, room) {
     objectSwitch.color = "red";
     objectSwitch.searchable = false;
     objectSwitch.drops = [];
+    objectSwitch.inside = "";
 
     room.switches.push(objectSwitch);
   }
@@ -307,7 +308,7 @@ function surroundingChecker(player) {
           userCommands.push("open door");
           }
         }
-        if(area.terrainType === "firepit") {
+        if(area.terrainType === "firepit" || area.terrainType === "objectSwitch") {
           if(userCommands.includes("use")) {
           } else {
           userCommands.push("use");
@@ -341,7 +342,7 @@ function looker(player) {
   $("#combat-display").text(detailString);
 }
 // function similar to surroundingChecker, to run when user inputs a use command
-function objectUser(player, room) {
+function objectUser(player) {
   var y = player.y - 1;
   var x = player.x - 1;
 
@@ -370,7 +371,13 @@ function objectUser(player, room) {
           } else if(player.torchChecker() === "unlit") {
             $("#combat-display").text("You prod the stone pillar with your unlit torch, nothing happens. It feels like you're onto something, though.");
           } else if(player.torchChecker() === "lit") {
-            roomManipulator(room);
+            var switchRoom;
+            if(area.inside === "room3") {
+              switchRoom = room3;
+            } else if(area.inside === "room4") {
+              switchRoom = room4;
+            }
+            roomManipulator(player, switchRoom);
           } else {
             $("#combat-display").text("You shouldn't be seeing this message, bro.");
           }
@@ -1802,9 +1809,7 @@ $(function() {
             } else if(userInput === "fight") {
               fighter(testPlayer);
             } else if(userInput === "use") {
-              if(testPlayer.torchChecker() === "none") {
-                $("#combat-display").text("You reach your hand out toward the embers... Ouch! The firepit is hotter than you expected.");
-              }
+              objectUser(testPlayer);
             } else {
               $("#combat-display").text("You can't do that.");
             }
