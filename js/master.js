@@ -479,6 +479,8 @@ function roomMover(player, doorLocation, firstTime) {
 function searcher(player) {
   // Make this item display later
   $("#combat-display").empty();
+  $("#room-description").fadeOut("fast");
+  $("#search-image").delay(200).fadeIn("fast");
   var y = player.y - 1;
 	var x = player.x - 1;
 
@@ -533,6 +535,8 @@ function searcher(player) {
       }
     }
   }
+  $("#search-image").delay(200).fadeOut("fast");
+  $("#room-description").delay(600).fadeIn("fast");
 }
 // Function to run for when a player starts combat
 function combatStarter(monster) {
@@ -543,6 +547,9 @@ function combatStarter(monster) {
   $("#monster-description").text(monster.description);
   $("#monster-name").text(monsterName);
   $("#room-description").hide();
+  $("#search-image").hide();
+  $("#chest-image").hide();
+  $("#door-image").hide();
   $("#monster-health").show();
   $("#monster-health-number").show();
   $("#" + monster.name + "-image").show();
@@ -596,7 +603,7 @@ function combatEnder() {
   var playerTile = mapArrays[testPlayer.y][testPlayer.x];
   playerTile.monsterHere = false;
   currentEnemy.statReset();
-  $("#" + currentEnemy.name + "-image").fadeOut("slow");
+  $("#" + currentEnemy.name + "-image").fadeOut("fast");
   currentEnemy = {};
   playerInCombat = false;
   $("#monster-description").text("");
@@ -604,7 +611,7 @@ function combatEnder() {
   $("#monster-sounds").text("");
   $("#monster-health-number").hide();
   $("#monster-health").hide();
-  $("#room-description").delay(800).fadeIn("slow");
+  $("#room-description").delay(200).fadeIn("slow");
   surroundingChecker(testPlayer);
 }
 // Function for the flee command

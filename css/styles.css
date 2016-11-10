@@ -23,7 +23,7 @@ p{
   color: #fff;
 }
 
-/* ----   Monster   ----*/
+/* ----   Monster plus a few other images   ----*/
 #monster {
   width: 275px;
   height: 600px;
@@ -114,13 +114,33 @@ p{
   display: none;
 
 }
-#chest {
+#chest-image {
   width: 240px;
   height: 360px;
   background-color: #555;
   margin-bottom: 10px;
   box-shadow: 5px 5px 15px #222;
   background-image: url("../img/chest.jpg");
+  border-radius: 15px;
+  display: none;
+}
+#search-image {
+  width: 240px;
+  height: 360px;
+  background-color: #555;
+  margin-bottom: 10px;
+  box-shadow: 5px 5px 15px #222;
+  background-image: url("../img/chest-open.jpg");
+  border-radius: 15px;
+  display: none;
+}
+#door-image {
+  width: 240px;
+  height: 360px;
+  background-color: #555;
+  margin-bottom: 10px;
+  box-shadow: 5px 5px 15px #222;
+  background-image: url("../img/door.jpg");
   border-radius: 15px;
   display: none;
 }
