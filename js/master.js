@@ -581,6 +581,9 @@ function combatStarter(monster) {
   $("#monster-description").text(monster.description);
   $("#monster-name").text(monsterName);
   $("#room-hider").hide();
+  $("#chest-image").stop().hide();
+  $("#door-image").stop().hide();
+  $("#search-image").stop().hide();
   $("#searcher-images").hide();
   $("#monster-health").show();
   $("#monster-health-number").show();
