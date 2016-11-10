@@ -341,7 +341,7 @@ function looker(player) {
   $("#combat-display").text(detailString);
 }
 // function similar to surroundingChecker, to run when user inputs a use command
-function objectUser(player) {
+function objectUser(player, room) {
   var y = player.y - 1;
   var x = player.x - 1;
 
@@ -370,7 +370,7 @@ function objectUser(player) {
           } else if(player.torchChecker() === "unlit") {
             $("#combat-display").text("You prod the stone pillar with your unlit torch, nothing happens. It feels like you're onto something, though.");
           } else if(player.torchChecker() === "lit") {
-
+            roomManipulator(room);
           } else {
             $("#combat-display").text("You shouldn't be seeing this message, bro.");
           }
@@ -776,17 +776,16 @@ Player.prototype.equipWeapon = function(string) {
 }
 
 Player.prototype.torchChecker = function() {
+  var torchType = "none";
   for(var idx = 0; idx < this.items.length; idx++) {
-    if(this.items[idx].name === "torch") {
-      return "lit";
-      break;
+    if(this.items[idx].name !== "torch" && this.items[idx].name !== "unlitTorch") {
+    } else if(this.items[idx].name === "torch") {
+      torchType = "lit";
     } else if(this.items[idx].name === "unlitTorch") {
-      return "unlit";
-      break;
-    } else {
-      return "none";
+      torchType = "unlit";
     }
   }
+  return torchType;
 }
 
 Player.prototype.potionCounter = function() {
@@ -1194,6 +1193,11 @@ var torch = new Item("torch", 0, 0, false);
 torch.description = "A lit torch";
 
 // ROOM GENERATION BELOW THIS LINE
+function roomManipulator(room) {
+  if(room.name === "room3") {
+
+  }
+}
 
 var room1 = new Room("room1");
 room1.displayName = "It begins...";
