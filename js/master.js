@@ -1068,6 +1068,9 @@ Monster.prototype.takeDamage = function(damageAmount) {
       enemyTile.monsterType = "";
 
       placedMonsterCombat = false;
+      mapDisplayer();
+      // hardcoding testPlayer in for now
+      playerDisplayer(testPlayer);
     }
     combatEnder();
     $("#combat-display").empty();
