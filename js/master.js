@@ -283,6 +283,8 @@ function surroundingChecker(player) {
   var y = player.y - 1;
 	var x = player.x - 1;
   userCommands = ["equip", "potion", "look"];
+  var chestFound = false;
+  var doorFound = false;
 
   for(var idx = y; idx < y+3; idx++) {
   	for(var idx2 = x; idx2 < x+3; idx2++) {
@@ -291,6 +293,7 @@ function surroundingChecker(player) {
       } else {
       	var area = mapArrays[idx][idx2];
         if(area.searchable) {
+          chestFound = true;
           if(userCommands.includes("search")) {
           } else {
           userCommands.push("search");
@@ -303,6 +306,7 @@ function surroundingChecker(player) {
           }
         }
         if(area.terrainType === "door") {
+          doorFound = true;
           if(userCommands.includes("open door")) {
           } else {
           userCommands.push("open door");
@@ -317,6 +321,16 @@ function surroundingChecker(player) {
         // Add more later
     	}
     }
+  }
+  if(chestFound) {
+    $("#door-image").hide();
+    $("#chest-image").fadeIn("fast");
+  } else if(doorFound) {
+    $("#chest-image").hide();
+    $("#door-image").fadeIn("fast");
+  } else {
+    $("#door-image").fadeOut("fast");
+    $("#chest-image").fadeOut("fast");
   }
   commandDisplayer();
 }
@@ -479,7 +493,7 @@ function roomMover(player, doorLocation, firstTime) {
 function searcher(player) {
   // Make this item display later
   $("#combat-display").empty();
-  $("#room-description").fadeOut("fast");
+  $("#chest-image").fadeOut("fast");
   $("#search-image").delay(200).fadeIn("fast");
   var y = player.y - 1;
 	var x = player.x - 1;
@@ -536,7 +550,7 @@ function searcher(player) {
     }
   }
   $("#search-image").delay(200).fadeOut("fast");
-  $("#room-description").delay(600).fadeIn("fast");
+  $("#chest-image").delay(600).fadeIn("fast");
 }
 // Function to run for when a player starts combat
 function combatStarter(monster) {
@@ -1053,6 +1067,9 @@ Monster.prototype.restoreHealth = function(healthAmount) {
 function attack(damage, target) {
 	// Generates and stores a random number from 1 to 10.
   $("#room-description").hide();
+  $("#search-image").hide();
+  $("#chest-image").hide();
+  $("#door-image").hide();
   // hide room description on attack in case it bugs out and is showing
 	var hitChance = Math.floor(Math.random() * 10) + 1;
   var defense = target.defense;
