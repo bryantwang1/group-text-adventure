@@ -1324,6 +1324,7 @@ room2.generator = function(player, createdBefore, whereFrom) {
       doorCreator(2, room);
       chestCreator(4, room);
       firepitCreator(1, room);
+      spikeCreator(4, room);
     }
     room.doors[0].y = 0;
     room.doors[0].x = 5;
@@ -1339,6 +1340,14 @@ room2.generator = function(player, createdBefore, whereFrom) {
     room.chests[3].x = 8;
     room.firepits[0].y = 1;
     room.firepits[0].x = 8;
+    room.spikes[0].y = 7;
+    room.spikes[0].x = 1;
+    room.spikes[1].y = 7;
+    room.spikes[1].x = 2;
+    room.spikes[2].y = 7;
+    room.spikes[2].x = 7;
+    room.spikes[3].y = 8;
+    room.spikes[3].x = 7;
 
     mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
     mapArrays[room.doors[1].y][room.doors[1].x] = room.doors[1];
@@ -1347,6 +1356,10 @@ room2.generator = function(player, createdBefore, whereFrom) {
     mapArrays[room.chests[2].y][room.chests[2].x] = room.chests[2];
     mapArrays[room.chests[3].y][room.chests[3].x] = room.chests[3];
     mapArrays[room.firepits[0].y][room.firepits[0].x] = room.firepits[0];
+    mapArrays[room.spikes[0].y][room.spikes[0].x] = room.spikes[0];
+    mapArrays[room.spikes[1].y][room.spikes[1].x] = room.spikes[1];
+    mapArrays[room.spikes[2].y][room.spikes[2].x] = room.spikes[2];
+    mapArrays[room.spikes[3].y][room.spikes[3].x] = room.spikes[3];
 
     miniWallMaker(2, 4);
     miniWallMaker(2, 5);
@@ -1368,7 +1381,7 @@ room2.generator = function(player, createdBefore, whereFrom) {
     room.doors[1].fromWhere = "room2";
 
     room.chests[0].drops.push(potion);
-    room.chests[1].drops.push();
+    room.chests[1].drops.push(metalSword);
     room.chests[2].drops.push(key);
     room.chests[3].drops.push();
   }
@@ -1593,7 +1606,8 @@ room4.generator = function(player, createdBefore, whereFrom) {
     room.doors[1].fromWhere = "room4";
     room.switches[0].inside = "room4";
 
-    room.chests[0].drops.push(potion);
+    room.chests[0].drops.push(potion, potion, revive);
+    room.chests[1].drops.push(revive);
   }
 
   mapCreator(10,10);
