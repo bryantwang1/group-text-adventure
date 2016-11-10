@@ -366,9 +366,9 @@ function objectUser(player) {
           }
         } else if(area.terrainType === "objectSwitch") {
           if(player.torchChecker() === "none") {
-
+            $("#combat-display").text("You nudge the stone pillar, climb into the bowl on top, push it with all your might. Nothing happens. You sigh and brush the ashes off your clothing.");
           } else if(player.torchChecker() === "unlit") {
-
+            $("#combat-display").text("You prod the stone pillar with your unlit torch, nothing happens. It feels like you're onto something, though.");
           } else if(player.torchChecker() === "lit") {
 
           } else {
