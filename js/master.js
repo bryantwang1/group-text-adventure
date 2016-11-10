@@ -712,6 +712,19 @@ Player.prototype.equipWeapon = function(string) {
   }
 }
 
+Player.prototype.torchChecker = function() {
+  for(var idx = 0; idx < this.items.length; idx++) {
+    if(this.items[idx].name === "torch") {
+      return "lit";
+      break;
+    }
+    else if (this.items[idx].name === "unlitTorch") {
+      return "unlit";
+      break;
+    }
+  }
+}
+
 Player.prototype.potionCounter = function() {
   var potionAmount = 0;
   for(var idx= 0; idx < this.items.length; idx++) {
@@ -1110,7 +1123,7 @@ this.image = "images/###.jpg";
 var revive = new Item("revive", 0, 0, false);
 revive.description = "Brings you back from the dead";
 
-var unlitTorch = new Item("torch", 0, 0, false);
+var unlitTorch = new Item("unlitTorch", 0, 0, false);
 unlitTorch.description = "An unlit torch";
 
 var torch = new Item("torch", 0, 0, false);
