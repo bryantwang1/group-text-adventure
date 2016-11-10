@@ -334,7 +334,7 @@ function objectUser(player) {
       if(idx === player.y && idx2 === player.x) {
       } else {
         var area = mapArrays[idx][idx2];
-        if(area.terrainType === firepit) {
+        if(area.terrainType === "firepit") {
           if(player.torchChecker() === "none") {
             $("#combat-display").text("You reach a hand toward the center of the firepit... Ouch! The faint embers were hotter than they looked. You pull your hand back toward your chest quickly.");
           } else if (player.torchChecker() === "unlit") {
@@ -348,7 +348,7 @@ function objectUser(player) {
           } else {
             $("#combat-display").text("You shouldn't be seeing this message.");
           }
-        } else if (area.terrainType === objectSwitch) {
+        } else if (area.terrainType === "objectSwitch") {
 
         } else {
           $("#combat-display").text("You can't use this object right now.");
