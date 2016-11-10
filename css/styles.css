@@ -406,16 +406,19 @@ display: none;
 #victory-image {
   text-align: center;
   margin-top: 200px;
-  display:none;
+  display:  none;
 }
 #starting-image {
   text-align: center;
   margin-top: 200px;
 }
+#dragon-onMap-image img {
+  width: 500px;
+  height: auto;
+}
 /*walls icon*/
 .wall {
   color: #4777A9;
-
 }
 /*tiles icon*/
 .tiles {

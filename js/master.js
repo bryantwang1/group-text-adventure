@@ -583,6 +583,11 @@ function combatStarter(monster) {
   $("#door-image").hide();
   $("#monster-health").show();
   $("#monster-health-number").show();
+  if(monster.name === "dragon") {
+    $("#map").empty();
+    $("#map").append("<div id=\"dragon-onMap-image\"><img src=\"img/dragon-onMap.jpg\"></div>")
+    $("#dragon-onMap-image").fadeIn(1000);
+  }
   $("#" + monster.name + "-image").show();
   monster.saySomething();
   monster.healthBar();
@@ -1287,7 +1292,9 @@ function roomManipulator(player, roomName) {
 // Hard coded to use testPlayer y and x for now
 function gameEnder() {
   $("#room-description").hide();
+  $("#dragon-onMap-image").fadeOut("slow");
   $("#map").fadeOut("slow");
+  $("#map").empty();
   $("#victory-image").delay(600).fadeIn("slow");
   userCommands = ["continue", "restart"];
   commandDisplayer();
@@ -1955,6 +1962,8 @@ $(function() {
               $("#victory-image").fadeOut("slow");
               $("#map").delay(600).fadeIn("slow");
               $("#combat-display").text("");
+              mapDisplayer();
+              playerDisplayer(testPlayer);
               surroundingChecker(testPlayer);
             } else if(userInput === "restart") {
               window.location.reload();
