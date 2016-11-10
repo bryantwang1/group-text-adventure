@@ -1910,6 +1910,14 @@ $(function() {
               fighter(testPlayer);
             } else if(userInput === "use") {
               objectUser(testPlayer);
+            } else if(userInput === "continue") {
+              $("#room-description").show();
+              $("#victory-image").fadeOut("slow");
+              $("#map").delay(600).fadeIn("slow");
+              $("#combat-display").text("");
+              surroundingChecker(testPlayer);
+            } else if(userInput === "restart") {
+              window.location.reload();
             } else {
               $("#combat-display").text("You can't do that.");
             }
