@@ -1308,27 +1308,39 @@ room1.generator = function(player, createdBefore, whereFrom) {
     if(runCreator) {
       doorCreator(1, room);
       chestCreator(3, room);
-      waterCreator(2, room);
-      lavaCreator(1, room);
+      waterCreator(5, room);
+      lavaCreator(4, room);
       spikeCreator(2, room);
       placedMonsterCreator("random", room);
     }
     room.doors[0].y = 0;
     room.doors[0].x = 5;
-    room.chests[0].y = 1;
+    room.chests[0].y = 3;
     room.chests[0].x = 1;
     room.chests[1].y = 5;
-    room.chests[1].x = 6;
-    room.chests[2].y = 6;
-    room.chests[2].x = 6;
-    room.waters[0].y = 4;
+    room.chests[1].x = 7;
+    room.chests[2].y = 8;
+    room.chests[2].x = 3;
+    room.waters[0].y = 1;
     room.waters[0].x = 1;
-    room.waters[1].y = 4;
-    room.waters[1].x = 2;
+    room.waters[1].y = 2;
+    room.waters[1].x = 1;
+    room.waters[2].y = 2;
+    room.waters[2].x = 2;
+    room.waters[3].y = 4;
+    room.waters[3].x = 1;
+    room.waters[4].y = 4;
+    room.waters[4].x = 2;
     room.lavas[0].y = 7;
     room.lavas[0].x = 5;
-    room.monsters[0].y = 8;
-    room.monsters[0].x = 1;
+    room.lavas[1].y = 7;
+    room.lavas[1].x = 4;
+    room.lavas[2].y = 8;
+    room.lavas[2].x = 5;
+    room.lavas[3].y = 8;
+    room.lavas[3].x = 4;
+    room.monsters[0].y = 1;
+    room.monsters[0].x = 5;
     room.spikes[0].y = 2;
     room.spikes[0].x = 5;
     room.spikes[1].y = 2;
@@ -1340,7 +1352,13 @@ room1.generator = function(player, createdBefore, whereFrom) {
     mapArrays[room.chests[2].y][room.chests[2].x] = room.chests[2];
     mapArrays[room.waters[0].y][room.waters[0].x] = room.waters[0];
     mapArrays[room.waters[1].y][room.waters[1].x] = room.waters[1];
+    mapArrays[room.waters[2].y][room.waters[2].x] = room.waters[2];
+    mapArrays[room.waters[3].y][room.waters[3].x] = room.waters[3];
+    mapArrays[room.waters[4].y][room.waters[4].x] = room.waters[4];
     mapArrays[room.lavas[0].y][room.lavas[0].x] = room.lavas[0];
+    mapArrays[room.lavas[1].y][room.lavas[1].x] = room.lavas[1];
+    mapArrays[room.lavas[2].y][room.lavas[2].x] = room.lavas[2];
+    mapArrays[room.lavas[3].y][room.lavas[3].x] = room.lavas[3];
     mapArrays[room.monsters[0].y][room.monsters[0].x] = room.monsters[0];
     mapArrays[room.spikes[0].y][room.spikes[0].x] = room.spikes[0];
     mapArrays[room.spikes[1].y][room.spikes[1].x] = room.spikes[1];
@@ -1352,9 +1370,9 @@ room1.generator = function(player, createdBefore, whereFrom) {
     room.doors[0].firstTime = true;
     room.doors[0].fromWhere = "room1";
 
-    room.chests[0].drops.push(mysticBow);
+    room.chests[0].drops.push(key);
     room.chests[1].drops.push(woodSword, potion);
-    room.chests[2].drops.push(key, revive);
+    room.chests[2].drops.push(revive);
   }
 
   mapCreator(10,10);
