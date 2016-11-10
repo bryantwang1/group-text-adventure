@@ -1902,7 +1902,7 @@ $(function() {
           testPlayer.equipWeapon(userInput);
           equipTyped = false;
         } else {
-          if(userCommands.includes(userInput)) {
+          if(userCommands.includes(userInput) || userInput === "dev healz") {
             if(userInput === "attack") {
               $("#combat-display").empty();
               var attackDamage = testPlayer.whatDamage()
@@ -1925,6 +1925,9 @@ $(function() {
               equipTyped = true;
             } else if(userInput === "revive") {
               testPlayer.reviver();
+            } else if(userInput === "dev healz") {
+              testPlayer.restoreHealth(1000);
+              testPlayer.healthBar();
             } else {
               $("#combat-display").text("You can't do that.");
             }
@@ -1937,7 +1940,7 @@ $(function() {
           testPlayer.equipWeapon(userInput);
           equipTyped = false;
         } else {
-          if(userCommands.includes(userInput)) {
+          if(userCommands.includes(userInput) || userInput === "dev healz") {
             if(userInput === "search") {
               searcher(testPlayer);
             } else if(userInput === "potion") {
@@ -1969,7 +1972,10 @@ $(function() {
               window.location.reload();
             } else if(userInput === "start") {
               gameStarter(testPlayer);
-            }else {
+            } else if(userInput === "dev healz") {
+              testPlayer.restoreHealth(1000);
+              testPlayer.healthBar();
+            } else {
               $("#combat-display").text("You can't do that.");
             }
           } else {
