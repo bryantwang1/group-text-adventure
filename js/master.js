@@ -375,12 +375,13 @@ function objectUser(player) {
               $("#combat-display").text("You prod the stone pillar with your unlit torch, nothing happens. It feels like you're onto something, though.");
             } else if(whichTorch === "lit") {
               $("#combat-display").text("You touch your torch's flame to the stone bowl atop the pillar. A groaning sound echoes through the room as somewhere some hidden mechanism activates.");
-              var switchRoom;
+              var switchRoom = "";
               if(area.inside === "room3") {
                 switchRoom = "room3";
               } else if(area.inside === "room4") {
                 switchRoom = "room4";
               }
+              console.log("about to run room manipulator: " + switchRoom);
               roomManipulator(player, switchRoom);
             } else {
               $("#combat-display").text("You shouldn't be seeing this message, bro.");
@@ -1204,19 +1205,20 @@ torch.description = "A lit torch";
 
 // ROOM GENERATION BELOW THIS LINE
 function roomManipulator(player, roomName) {
+  console.log("running room manip");
   var savedPlayerY = player.y;
   var savedPlayerX = player.x;
   if(roomName === "room3") {
-    room.switched = true;
-    room.generator(player, false);
+    room3.switched = true;
+    room3.generator(player, false);
     mapArrays[player.y][player.x].playerHere = false;
     player.y = savedPlayerY;
     player.x = savedPlayerX;
     playerDisplayer(player);
     surroundingChecker(player);
   } else if(roomName === "room4") {
-    room.switched = true;
-    room.generator(player, false);
+    room4.switched = true;
+    room4.generator(player, false);
     mapArrays[player.y][player.x].playerHere = false;
     player.y = savedPlayerY;
     player.x = savedPlayerX;
@@ -1476,6 +1478,8 @@ room3.generator = function(player, createdBefore, whereFrom) {
 
     room.chests[0].drops.push(potion, unlitTorch, key);
     room.chests[0].drops.push(mysticBow, revive);
+
+    room.switches[0].inside = "room3";
   }
 
   mapCreator(10,10);
