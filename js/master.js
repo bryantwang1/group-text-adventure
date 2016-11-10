@@ -1435,14 +1435,43 @@ room5.generator = function(player, createdBefore, whereFrom) {
     if(runCreator) {
       doorCreator(2, room);
       chestCreator(1, room);
-      lavaCreator(48, room);
     }
-    room.doors[0].y = 0;
-    room.doors[0].x = 1;
+    room.doors[0].y = 9;
+    room.doors[0].x = 5;
 
     mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
 
-    // for(var lavaIdx = 0; )
+    var lavaCounter = 0;
+    for(var yIdx = 1; yIdx < 9; yIdx++) {
+      for(var xIdx = 1; xIdx < 9; xIdx++) {
+        lavaCreator(1, room);
+        mapArrays[yIdx][xIdx] = room.lavas[lavaCounter];
+        lavaCounter++;
+      }
+    }
+
+    for(var yIdx = 1; yIdx < 4; yIdx++) {
+      for(var xIdx = 3; xIdx < 7; xIdx++) {
+        console.log("loop");
+        var selectTile = mapArrays[yIdx][xIdx];
+        selectTile.terrainType = "floor";
+        selectTile.description = "A floor tile";
+        selectTile.symbol = "#";
+        selectTile.color = "tiles";
+      }
+    }
+
+    for(var yIdx = 4; yIdx < 9; yIdx++) {
+      for(var xIdx = 4; xIdx < 6; xIdx++) {
+        console.log("loop");
+        var selectTile = mapArrays[yIdx][xIdx];
+        selectTile.terrainType = "floor";
+        selectTile.description = "A floor tile";
+        selectTile.symbol = "#";
+        selectTile.color = "tiles";
+      }
+    }
+
   }
   function itemFiller() {
     room.doors[0].leadsTo = "room4";
@@ -1455,13 +1484,13 @@ room5.generator = function(player, createdBefore, whereFrom) {
   if(createdBefore){
     itemFiller();
     player.y = 8;
-    player.x = 8;
-    mapArrays[8][8].playerHere = true;
+    player.x = 5;
+    mapArrays[8][5].playerHere = true;
   } else {
-    if(whereFrom === "room2") {
+    if(whereFrom === "room4") {
       player.y = 8;
-      player.x = 8;
-      mapArrays[8][8].playerHere = true;
+      player.x = 5;
+      mapArrays[8][5].playerHere = true;
     } else {
       player.y = 1;
       player.x = 1;
