@@ -20,6 +20,7 @@ function Room(roomName) {
   this.waters = [];
   this.lavas = [];
   this.spikes = [];
+  this.firepits = [];
 }
 
 Room.prototype.displayer = function() {
@@ -136,7 +137,7 @@ function firepitCreator(amount, room) {
     firepit.canMove = false;
     firepit.description = "A shallow depression in the ground, filled with ashes. A few embers still glow brightly in the center.";
     firepit.terrainType = "firepit";
-    firepit.symbol = "#";
+    firepit.symbol = "¥";
     firepit.color = "red";
     firepit.searchable = false;
     firepit.drops = [];
@@ -1213,6 +1214,7 @@ room2.generator = function(player, createdBefore, whereFrom) {
     if(runCreator) {
       doorCreator(2, room);
       chestCreator(4, room);
+      firepitCreator(1, room);
     }
     room.doors[0].y = 0;
     room.doors[0].x = 5;
@@ -1226,6 +1228,8 @@ room2.generator = function(player, createdBefore, whereFrom) {
     room.chests[2].x = 1;
     room.chests[3].y = 7;
     room.chests[3].x = 8;
+    room.firepits[0].y = 1;
+    room.firepits[0].x = 8;
 
     mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
     mapArrays[room.doors[1].y][room.doors[1].x] = room.doors[1];
@@ -1233,6 +1237,7 @@ room2.generator = function(player, createdBefore, whereFrom) {
     mapArrays[room.chests[1].y][room.chests[1].x] = room.chests[1];
     mapArrays[room.chests[2].y][room.chests[2].x] = room.chests[2];
     mapArrays[room.chests[3].y][room.chests[3].x] = room.chests[3];
+    mapArrays[room.firepits[0].y][room.firepits[0].x] = room.firepits[0];
 
     miniWallMaker(2, 4);
     miniWallMaker(2, 5);
