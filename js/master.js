@@ -337,6 +337,16 @@ function objectUser(player) {
         if(area.terrainType === firepit) {
           if(player.torchChecker() === "none") {
             $("#combat-display").text("You reach a hand toward the center of the firepit... Ouch! The faint embers were hotter than they looked. You pull your hand back toward your chest quickly.");
+          } else if (player.torchChecker() === "unlit") {
+            for(var torchIdx = 0; torchIdx < player.items.length; torchIdx++) {
+              if(player.items[torchIdx].name === "unlitTorch") {
+                player.items[torchIdx] = torch;
+              }
+            }
+          } else if (player.torchChecker() === "lit") {
+            $("#combat-display").text("You thrust your lit torch at the firepit, but nothing happens.");
+          } else {
+            $("#combat-display").text("You shouldn't be seeing this message.");
           }
         } else if (area.terrainType === objectSwitch) {
 
@@ -746,8 +756,7 @@ Player.prototype.torchChecker = function() {
     if(this.items[idx].name === "torch") {
       return "lit";
       break;
-    }
-    else if (this.items[idx].name === "unlitTorch") {
+    } else if(this.items[idx].name === "unlitTorch") {
       return "unlit";
       break;
     } else {
