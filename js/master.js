@@ -721,6 +721,8 @@ Player.prototype.torchChecker = function() {
     else if (this.items[idx].name === "unlitTorch") {
       return "unlit";
       break;
+    } else {
+      return "none";
     }
   }
 }
