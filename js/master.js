@@ -1295,16 +1295,18 @@ function gameEnder() {
 }
 
 function gameStarter(player) {
-  $("#room-description").fadeIn("slow");
-  $("#map").fadeIn("slow");
-  $("#hero-image").fadeIn("slow");
-  $("#hero-health-number").fadeIn("slow");
-  $("#hero-health").fadeIn("slow");
-  $("#weapons-label").fadeIn("slow");
-  $("#weapons").fadeIn("slow");
-  $("#items-label").fadeIn("slow");
-  $("#items").fadeIn("slow");
+  $("#starting-image").fadeOut("slow");
+  $("#room-description").delay(600).fadeIn("slow");
+  $("#map").delay(600).fadeIn("slow");
+  $("#hero-image").delay(600).fadeIn("slow");
+  $("#hero-health-number").delay(600).fadeIn("slow");
+  $("#hero-health").delay(600).fadeIn("slow");
+  $("#weapons-label").delay(600).fadeIn("slow");
+  $("#weapons").delay(600).fadeIn("slow");
+  $("#items-label").delay(600).fadeIn("slow");
+  $("#items").delay(600).fadeIn("slow");
   surroundingChecker(player);
+  $("#combat-display").text("Move with the arrow keys. The commands you can use at any given time (besides movement) are listed in the black box directly above this one, labeled as Possible Commands.");
 }
 
 var room1 = new Room("room1");
@@ -1834,6 +1836,7 @@ $(function() {
   testPlayer.keyCounter();
   userCommands = ["start"]
   commandDisplayer();
+  $("#combat-display").text("Hi, welcome to our text adventure! Type start in the input box and hit enter to begin.");
 
   // Code to make arrow keys work to move
   $(document).on("keydown", function(event) {

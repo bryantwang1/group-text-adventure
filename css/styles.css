@@ -407,6 +407,10 @@ display: none;
   margin-top: 200px;
   display:none;
 }
+#starting-image {
+  text-align: center;
+  margin-top: 200px;
+}
 /*walls icon*/
 .wall {
   color: #4777A9;
