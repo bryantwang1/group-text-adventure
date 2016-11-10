@@ -1262,8 +1262,8 @@ function roomManipulator(player, roomName) {
 }
 
 var room1 = new Room("room1");
-room1.displayName = "It begins...";
-room1.description = "Filler description for room 1";
+room1.displayName = "Entry Hall";
+room1.description = "You're standing in a large, dark room. The stone floor and walls vanish into the gloom. Next to you rest a few old chests, and unless you’re mistaken something behind you is radiating warmth. You can barely make out something else in the distance. Did it just move?";
 rooms.push(room1);
 // This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide true.
 room1.generator = function(player, createdBefore, whereFrom) {
@@ -1346,8 +1346,8 @@ room1.generator = function(player, createdBefore, whereFrom) {
 }
 
 var room2 = new Room("room2");
-room2.displayName = "It continues...";
-room2.description = "Filler description for room 2";
+room2.displayName = "The Room of Despair";
+room2.description = "The door slams behind you and you find yourself in another space. Somewhere off to your right something makes a noise, and then all is silent again. The walls are closer in than before, and there’s no obvious exit. Hopefully there's another door around here somewhere, but will it require another key?";
 rooms.push(room2);
 room2.generator = function(player, createdBefore, whereFrom) {
   $("#audio").empty();
@@ -1446,8 +1446,8 @@ room2.generator = function(player, createdBefore, whereFrom) {
 }
 
 var room3 = new Room("room3");
-room3.displayName = "Room 3";
-room3.description = "Filler description for room 3";
+room3.displayName = "The Slightly Puzzling Room";
+room3.description = "You hear water, and it’s not just a trickle. Your normal poor visibility is worse than usual, as a mist seems to cling to everything. You hear some sort of mechanical grinding for a few seconds, but then it shudders to a halt. A new menace? Or a help?";
 room3.switched = false;
 rooms.push(room3);
 room3.generator = function(player, createdBefore, whereFrom) {
@@ -1555,8 +1555,8 @@ room3.generator = function(player, createdBefore, whereFrom) {
 }
 
 var room4 = new Room("room4");
-room4.displayName = "Room 4";
-room4.description = "Filler description for room 4";
+room4.displayName = "The Maze Room";
+room4.description = "A maze of columns, spike traps, and walls lies before you. You hear some sort of rustling in a far hallway, and you almost think you hear a great rumbling sigh somewhere. Surely that couldn’t involve you. Surely.";
 room4.switched = false;
 rooms.push(room4);
 room4.generator = function(player, createdBefore, whereFrom) {
@@ -1670,8 +1670,8 @@ room4.generator = function(player, createdBefore, whereFrom) {
 }
 
 var room5 = new Room("room5");
-room5.displayName = "Room 5";
-room5.description = "Filler description for room 5";
+room5.displayName = "The Treasure Room";
+room5.description = "As you pass through the door, a warm, red glow envelopes you. Soon you realize why: The entire room is filled with a bed of lava. A narrow stone bridge arches above the lava to a wider platform, at the center of which slumbers a huge scaly beast, its tail curling protectively around a large chest beside it."
 rooms.push(room5);
 room5.generator = function(player, createdBefore, whereFrom) {
   $("#audio").empty();
