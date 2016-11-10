@@ -1608,7 +1608,7 @@ room4.generator = function(player, createdBefore, whereFrom) {
     room.switches[0].inside = "room4";
 
     room.chests[0].drops.push(potion, potion, revive);
-    room.chests[1].drops.push(revive);
+    room.chests[1].drops.push(revive, key);
   }
 
   mapCreator(10,10);
