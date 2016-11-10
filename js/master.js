@@ -1306,7 +1306,7 @@ function gameStarter(player) {
   $("#items-label").delay(1000).fadeIn("slow");
   $("#items").delay(1000).fadeIn("slow");
   surroundingChecker(player);
-  $("#combat-display").text("Move with the arrow keys. The commands you can use at any given time (besides movement) are listed in the black box directly above this one, labeled as Possible Commands.");
+  $("#combat-display").text("Move with the arrow keys. The commands you can use at any given time (besides movement) are listed in the black box immediately above this one, labeled as Possible Commands.");
 }
 
 var room1 = new Room("room1");
