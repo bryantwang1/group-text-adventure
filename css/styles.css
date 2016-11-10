@@ -164,7 +164,6 @@ p{
   letter-spacing: 1px;
 }
 #monster-health-bar-inner, #player-health-bar-inner {
-  width: 236px;
   height: 16px;
   background-color: #6dc20f;
   border-radius: 5px;

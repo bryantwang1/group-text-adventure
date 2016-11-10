@@ -687,6 +687,7 @@ function Player(userName) {
 	this.name = userName;
   this.maxHealth = 500;
   this.currentHealth = 500;
+  this.previousHealth = 500;
   this.minDamage = 10;
   this.maxDamage = 10;
   // We need to update these coordinates everytime the player enters a room or moves.
@@ -702,10 +703,15 @@ function Player(userName) {
 }
 
 Player.prototype.healthBar = function() {
-	var percentage = Math.floor((this.currentHealth / this.maxHealth) * 100);
+  console.log(this.previousHealth);
+  var oldHP = this.previousHealth/this.maxHealth;
+  var oldHP2 = Math.floor(oldHP * 240);
+	var percentage = (this.currentHealth / this.maxHealth);
+  var percentage2 = Math.floor(percentage * 240);
   $("div#hero-health").empty();
   $("div#hero-health").append("<div id=\"player-health-bar-outer\"><div id=\"player-health-bar-inner\"></div></div>");
-  $("#player-health-bar-inner").css("width", percentage + "%");
+  $("#player-health-bar-inner").css("width", oldHP2 + "px");
+  $("#player-health-bar-inner").animate({width: percentage2 + "px"}, 600);
 
   $("#hero-health-display").text(this.currentHealth + "/" + this.maxHealth);
 }
@@ -752,6 +758,7 @@ Player.prototype.reviver = function() {
 }
 
 Player.prototype.takeDamage = function(damageAmount) {
+  this.previousHealth = this.currentHealth;
 	this.currentHealth -= damageAmount;
   this.healthBar();
   $("#combat-display").append("<p>You're attacked with " + damageAmount + " damage, your health is " + this.currentHealth + ".</p>");
@@ -771,6 +778,7 @@ Player.prototype.takeDamage = function(damageAmount) {
 }
 
 Player.prototype.restoreHealth = function(healthAmount) {
+  this.previousHealth = this.currentHealth;
   this.currentHealth += healthAmount;
   if(this.currentHealth > this.maxHealth) {
     this.currentHealth = this.maxHealth;
@@ -1008,6 +1016,7 @@ function Monster(name, health, minDamage, maxDamage) {
  this.alive = true;
  this.maxHealth = health;
  this.currentHealth = health;
+ this.previousHealth = health;
  this.minDamage = minDamage;
  this.maxDamage = maxDamage;
  this.defense = 0;
@@ -1029,12 +1038,14 @@ Monster.prototype.saySomething = function() {
   $("#monster-sounds").text(monsterName + " says: " + this.vocalizations[whichSound-1]);
 }
 
-// Prototype method for generating a health bar based on current and max health. Needs to be tested. Should update the health bar everytime it's run as well. Don't forget the accompanying css.
+// Prototype method for generating a health bar based on current and max health. Needs to be tested. Should update the health bar everytime it's run as well. Don't forget the accompanying css. Animated a slightly different way from player healthbar just for experimentation.
 Monster.prototype.healthBar = function() {
+  var oldHP = Math.floor((this.previousHealth/this.maxHealth) * 100);
 	var percentage = Math.floor((this.currentHealth / this.maxHealth) * 100);
   $("div#monster-health").empty();
   $("div#monster-health").append("<div id=\"monster-health-bar-outer\"><div id=\"monster-health-bar-inner\"></div></div>");
-  $("#monster-health-bar-inner").css("width", percentage + "%");
+  $("#monster-health-bar-inner").css("width", oldHP + "%");
+  $("#monster-health-bar-inner").animate({width: percentage + "%"}, 600);
 
   $("#monster-health-display").text(this.currentHealth + "/" + this.maxHealth);
 }
@@ -1048,6 +1059,7 @@ Monster.prototype.statReset = function() {
 // Prototype method for monsters to take damage. Changes alive property to false if their currentHealth falls to 0 or below. Hard coded testPlayer in for potions.
 Monster.prototype.takeDamage = function(damageAmount) {
   var dragonSaver = currentEnemy;
+  this.previousHealth = this.currentHealth;
 	this.currentHealth -= damageAmount;
   this.healthBar();
   $("#combat-display").append("<p>You attack with " + damageAmount + " damage, the monster's health is " + this.currentHealth + ".</p>");
@@ -1085,6 +1097,7 @@ Monster.prototype.takeDamage = function(damageAmount) {
 }
 
 Monster.prototype.restoreHealth = function(healthAmount) {
+  this.previousHealth = this.currentHealth;
   this.currentHealth += healthAmount;
   if(this.currentHealth > this.maxHealth) {
     this.currentHealth = this.maxHealth;
