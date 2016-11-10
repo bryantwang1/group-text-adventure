@@ -324,14 +324,14 @@ function surroundingChecker(player) {
     }
   }
   if(chestFound) {
-    $("#door-image").fadeOut(300);
-    $("#chest-image").delay(300).fadeIn("slow");
+    $("#door-image").stop().hide();
+    $("#chest-image").delay(300).fadeIn(300);
   } else if(doorFound) {
-    $("#chest-image").fadeOut(300);
-    $("#door-image").delay(300).fadeIn("slow");
+    $("#chest-image").stop().hide();
+    $("#door-image").delay(300).fadeIn(300);
   } else {
-    $("#door-image").fadeOut("slow");
-    $("#chest-image").fadeOut("slow");
+    $("#door-image").fadeOut(300);
+    $("#chest-image").fadeOut(300);
   }
   commandDisplayer();
 }
@@ -375,6 +375,7 @@ function objectUser(player) {
               for(var torchIdx = 0; torchIdx < player.items.length; torchIdx++) {
                 if(player.items[torchIdx].name === "unlitTorch") {
                   player.items[torchIdx] = torch;
+                  $("#which-torch").text("Lit Torch");
                 }
               }
               $("#combat-display").text("You touch your unlit torch to the embers...your previously unlit torch springs to life with a whoosh.");
@@ -530,6 +531,7 @@ function searcher(player) {
                     } else if(area.drops[0].itemType === "item") {
                       if(area.drops[0].name === "torch" || area.drops[0].name === "unlitTorch") {
                         $("#torch").fadeIn("slow");
+                        $("#which-torch").text("Unlit Torch")
                       }
                       if(area.drops[0].name === "potion") {
                         var potionAmount = Math.floor((Math.random() * 5) + 1);
@@ -579,6 +581,9 @@ function combatStarter(monster) {
   $("#monster-description").text(monster.description);
   $("#monster-name").text(monsterName);
   $("#room-hider").hide();
+  $("#chest-image").stop().hide();
+  $("#door-image").stop().hide();
+  $("#search-image").stop().hide();
   $("#searcher-images").hide();
   $("#monster-health").show();
   $("#monster-health-number").show();
