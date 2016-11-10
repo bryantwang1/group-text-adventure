@@ -1195,7 +1195,9 @@ torch.description = "A lit torch";
 // ROOM GENERATION BELOW THIS LINE
 function roomManipulator(room) {
   if(room.name === "room3") {
-
+    room.switched = true;
+  } else if(room.name === "room4") {
+    room.switched = true;
   }
 }
 
@@ -1373,6 +1375,7 @@ room2.generator = function(player, createdBefore, whereFrom) {
 var room3 = new Room("room3");
 room3.displayName = "Room 3";
 room3.description = "Filler description for room 3";
+room3.switched = false;
 rooms.push(room3);
 room3.generator = function(player, createdBefore, whereFrom) {
   $("#audio").empty();
@@ -1473,6 +1476,7 @@ room3.generator = function(player, createdBefore, whereFrom) {
 var room4 = new Room("room4");
 room4.displayName = "Room 4";
 room4.description = "Filler description for room 4";
+room4.switched = false;
 rooms.push(room4);
 room4.generator = function(player, createdBefore, whereFrom) {
   $("#audio").empty();
