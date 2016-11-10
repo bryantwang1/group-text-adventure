@@ -504,6 +504,7 @@ function searcher(player) {
           var area = mapArrays[idx][idx2];
           if(area.searchable) {
             if(area.trapped) {
+              area.trapped = false;
               $("#chest-image").hide();
               $("#search-image").hide();
               currentEnemy = dragon;
