@@ -1108,6 +1108,8 @@ room1.description = "Filler description for room 1";
 rooms.push(room1);
 // This function should be run to generate room1 at the beginning and when players pass back in through a door, provide true for createdBefore if it's the first time you're running it, otherwise leave it empty or provide true.
 room1.generator = function(player, createdBefore, whereFrom) {
+  $("#audio").empty();
+  $("#audio").append("<audio autoplay loop src=\"music/first.mp3\" type=\"audio/mpeg\"></audio>");
   var room = this;
   // Generates the items for the room
   function itemPlacer(runCreator) {
@@ -1189,6 +1191,8 @@ room2.displayName = "It continues...";
 room2.description = "Filler description for room 2";
 rooms.push(room2);
 room2.generator = function(player, createdBefore, whereFrom) {
+  $("#audio").empty();
+  $("#audio").append("<audio autoplay loop src=\"music/second.mp3\" type=\"audio/mpeg\"></audio>");
   var room = this;
   function itemPlacer(runCreator) {
     if(runCreator) {
@@ -1270,6 +1274,8 @@ room3.displayName = "Room 3";
 room3.description = "Filler description for room 3";
 rooms.push(room3);
 room3.generator = function(player, createdBefore, whereFrom) {
+  $("#audio").empty();
+  $("#audio").append("<audio autoplay loop src=\"music/third.mp3\" type=\"audio/mpeg\"></audio>");
   var room = this;
   function itemPlacer(runCreator) {
     if(runCreator) {
@@ -1328,6 +1334,8 @@ room4.displayName = "Room 4";
 room4.description = "Filler description for room 4";
 rooms.push(room4);
 room4.generator = function(player, createdBefore, whereFrom) {
+  $("#audio").empty();
+  $("#audio").append("<audio autoplay loop src=\"music/maze.mp3\" type=\"audio/mpeg\"></audio>");
   var room = this;
   function itemPlacer(runCreator) {
     if(runCreator) {
@@ -1430,6 +1438,8 @@ room5.displayName = "Room 5";
 room5.description = "Filler description for room 5";
 rooms.push(room5);
 room5.generator = function(player, createdBefore, whereFrom) {
+  $("#audio").empty();
+  $("#audio").append("<audio autoplay loop src=\"music/boss.mp3\" type=\"audio/mpeg\"></audio>");
   var room = this;
   function itemPlacer(runCreator) {
     if(runCreator) {
