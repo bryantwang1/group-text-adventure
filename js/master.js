@@ -634,7 +634,7 @@ function combatEnder() {
   var playerTile = mapArrays[testPlayer.y][testPlayer.x];
   playerTile.monsterHere = false;
   currentEnemy.statReset();
-  $("#" + currentEnemy.name + "-image").fadeOut("fast");
+  $("#" + currentEnemy.name + "-image").hide();;
   currentEnemy = {};
   playerInCombat = false;
   $("#monster-description").text("");
@@ -642,8 +642,16 @@ function combatEnder() {
   $("#monster-sounds").text("");
   $("#monster-health-number").hide();
   $("#monster-health").hide();
-  $("#room-description").delay(200).fadeIn("slow");
+  $("#room-description").show();
   surroundingChecker(testPlayer);
+}
+// Hard coded to use testPlayer y and x for now
+function gameEnder() {
+  $("#room-description").hide();
+  $("#map").fadeOut("slow");
+  userCommands = ["continue", "restart"];
+  commandDisplayer();
+  $("#combat-display").text("Congratulations, you finished the game! Would you like to continue playing with this character or restart the game?");
 }
 // Function for the flee command
 function playerFlee(player) {
