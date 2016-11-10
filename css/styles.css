@@ -61,7 +61,6 @@ p{
   background-image: url("../img/wizard.jpg");
   border-radius: 15px;
   display: none;
-
 }
 #golem-image {
   width: 240px;
@@ -70,6 +69,16 @@ p{
   margin-bottom: 10px;
   box-shadow: 5px 5px 15px #222;
   background-image: url("../img/golem.jpg");
+  border-radius: 15px;
+  display: none;
+}
+#mega-golem-image {
+  width: 240px;
+  height: 360px;
+  background-color: #555;
+  margin-bottom: 10px;
+  box-shadow: 5px 5px 15px #222;
+  background-image: url("../img/super-golem.jpg");
   border-radius: 15px;
   display: none;
 }

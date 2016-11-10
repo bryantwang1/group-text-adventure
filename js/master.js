@@ -141,7 +141,7 @@ function placedMonsterCreator(type, room) {
   if(type === "golem") {
     monster.description = "A golem, much larger than any you've previously seen.";
     monster.symbol = "Ώ";
-    monster.monsterType = "special golem";
+    monster.monsterType = "super golem";
   } else if(type === "dragon") {
     monster.description = "A massive scaled creature slumbers here. Its wings flap a little everytime it takes a breath. The air around the beast shimmers like the air around an intense fire."
     monster.symbol = "♠";
@@ -468,8 +468,8 @@ function fighter(player) {
       } else {
         var area = mapArrays[idx][idx2];
         if(area.terrainType === "monster") {
-          if(area.monsterType === "special golem") {
-            currentEnemy = specialGolem;
+          if(area.monsterType === "super golem") {
+            currentEnemy = superGolem;
           } else if(area.monsterType === "dragon") {
             currentEnemy = dragon;
           } else if(area.monsterType === "random") {
@@ -595,7 +595,7 @@ Player.prototype.reviver = function() {
       this.restoreHealth(1000);
       this.revives -= 1;
       this.healthBar();
-      if(currentEnemy !== dragon && currentEnemy !== specialGolem) {
+      if(currentEnemy !== dragon && currentEnemy !== superGolem) {
         combatEnder();
       }
       $("#combat-display").text("Before you breathe no more you manage to empty your revival potion into your throat. As the darkness of death lifts, you are comforted by the knowledge that death’s door will not shut on you…this time. ");
@@ -1003,11 +1003,11 @@ golem.defense = 0;
 golem.drops = ["puzzle item", "armor", "potion"];
 golem.vocalizations = ["Rock crush you...", "Ugh!", "I slow. Hold still!", "Rock mad!", "Leave me alone...", "Oof!"];
 
-var specialGolem = new Monster("golem", 1000, 25, 100);
-specialGolem.description = "A massive rock monster, every time it moves the ground quakes.";
-specialGolem.defense = 3;
-specialGolem.drops = ["puzzle item", "armor", "potion"];
-specialGolem.vocalizations = ["Rock crush you...", "Ugh!", "I slow. Hold still!", "Rock mad!", "Leave me alone...", "Oof!"];
+var superGolem = new Monster("mega-golem", 1000, 25, 100);
+superGolem.description = "A massive rock monster, every time it moves the ground quakes.";
+superGolem.defense = 3;
+superGolem.drops = ["puzzle item", "armor", "potion"];
+superGolem.vocalizations = ["Rock crush you...", "Ugh!", "I slow. Hold still!", "Rock mad!", "Leave me alone...", "Oof!"];
 
 var skeleton = new Monster("skeleton", 120, 15, 40);
 skeleton.description = "A member of the undead legions approaches you with malice in the very marrow of its bones.";
@@ -1281,6 +1281,7 @@ room3.generator = function(player, createdBefore, whereFrom) {
     if(runCreator) {
       doorCreator(2, room);
       chestCreator(1, room);
+      placedMonsterCreator("golem", room);
     }
     room.doors[0].y = 0;
     room.doors[0].x = 1;
@@ -1288,10 +1289,13 @@ room3.generator = function(player, createdBefore, whereFrom) {
     room.doors[1].x = 8;
     room.chests[0].y = 1;
     room.chests[0].x = 8;
+    room.monsters[0].y = 5;
+    room.monsters[0].x = 1;
 
     mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
     mapArrays[room.doors[1].y][room.doors[1].x] = room.doors[1];
     mapArrays[room.chests[0].y][room.chests[0].x] = room.chests[0];
+    mapArrays[room.monsters[0].y][room.monsters[0].x] = room.monsters[0];
   }
   function itemFiller() {
     room.doors[0].locked = true;
@@ -1445,11 +1449,14 @@ room5.generator = function(player, createdBefore, whereFrom) {
     if(runCreator) {
       doorCreator(2, room);
       chestCreator(1, room);
+      placedMonsterCreator("dragon", room);
     }
     room.doors[0].y = 9;
     room.doors[0].x = 5;
     room.chests[0].y = 2;
     room.chests[0].x = 5;
+    room.monsters[0].y = 2;
+    room.monsters[0].x = 4;
 
     var lavaCounter = 0;
     for(var yIdx = 1; yIdx < 9; yIdx++) {
@@ -1482,6 +1489,7 @@ room5.generator = function(player, createdBefore, whereFrom) {
 
     mapArrays[room.doors[0].y][room.doors[0].x] = room.doors[0];
     mapArrays[room.chests[0].y][room.chests[0].x] = room.chests[0];
+    mapArrays[room.monsters[0].y][room.monsters[0].x] = room.monsters[0];
   }
   function itemFiller() {
     room.doors[0].leadsTo = "room4";
