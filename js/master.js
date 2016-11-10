@@ -21,6 +21,7 @@ function Room(roomName) {
   this.lavas = [];
   this.spikes = [];
   this.firepits = [];
+  this.switches = [];
 }
 
 Room.prototype.displayer = function() {
@@ -143,6 +144,21 @@ function firepitCreator(amount, room) {
     firepit.drops = [];
 
     room.firepits.push(firepit);
+  }
+}
+// function similar to chestCreator but for switch objects
+function objectSwitchCreator(amount, room) {
+  for(var idx = 0; idx < amount; idx++) {
+    var objectSwitch = new Location(-1, -1);
+    objectSwitch.canMove = false;
+    objectSwitch.description = "A stone pillar about chest-high, topped with a stone bowl that shows signs of intense heat";
+    objectSwitch.terrainType = "objectSwitch";
+    objectSwitch.symbol = "/";
+    objectSwitch.color = "red";
+    objectSwitch.searchable = false;
+    objectSwitch.drops = [];
+
+    room.switches.push(objectSwitch);
   }
 }
 // Function similar to chestCreator but for placed monsters
