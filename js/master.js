@@ -324,14 +324,14 @@ function surroundingChecker(player) {
     }
   }
   if(chestFound) {
-    $("#door-image").hide();
-    $("#chest-image").fadeIn("fast");
+    $("#door-image").fadeOut(300);
+    $("#chest-image").delay(300).fadeIn("slow");
   } else if(doorFound) {
-    $("#chest-image").hide();
-    $("#door-image").fadeIn("fast");
+    $("#chest-image").fadeOut(300);
+    $("#door-image").delay(300).fadeIn("slow");
   } else {
-    $("#door-image").fadeOut("fast");
-    $("#chest-image").fadeOut("fast");
+    $("#door-image").fadeOut("slow");
+    $("#chest-image").fadeOut("slow");
   }
   commandDisplayer();
 }
@@ -578,10 +578,8 @@ function combatStarter(monster) {
   $("#combat-display").text("You have entered combat with a " + monster.name + ".");
   $("#monster-description").text(monster.description);
   $("#monster-name").text(monsterName);
-  $("#room-description").hide();
-  $("#search-image").hide();
-  $("#chest-image").hide();
-  $("#door-image").hide();
+  $("#room-hider").hide();
+  $("#searcher-images").hide();
   $("#monster-health").show();
   $("#monster-health-number").show();
   if(monster.name === "dragon") {
@@ -640,7 +638,7 @@ function combatEnder() {
   var playerTile = mapArrays[testPlayer.y][testPlayer.x];
   playerTile.monsterHere = false;
   currentEnemy.statReset();
-  $("#" + currentEnemy.name + "-image").hide();;
+  $("#" + currentEnemy.name + "-image").fadeOut("slow");;
   currentEnemy = {};
   playerInCombat = false;
   $("#monster-description").text("");
@@ -648,7 +646,9 @@ function combatEnder() {
   $("#monster-sounds").text("");
   $("#monster-health-number").hide();
   $("#monster-health").hide();
-  $("#room-description").show();
+  $("#room-hider").delay(600).fadeIn(100);
+  $("#room-description").delay(600).fadeIn("slow")
+  $("#searcher-images").delay(600).fadeIn("slow");
   surroundingChecker(testPlayer);
 }
 // Function for the flee command
@@ -1109,10 +1109,8 @@ Monster.prototype.restoreHealth = function(healthAmount) {
 // Example of a function for a chance to hit a monster instead of a sure hit.
 function attack(damage, target) {
 	// Generates and stores a random number from 1 to 10.
-  $("#room-description").hide();
-  $("#search-image").hide();
-  $("#chest-image").hide();
-  $("#door-image").hide();
+  $("#room-hider").hide();
+  $("#searcher-images").hide();
   // hide room description on attack in case it bugs out and is showing
 	var hitChance = Math.floor(Math.random() * 10) + 1;
   var defense = target.defense;
