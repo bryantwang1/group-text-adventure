@@ -384,9 +384,14 @@ padding-left: 50px;
 }
 #death-message {
   text-align: center;
-  margin-top: 150px;
+  margin-top: 200px;
   color: darkred;
   display: none;
+}
+#victory-image {
+  text-align: center;
+  margin-top: 200px;
+  display:none;
 }
 /*walls icon*/
 .wall {

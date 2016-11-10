@@ -647,9 +647,9 @@ function combatEnder() {
 }
 // Hard coded to use testPlayer y and x for now
 function gameEnder() {
-  $
   $("#room-description").hide();
   $("#map").fadeOut("slow");
+  $("#victory-image").delay(600).fadeIn("slow");
   userCommands = ["continue", "restart"];
   commandDisplayer();
   $("#combat-display").text("Congratulations, you finished the game! Would you like to continue playing with this character or restart the game?");
