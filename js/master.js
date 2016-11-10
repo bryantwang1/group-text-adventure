@@ -326,7 +326,26 @@ function looker(player) {
 }
 // function similar to surroundingChecker, to run when user inputs a use command
 function objectUser(player) {
-  
+  var y = player.y - 1;
+  var x = player.x - 1;
+
+  for(var idx = y; idx < y+3; idx++) {
+    for(var idx2 = x; idx2 < x+3; idx2++) {
+      if(idx === player.y && idx2 === player.x) {
+      } else {
+        var area = mapArrays[idx][idx2];
+        if(area.terrainType === firepit) {
+          if(player.torchChecker() === "none") {
+            $("#combat-display").text("You reach a hand toward the center of the firepit... Ouch! The faint embers were hotter than they looked. You pull your hand back toward your chest quickly.");
+          }
+        } else if (area.terrainType === objectSwitch) {
+
+        } else {
+          $("#combat-display").text("You can't use this object right now.");
+        }
+      }
+    }
+  }
 }
 // Function similar to surroundingChecker, to run when user inputs an open door command
 function doorOpener(player) {
