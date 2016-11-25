@@ -328,6 +328,7 @@ function surroundingChecker(player) {
     $("#door-image").fadeOut(300);
     $("#chest-image").fadeOut(300);
   }
+  player.shortcutSetter();
   commandDisplayer();
 }
 // Function similar to surroundingChecker, to run when user inputs a look command.
@@ -506,6 +507,7 @@ function searcher(player) {
               currentEnemy.type = dragon;
               combatStarter(currentEnemy.type);
               player.commands = ["attack", "potion", "equip"];
+              player.shortcutSetter();
               commandDisplayer();
               placedMonsterCombat = true;
               currentEnemy.setCoord(2, 4);
@@ -590,6 +592,7 @@ function combatStarter(monster) {
   monster.healthBar();
   playerInCombat = true;
   testPlayer.commands = ["attack", "flee", "potion", "equip"];
+  testPlayer.shortcutSetter();
   commandDisplayer();
 }
 // Function for the command "fight" which will initiate a fight with a monster on an adjacent tile. If there are multiple monsters for some reason it will initiate a fight with the first monster found.
@@ -613,6 +616,7 @@ function fighter(player) {
           combatStarter(currentEnemy.type);
           if(area.monsterType === "dragon") {
             player.commands = ["attack", "potion", "equip"];
+            player.shortcutSetter();
             commandDisplayer();
           }
           placedMonsterCombat = true;
@@ -695,9 +699,23 @@ function Player(userName) {
   this.weapons = [];
   this.items = [];
   this.commands = [];
+  this.shortcuts = [];
   this.equippedWeapon = {};
   // Not sure if we need to actually keep track of armor or if it would be a permanent upgrade once it's picked up
   this.equippedArmor = {};
+}
+
+Player.prototype.shortcutSetter = function() {
+  this.shortcuts = [];
+  for(var idx = 0; idx < this.commands.length ;idx++) {
+    if(this.commands[idx] === "attack") {
+      this.shortcuts.push("a");
+    } else if(this.commands[idx] === "potion") {
+      this.shortcuts.push("p");
+    } else if(this.commands[idx] === "flee") {
+      this.shortcuts.push("f");
+    }
+  }
 }
 
 Player.prototype.healthBar = function() {
@@ -739,6 +757,7 @@ Player.prototype.reviver = function() {
       this.healthBar();
       if(playerInCombat) {
         this.commands = ["attack", "flee", "potion", "equip"];
+        this.shortcutSetter();
         commandDisplayer();
       } else {
         surroundingChecker(testPlayer);
@@ -768,6 +787,7 @@ Player.prototype.takeDamage = function(damageAmount) {
     this.healthBar();
     playerDead = true;
     this.commands = ["revive"];
+    this.shortcutSetter();
     commandDisplayer();
     $("#hero-image").fadeOut("slow");
     $("#hero-dead").delay(600).fadeIn("slow");
@@ -1018,7 +1038,7 @@ function Monster(name, health, minDamage, maxDamage) {
 }
 // Object to track the current enemy
 function CurrentEnemy() {
-  this.type = skeleton;
+  this.type = {};
   this.y = 0;
   this.x = 0;
 }
@@ -1141,7 +1161,15 @@ function commandDisplayer() {
   $("#available-options").append("<li>Possible Commands:</li>")
   if(testPlayer.commands.length > 0) {
     for(var idx = 0; idx < testPlayer.commands.length; idx++) {
-      $("#available-options").append("<li>" + testPlayer.commands[idx] + "</li>");
+      if(testPlayer.commands[idx] === "attack") {
+        $("#available-options").append("<li>(a)ttack</li>");
+      } else if(testPlayer.commands[idx] === "potion") {
+        $("#available-options").append("<li>(p)otion</li>");
+      } else if(testPlayer.commands[idx] === "flee") {
+        $("#available-options").append("<li>(f)lee</li>");
+      } else {
+        $("#available-options").append("<li>" + testPlayer.commands[idx] + "</li>");
+      }
     }
   }
 }
@@ -1308,6 +1336,7 @@ function gameEnder() {
   $("#map").empty();
   $("#victory-image").delay(600).fadeIn("slow");
   testPlayer.commands = ["continue", "restart"];
+  testPlayer.shortcutSetter();
   commandDisplayer();
   $("#combat-display").text("Congratulations, you finished the game! Would you like to continue playing with this character or restart the game?");
 }
@@ -1846,7 +1875,8 @@ $(function() {
   testPlayer.potionCounter();
   testPlayer.reviveCounter();
   testPlayer.keyCounter();
-  testPlayer.commands = ["start"]
+  testPlayer.commands = ["start"];
+  testPlayer.shortcutSetter();
   commandDisplayer();
   $("#combat-display").text("Hi, welcome to our text adventure! Type start in the input box and hit enter to begin.");
 
@@ -1883,10 +1913,10 @@ $(function() {
           testPlayer.equipWeapon(userInput);
           equipTyped = false;
         } else {
-          if(testPlayer.commands.includes(userInput) || userInput === "dev healz") {
+          if(testPlayer.commands.includes(userInput) || testPlayer.shortcuts.includes(userInput) || userInput === "dev healz") {
             if(userInput === "search") {
               searcher(testPlayer);
-            } else if(userInput === "potion") {
+            } else if(userInput === "potion" || userInput === "p") {
               testPlayer.drinkPotion();
             } else if(userInput === "equip") {
               var weaponNames = [];
@@ -1918,7 +1948,7 @@ $(function() {
             } else if(userInput === "dev healz") {
               testPlayer.restoreHealth(1000);
               testPlayer.healthBar();
-            } else if(userInput === "attack") {
+            } else if(userInput === "attack" || userInput === "a") {
               $("#combat-display").empty();
               var attackDamage = testPlayer.whatDamage()
               console.log("player attacks");
@@ -1927,7 +1957,7 @@ $(function() {
               if(playerInCombat) {
                 monsterRetaliater(currentEnemy.type, testPlayer);
               }
-            } else if(userInput === "flee") {
+            } else if(userInput === "flee" || userInput === "f") {
               playerFlee(testPlayer);
             } else if(userInput === "revive") {
               testPlayer.reviver();
