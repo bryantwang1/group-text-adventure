@@ -1894,45 +1894,6 @@ $(function() {
       var userInput = $("#user-input").val().toLowerCase();
       $("#weapon-descriptions").text("");
 
-      if(playerInCombat) {
-        if(equipTyped) {
-          testPlayer.equipWeapon(userInput);
-          equipTyped = false;
-        } else {
-          if(userCommands.includes(userInput) || userInput === "dev healz") {
-            if(userInput === "attack") {
-              $("#combat-display").empty();
-              var attackDamage = testPlayer.whatDamage()
-              console.log("player attacks")
-              attack(attackDamage, currentEnemy);
-
-              if(playerInCombat) {
-                monsterRetaliater(currentEnemy, testPlayer);
-              }
-            } else if(userInput === "flee") {
-              playerFlee(testPlayer);
-            } else if(userInput === "potion") {
-              testPlayer.drinkPotion();
-            } else if(userInput === "equip") {
-              var weaponNames = [];
-              for(var idx = 0; idx < testPlayer.weapons.length; idx++) {
-                weaponNames.push(testPlayer.weapons[idx].name);
-              }
-              $("#combat-display").text("What would you like to equip? Type its name in the command space and hit enter. Available weapons: " + "| " + weaponNames.join(" | ") + " |");
-              equipTyped = true;
-            } else if(userInput === "revive") {
-              testPlayer.reviver();
-            } else if(userInput === "dev healz") {
-              testPlayer.restoreHealth(1000);
-              testPlayer.healthBar();
-            } else {
-              $("#combat-display").text("You can't do that.");
-            }
-          } else {
-            $("#combat-display").text("You can't do that.");
-          }
-        }
-      } else {
         if(equipTyped) {
           testPlayer.equipWeapon(userInput);
           equipTyped = false;
@@ -1972,6 +1933,19 @@ $(function() {
             } else if(userInput === "dev healz") {
               testPlayer.restoreHealth(1000);
               testPlayer.healthBar();
+            } else if(userInput === "attack") {
+              $("#combat-display").empty();
+              var attackDamage = testPlayer.whatDamage()
+              console.log("player attacks");
+              attack(attackDamage, currentEnemy);
+
+              if(playerInCombat) {
+                monsterRetaliater(currentEnemy, testPlayer);
+              }
+            } else if(userInput === "flee") {
+              playerFlee(testPlayer);
+            } else if(userInput === "revive") {
+              testPlayer.reviver();
             } else {
               $("#combat-display").text("You can't do that.");
             }
@@ -1979,7 +1953,6 @@ $(function() {
             $("#combat-display").text("You can't do that.");
           }
         }
-      }
       $("#user-input").val("");
   });
 });
