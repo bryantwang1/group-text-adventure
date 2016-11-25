@@ -1,5 +1,4 @@
 var mapArrays = [];
-var userCommands = [];
 var playerInCombat = false;
 var playerDead = false;
 var placedMonsterCombat = false;
@@ -279,7 +278,7 @@ function mapDisplayer() {
 function surroundingChecker(player) {
   var y = player.y - 1;
 	var x = player.x - 1;
-  userCommands = ["equip", "potion", "look"];
+  player.commands = ["equip", "potion", "look"];
   var chestFound = false;
   var doorFound = false;
 
@@ -291,28 +290,28 @@ function surroundingChecker(player) {
       	var area = mapArrays[idx][idx2];
         if(area.searchable) {
           chestFound = true;
-          if(userCommands.includes("search")) {
+          if(player.commands.includes("search")) {
           } else {
-          userCommands.push("search");
+          player.commands.push("search");
           }
         }
         if(area.terrainType === "monster") {
-          if(userCommands.includes("fight")) {
+          if(player.commands.includes("fight")) {
           } else {
-          userCommands.push("fight");
+          player.commands.push("fight");
           }
         }
         if(area.terrainType === "door") {
           doorFound = true;
-          if(userCommands.includes("open door")) {
+          if(player.commands.includes("open door")) {
           } else {
-          userCommands.push("open door");
+          player.commands.push("open door");
           }
         }
         if(area.terrainType === "firepit" || area.terrainType === "objectSwitch") {
-          if(userCommands.includes("use")) {
+          if(player.commands.includes("use")) {
           } else {
-          userCommands.push("use");
+          player.commands.push("use");
           }
         }
         // Add more later
@@ -506,7 +505,7 @@ function searcher(player) {
               $("#search-image").hide();
               currentEnemy.type = dragon;
               combatStarter(currentEnemy.type);
-              userCommands = ["attack", "potion", "equip"];
+              player.commands = ["attack", "potion", "equip"];
               commandDisplayer();
               placedMonsterCombat = true;
               currentEnemy.setCoord(2, 4);
@@ -590,7 +589,7 @@ function combatStarter(monster) {
   monster.saySomething();
   monster.healthBar();
   playerInCombat = true;
-  userCommands = ["attack", "flee", "potion", "equip"];
+  testPlayer.commands = ["attack", "flee", "potion", "equip"];
   commandDisplayer();
 }
 // Function for the command "fight" which will initiate a fight with a monster on an adjacent tile. If there are multiple monsters for some reason it will initiate a fight with the first monster found.
@@ -613,7 +612,7 @@ function fighter(player) {
           }
           combatStarter(currentEnemy.type);
           if(area.monsterType === "dragon") {
-            userCommands = ["attack", "potion", "equip"];
+            player.commands = ["attack", "potion", "equip"];
             commandDisplayer();
           }
           placedMonsterCombat = true;
@@ -695,6 +694,7 @@ function Player(userName) {
   this.symbol = "Δ";
   this.weapons = [];
   this.items = [];
+  this.commands = [];
   this.equippedWeapon = {};
   // Not sure if we need to actually keep track of armor or if it would be a permanent upgrade once it's picked up
   this.equippedArmor = {};
@@ -738,7 +738,7 @@ Player.prototype.reviver = function() {
       this.revives -= 1;
       this.healthBar();
       if(playerInCombat) {
-        userCommands = ["attack", "flee", "potion", "equip"];
+        this.commands = ["attack", "flee", "potion", "equip"];
         commandDisplayer();
       } else {
         surroundingChecker(testPlayer);
@@ -767,7 +767,7 @@ Player.prototype.takeDamage = function(damageAmount) {
     this.currentHealth = 0;
     this.healthBar();
     playerDead = true;
-    userCommands = ["revive"];
+    this.commands = ["revive"];
     commandDisplayer();
     $("#hero-image").fadeOut("slow");
     $("#hero-dead").delay(600).fadeIn("slow");
@@ -1139,9 +1139,9 @@ function monsterRetaliater(monster, player) {
 function commandDisplayer() {
   $("#available-options").empty();
   $("#available-options").append("<li>Possible Commands:</li>")
-  if(userCommands.length > 0) {
-    for(var idx = 0; idx < userCommands.length; idx++) {
-      $("#available-options").append("<li>" + userCommands[idx] + "</li>")
+  if(testPlayer.commands.length > 0) {
+    for(var idx = 0; idx < testPlayer.commands.length; idx++) {
+      $("#available-options").append("<li>" + testPlayer.commands[idx] + "</li>");
     }
   }
 }
@@ -1307,7 +1307,7 @@ function gameEnder() {
   $("#map").fadeOut("slow");
   $("#map").empty();
   $("#victory-image").delay(600).fadeIn("slow");
-  userCommands = ["continue", "restart"];
+  testPlayer.commands = ["continue", "restart"];
   commandDisplayer();
   $("#combat-display").text("Congratulations, you finished the game! Would you like to continue playing with this character or restart the game?");
 }
@@ -1846,7 +1846,7 @@ $(function() {
   testPlayer.potionCounter();
   testPlayer.reviveCounter();
   testPlayer.keyCounter();
-  userCommands = ["start"]
+  testPlayer.commands = ["start"]
   commandDisplayer();
   $("#combat-display").text("Hi, welcome to our text adventure! Type start in the input box and hit enter to begin.");
 
@@ -1883,7 +1883,7 @@ $(function() {
           testPlayer.equipWeapon(userInput);
           equipTyped = false;
         } else {
-          if(userCommands.includes(userInput) || userInput === "dev healz") {
+          if(testPlayer.commands.includes(userInput) || userInput === "dev healz") {
             if(userInput === "search") {
               searcher(testPlayer);
             } else if(userInput === "potion") {
