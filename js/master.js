@@ -2,9 +2,6 @@ var mapArrays = [];
 var userCommands = [];
 var playerInCombat = false;
 var playerDead = false;
-var currentEnemy = {};
-var currentEnemyY = 0;
-var currentEnemyX = 0;
 var placedMonsterCombat = false;
 var playerStart = true;
 var rooms = [];
@@ -507,13 +504,12 @@ function searcher(player) {
               area.trapped = false;
               $("#chest-image").hide();
               $("#search-image").hide();
-              currentEnemy = dragon;
-              combatStarter(currentEnemy);
+              currentEnemy.type = dragon;
+              combatStarter(currentEnemy.type);
               userCommands = ["attack", "potion", "equip"];
               commandDisplayer();
               placedMonsterCombat = true;
-              currentEnemyY = 2;
-              currentEnemyX = 4;
+              currentEnemy.setCoord(2, 4);
               break searcherBreaker;
             } else {
               var displayText = "You searched a " + area.terrainType + ", you found";
@@ -609,20 +605,19 @@ function fighter(player) {
         var area = mapArrays[idx][idx2];
         if(area.terrainType === "monster") {
           if(area.monsterType === "super golem") {
-            currentEnemy = superGolem;
+            currentEnemy.type = superGolem;
           } else if(area.monsterType === "dragon") {
-            currentEnemy = dragon;
+            currentEnemy.type = dragon;
           } else if(area.monsterType === "random") {
-            currentEnemy = getMonster();
+            currentEnemy.type = getMonster();
           }
-          combatStarter(currentEnemy);
+          combatStarter(currentEnemy.type);
           if(area.monsterType === "dragon") {
             userCommands = ["attack", "potion", "equip"];
             commandDisplayer();
           }
           placedMonsterCombat = true;
-          currentEnemyY = area.y;
-          currentEnemyX = area.x;
+          currentEnemy.setCoord(area.y, area.x);
           break;
         }
       }
@@ -633,16 +628,15 @@ function fighter(player) {
 function monsterEncounter(player) {
   var playerTile = mapArrays[player.y][player.x];
   playerTile.monsterHere = true;
-  currentEnemy = getMonster();
-  combatStarter(currentEnemy);
+  currentEnemy.type = getMonster();
+  combatStarter(currentEnemy.type);
 }
 // Hard coded to use testPlayer y and x for now
 function combatEnder() {
   var playerTile = mapArrays[testPlayer.y][testPlayer.x];
   playerTile.monsterHere = false;
-  currentEnemy.statReset();
-  $("#" + currentEnemy.name + "-image").fadeOut("slow");;
-  currentEnemy = {};
+  currentEnemy.type.statReset();
+  $("#" + currentEnemy.type.name + "-image").fadeOut("slow");;
   playerInCombat = false;
   $("#monster-description").text("");
   $("#monster-name").text("");
@@ -667,7 +661,7 @@ function playerFlee(player) {
   } else {
     $("#combat-display").empty();
     $("#combat-display").append("You attempt to flee, but can't get away from the monster.");
-    monsterRetaliater(currentEnemy, player);
+    monsterRetaliater(currentEnemy.type, player);
   }
 }
 
@@ -939,13 +933,13 @@ function moveChecklist(player, spawnPercentage) {
     player.takeDamage(50);
     $("#combat-display").text("The water contains leeches! They drain 50 points of health from your body.");
     if(playerInCombat) {
-      $("#combat-display").append("<p>You have entered combat with a " + currentEnemy.name + ".</p>");
+      $("#combat-display").append("<p>You have entered combat with a " + currentEnemy.type.name + ".</p>");
     }
   } else if(checkTile.terrainType === "spike") {
     player.takeDamage(250);
     $("#combat-display").text("You stumble into a pit of carefully sharpened spikes, and are unable to dodge all of them. You are still alive, but sport a few deep wounds reminding you to be wary of such traps in the future.");
     if(playerInCombat) {
-      $("#combat-display").append("<p>You have entered combat with a " + currentEnemy.name + ".</p>");
+      $("#combat-display").append("<p>You have entered combat with a " + currentEnemy.type.name + ".</p>");
     }
   } else if(checkTile.terrainType === "lava") {
     if(playerInCombat) {
@@ -1019,8 +1013,19 @@ function Monster(name, health, minDamage, maxDamage) {
  this.description = "";
  this.symbol = "";
  this.drops = [];
- // The vocalizations property could hold an array of strings with sounds the monster could say to the player. See example prototype method below.
+ // The vocalizations property holdss an array of strings with sounds the monster says to the player.
  this.vocalizations = [];
+}
+// Object to track the current enemy
+function CurrentEnemy() {
+  this.type = skeleton;
+  this.y = 0;
+  this.x = 0;
+}
+
+CurrentEnemy.prototype.setCoord = function(yCoord, xCoord) {
+  this.y = yCoord;
+  this.x = xCoord;
 }
 
 // Prototype method for monster to emit a random vocalization from its library.
@@ -1054,7 +1059,7 @@ Monster.prototype.statReset = function() {
 
 // Prototype method for monsters to take damage. Changes alive property to false if their currentHealth falls to 0 or below. Hard coded testPlayer in for potions.
 Monster.prototype.takeDamage = function(damageAmount) {
-  var dragonSaver = currentEnemy;
+  var dragonSaver = currentEnemy.type;
   this.previousHealth = this.currentHealth;
 	this.currentHealth -= damageAmount;
   this.healthBar();
@@ -1062,7 +1067,7 @@ Monster.prototype.takeDamage = function(damageAmount) {
   if(this.currentHealth <= 0) {
   	this.alive = false;
     if(placedMonsterCombat) {
-      var enemyTile = mapArrays[currentEnemyY][currentEnemyX];
+      var enemyTile = mapArrays[currentEnemy.y][currentEnemy.x];
       enemyTile.canMove = true;
       enemyTile.description = "A floor tile";
       enemyTile.terrainType = "floor";
@@ -1829,6 +1834,7 @@ room5.generator = function(player, createdBefore, whereFrom) {
 
 // Only in back-end for testing purposes
 var testPlayer = new Player("You");
+var currentEnemy = new CurrentEnemy();
 // Front-end below this line
 
 $(function() {
@@ -1916,10 +1922,10 @@ $(function() {
               $("#combat-display").empty();
               var attackDamage = testPlayer.whatDamage()
               console.log("player attacks");
-              attack(attackDamage, currentEnemy);
+              attack(attackDamage, currentEnemy.type);
 
               if(playerInCombat) {
-                monsterRetaliater(currentEnemy, testPlayer);
+                monsterRetaliater(currentEnemy.type, testPlayer);
               }
             } else if(userInput === "flee") {
               playerFlee(testPlayer);
