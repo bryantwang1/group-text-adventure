@@ -1845,39 +1845,17 @@ $(function() {
 
   // Code to make arrow keys work to move
   $(document).on("keydown", function(event) {
-    if(event.which === 37) {
-      if(playerInCombat === false && playerDead === false && playerStart === false) {
-        moveLeft(testPlayer);
-      } else {
-        if(playerDead) {
-          $("#combat-display").text("You can't move...you're dead!");
-        } else if(playerInCombat) {
-          $("#combat-display").text("You can't move while in combat!");
+    if(event.which === 37 || event.which === 38 || event.which === 39 || event.which === 40) {
+      if(!playerInCombat && !playerDead && !playerStart) {
+        if(event.which === 37) {
+          moveLeft(testPlayer);
+        } else if(event.which === 38) {
+          moveUp(testPlayer);
+        } else if(event.which === 39) {
+          moveRight(testPlayer);
+        } else if(event.which === 40) {
+          moveDown(testPlayer);
         }
-      }
-    } else if(event.which === 38) {
-      if(playerInCombat === false && playerDead === false && playerStart === false) {
-        moveUp(testPlayer);
-      } else {
-        if(playerDead) {
-          $("#combat-display").text("You can't move...you're dead!");
-        } else if(playerInCombat) {
-          $("#combat-display").text("You can't move while in combat!");
-        }
-      }
-    } else if(event.which === 39) {
-      if(playerInCombat === false && playerDead === false && playerStart === false) {
-        moveRight(testPlayer);
-      } else {
-        if(playerDead) {
-          $("#combat-display").text("You can't move...you're dead!");
-        } else if(playerInCombat) {
-          $("#combat-display").text("You can't move while in combat!");
-        }
-      }
-    } else if(event.which === 40) {
-      if(playerInCombat === false && playerDead === false && playerStart === false) {
-        moveDown(testPlayer);
       } else {
         if(playerDead) {
           $("#combat-display").text("You can't move...you're dead!");
