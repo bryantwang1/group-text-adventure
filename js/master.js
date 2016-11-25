@@ -36,7 +36,6 @@ function Location(yCoord, xCoord) {
 	this.canMove = true;
   this.description = "A floor tile";
   this.terrainType = "floor";
-  this.playerHere = false;
   this.symbol = "#";
   this.color = "tiles";
   this.searchable = false;
@@ -465,7 +464,6 @@ doorOpenerLoops: {
 //
 function roomMover(player, doorLocation, firstTime) {
   var playerTile = mapArrays[player.y][player.x];
-  playerTile.playerHere = false;
   var whereToGo = doorLocation.leadsTo;
   var whereComeFrom = doorLocation.fromWhere;
   var roomNames = [];
@@ -927,11 +925,6 @@ function atmosphericDisplayer() {
     $("#atmospheric-display").text("");
   }
 }
-// Example of what would update the map on move.
-function positionUpdater(player, oldY, oldX) {
-  mapArrays[player.y + oldY][player.x + oldX].playerHere = false;
-  mapArrays[player.y][player.x].playerHere = true;
-}
 //
 function moveChecklist(player, spawnPercentage) {
   $("#combat-display").empty();
@@ -970,7 +963,6 @@ function moveChecklist(player, spawnPercentage) {
 function moveUp(player) {
   if(mapArrays[player.y-1][player.x].canMove) {
     player.y -= 1;
-    positionUpdater(player,1,0);
     moveChecklist(player, 2);
   } else {
     $("#combat-display").empty();
@@ -982,7 +974,6 @@ function moveUp(player) {
 function moveDown(player) {
   if(mapArrays[player.y+1][player.x].canMove) {
     player.y += 1;
-    positionUpdater(player,-1,0);
     moveChecklist(player, 2);
   } else {
     $("#combat-display").empty();
@@ -994,7 +985,6 @@ function moveDown(player) {
 function moveLeft(player) {
   if(mapArrays[player.y][player.x-1].canMove) {
     player.x -= 1;
-    positionUpdater(player,0,1);
     moveChecklist(player, 2);
   } else {
     $("#combat-display").empty();
@@ -1006,7 +996,6 @@ function moveLeft(player) {
 function moveRight(player) {
   if(mapArrays[player.y][player.x+1].canMove) {
     player.x += 1;
-    positionUpdater(player,0,-1);
     moveChecklist(player, 2);
   } else {
     $("#combat-display").empty();
@@ -1076,7 +1065,6 @@ Monster.prototype.takeDamage = function(damageAmount) {
       enemyTile.canMove = true;
       enemyTile.description = "A floor tile";
       enemyTile.terrainType = "floor";
-      enemyTile.playerHere = false;
       enemyTile.symbol = "#";
       enemyTile.color = "tiles";
       enemyTile.monsterType = "";
@@ -1289,7 +1277,6 @@ function roomManipulator(player, roomName) {
   if(roomName === "room3") {
     room3.switched = true;
     room3.generator(player, false);
-    mapArrays[player.y][player.x].playerHere = false;
     player.y = savedPlayerY;
     player.x = savedPlayerX;
     mapDisplayer();
@@ -1298,7 +1285,6 @@ function roomManipulator(player, roomName) {
   } else if(roomName === "room4") {
     room4.switched = true;
     room4.generator(player, false);
-    mapArrays[player.y][player.x].playerHere = false;
     player.y = savedPlayerY;
     player.x = savedPlayerX;
     mapDisplayer();
@@ -1428,12 +1414,10 @@ room1.generator = function(player, createdBefore, whereFrom) {
     itemFiller();
     player.y = 5;
     player.x = 5;
-    mapArrays[5][5].playerHere = true;
   } else {
     if(whereFrom === "room2") {
       player.y = 1;
       player.x = 5;
-      mapArrays[2][5].playerHere = true;
     }
   }
   mapDisplayer();
@@ -1524,16 +1508,13 @@ room2.generator = function(player, createdBefore, whereFrom) {
     itemFiller();
     player.y = 8;
     player.x = 5;
-    mapArrays[8][5].playerHere = true;
   } else {
     if(whereFrom === "room3") {
       player.y = 1;
       player.x = 5;
-      mapArrays[8][5].playerHere = true;
     } else {
       player.y = 8;
       player.x = 5;
-      mapArrays[8][5].playerHere = true;
     }
   }
   mapDisplayer();
@@ -1633,16 +1614,13 @@ room3.generator = function(player, createdBefore, whereFrom) {
     itemFiller();
     player.y = 8;
     player.x = 8;
-    mapArrays[8][8].playerHere = true;
   } else {
     if(whereFrom === "room2") {
       player.y = 8;
       player.x = 8;
-      mapArrays[8][8].playerHere = true;
     } else {
       player.y = 1;
       player.x = 1;
-      mapArrays[1][1].playerHere = true;
     }
   }
   mapDisplayer();
@@ -1748,16 +1726,13 @@ room4.generator = function(player, createdBefore, whereFrom) {
     itemFiller();
     player.y = 8;
     player.x = 8;
-    mapArrays[8][8].playerHere = true;
   } else {
     if(whereFrom === "room3") {
       player.y = 8;
       player.x = 8;
-      mapArrays[8][8].playerHere = true;
     } else {
       player.y = 1;
       player.x = 1;
-      mapArrays[1][1].playerHere = true;
     }
   }
   mapDisplayer();
@@ -1836,16 +1811,13 @@ room5.generator = function(player, createdBefore, whereFrom) {
     itemFiller();
     player.y = 8;
     player.x = 5;
-    mapArrays[8][5].playerHere = true;
   } else {
     if(whereFrom === "room4") {
       player.y = 8;
       player.x = 5;
-      mapArrays[8][5].playerHere = true;
     } else {
       player.y = 1;
       player.x = 1;
-      mapArrays[1][1].playerHere = true;
     }
   }
   mapDisplayer();
