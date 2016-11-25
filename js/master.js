@@ -743,16 +743,19 @@ Player.prototype.reviver = function() {
       this.restoreHealth(1000);
       this.revives -= 1;
       this.healthBar();
-      if(currentEnemy !== dragon && currentEnemy !== superGolem) {
-        combatEnder();
+      if(playerInCombat) {
+        userCommands = ["attack", "flee", "potion", "equip"];
+        commandDisplayer();
+      } else {
+        surroundingChecker(testPlayer);
       }
-      userCommands = ["attack", "flee", "potion", "equip"];
-      commandDisplayer();
       $("#combat-display").text("Before you breathe no more you manage to empty your revival potion into your throat. As the darkness of death lifts, you are comforted by the knowledge that death’s door will not shut on you…this time. ");
       $("#death-message").fadeOut("slow");
       $("#map").delay(600).fadeIn("slow");
       $("#hero-dead").fadeOut("slow");
       $("#hero-image").delay(600).fadeIn("slow");
+      mapDisplayer();
+      playerDisplayer(testPlayer);
       this.items.splice(idx, 1);
       idx--;
       break;
@@ -949,8 +952,6 @@ function moveChecklist(player, spawnPercentage) {
       combatEnder();
     }
     player.takeDamage(1000);
-    userCommands = [];
-    commandDisplayer();
     $("#combat-display").prepend("<p>You walked on lava.</p>")
   }
   spawnAdjuster(spawnPercentage);
