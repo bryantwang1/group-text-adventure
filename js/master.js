@@ -781,7 +781,7 @@ Player.prototype.takeDamage = function(damageAmount) {
   this.previousHealth = this.currentHealth;
 	this.currentHealth -= damageAmount;
   this.healthBar();
-  $("#combat-display").append("<p>You're attacked with " + damageAmount + " damage, your health is " + this.currentHealth + ".</p>");
+  $("#combat-display").append("<p>You take " + damageAmount + " damage, you have " + this.currentHealth + " health left.</p>");
   if(this.currentHealth <= 0) {
     this.currentHealth = 0;
     this.healthBar();
@@ -956,8 +956,11 @@ function moveChecklist(player, spawnPercentage) {
       $("#combat-display").append("<p>You have entered combat with a " + currentEnemy.type.name + ".</p>");
     }
   } else if(checkTile.terrainType === "spike") {
-    player.takeDamage(250);
     $("#combat-display").text("You stumble into a pit of carefully sharpened spikes, and are unable to dodge all of them. You are still alive, but sport a few deep wounds reminding you to be wary of such traps in the future.");
+    player.takeDamage(250);
+    if(player.currentHealth <= 0) {
+        $("#combat-display").text("You stumble into a pit of carefully sharpened spikes, and are unable to dodge all of them. You have died.");
+    }
     if(playerInCombat) {
       $("#combat-display").append("<p>You have entered combat with a " + currentEnemy.type.name + ".</p>");
     }
@@ -1083,7 +1086,7 @@ Monster.prototype.takeDamage = function(damageAmount) {
   this.previousHealth = this.currentHealth;
 	this.currentHealth -= damageAmount;
   this.healthBar();
-  $("#combat-display").append("<p>You attack with " + damageAmount + " damage, the monster's health is " + this.currentHealth + ".</p>");
+  $("#combat-display").append("<p>You attack with " + damageAmount + " damage, the monster has " + this.currentHealth + " health left.</p>");
   if(this.currentHealth <= 0) {
   	this.alive = false;
     if(placedMonsterCombat) {
