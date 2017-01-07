@@ -556,7 +556,7 @@ Environment.prototype.lookAround = function() {
   this.surroundings.forEach(function(tile) {
     descs.push(tile);
   });
-  var detailString = "Northwest: " + descs[0] + "; North: " + descs[1] + "; Northeast: " + descs[2] + "; West: " + descs[3] + "; East: " + descs[4] + "; Southwest: " + descs[5] + "; South: " + descs[6] + "; Southeast: " + descs[7] + ".";
+  var detailString = "NW: " + descs[0] + " || N: " + descs[1] + " || NE: " + descs[2] + " || W: " + descs[3] + " || E: " + descs[4] + " || SW: " + descs[5] + " || S: " + descs[6] + " || SE: " + descs[7] + ".";
 
   $("#combat-display").text(detailString);
 }
