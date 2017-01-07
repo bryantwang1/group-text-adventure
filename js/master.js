@@ -786,7 +786,7 @@ Player.prototype.takeDamage = function(damageAmount) {
     this.currentHealth = 0;
     this.healthBar();
     playerDead = true;
-    this.commands = ["revive"];
+    this.commands = ["revive", "restart"];
     this.shortcutSetter();
     commandDisplayer();
     $("#hero-image").fadeOut("slow");
@@ -1962,10 +1962,10 @@ $(function() {
             } else if(userInput === "revive") {
               testPlayer.reviver();
             } else {
-              $("#combat-display").text("You can't do that.");
+              $("#combat-display").text("You can't do \"" + userInput + "\".");
             }
           } else {
-            $("#combat-display").text("You can't do that.");
+            $("#combat-display").text("You can't do \"" + userInput + "\".");
           }
         }
       $("#user-input").val("");
